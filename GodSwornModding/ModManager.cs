@@ -18,9 +18,9 @@ namespace JCGodSwornConfigurator
     public class Plugin : BasePlugin
     {
         public GameObject GodSwornMainModObject;
+        // Plugin startup logic
         public override void Load()
         {
-            // Plugin startup logic
             Log.LogInfo("Plugin JCGodSwornConfigurator is loaded!");
             ClassInjector.RegisterTypeInIl2Cpp<ModManager>();
             if (GodSwornMainModObject == null)
@@ -58,13 +58,13 @@ namespace JCGodSwornConfigurator
             //wait before modding datamanager
             private int waitFrames = 120;
 
-            private string listDelimiter = ", ";
-            private string wordDelimiter = "_";
-            private string keyDelimiter = ":";
+            private readonly string listDelimiter = ", ";
+            private readonly string wordDelimiter = "_";
+            private readonly string keyDelimiter = ":";
 
             internal void Update()
             {
-                //Bepinex is angry if I don't wait here, probably some time between inject and scene load? Can't use unity event either here for some reason
+                //Bepinex is angry if I don't wait here, probably some time between inject and unity/scene load? Can't use unity event either here for some reason
                 if (waitFrames > 0)
                 {
                     waitFrames--;
@@ -74,31 +74,17 @@ namespace JCGodSwornConfigurator
                 if (!initialized && DataManager.Instance != null)
                 {
                     dataManager = DataManager.Instance;
+                    Initialize();
                     ReadModConfig();
-                    InitSetup();
+                    MainSetup();
                 }
 
                 if (DataManager.Instance.gameMgr != null && !initializedInGame)
                 {
-                    //test damage modifiers
-                    //DataManager.Instance.gameMgr.DmgMgr.Data.ComparisonSheet[6].defType[0].Precentage = 900f;
-                    //DataManager.Instance.gameMgr.DmgMgr.Data.ComparisonSheet[6].defType[1].Precentage = 600f;
-
                     gameManager = DataManager.Instance.gameMgr;
                     damageManager = gameManager.DmgMgr;
 
-                    //WriteDefaultDamageTypeModifierConfig();
-
-                    Il2CppReferenceArray<DMGData.TypesCompared> comparisonSheet = damageManager.Data.ComparisonSheet;
-
-                    for (int i = 0; i < comparisonSheet.Length; i++)
-                    {
-                        foreach (var defType in comparisonSheet[i].defType)
-                        {
-                            string searchKey = new StringBuilder(i.ToString()).Append(wordDelimiter).Append(comparisonSheet[i].dmgType).Append(wordDelimiter).Append(defType.DefenseType.ToString()).ToString();
-                            defType.Precentage = GetFloatByKey(defType.Precentage, searchKey);
-                        }
-                    }
+                    //WriteDefaultDamageTypeModifierConfig();   //internal use for creating default config
 
                     InGameSetup();
                     plugin.Log.LogInfo("In-Game Init Complete");
@@ -107,27 +93,36 @@ namespace JCGodSwornConfigurator
 
 
                 //hotkey to force reloading the text file values again
-                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.F11))
+                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.F10))
                 {
                     plugin.Log.LogInfo("Reloading mod config");
                     ReadModConfig();
-                    InitSetup();
+                    MainSetup();
                     //DataManager.Instance.FactionsOptions.Factions[0].Construction[0].CostData.resources[0].resource.
                     //DataManager.Instance.FactionsOptions.Factions[0].DefaultUpgrades[0].AddActions.AddItem(DataManager.Instance.FactionsOptions.Factions[1].DefaultUpgrades[1].AddActions[2]);
                     //DataManager.Instance.FactionsOptions.Factions[0].DefaultUpgrades[0].AddActions.AddItem(DataManager.Instance.FactionsOptions.Factions[1].DefaultUpgrades[1].AddActions[4]);
                 }
             }
 
-            private void InitSetup()
+            private void Initialize()
+            {
+                modRootPath = Directory.GetCurrentDirectory() + @"\BepInEx\plugins\GodswornConfigurator\";
+                configPath = modRootPath + "config.txt";
+            }
+
+            /// <summary>
+            /// General mod setup for global config for variables present in main menu
+            /// </summary>
+            private void MainSetup()
             {
                 if (DisableModMasterSwitch)
                 {
                     initialized = true;
                     return;
                 }
-                int intValue = 0;
-                float floatValue = 0;
-                bool boolValue = false;
+                int intValue;
+                float floatValue;
+                bool boolValue;
 
                 #region FactionStuff
 
@@ -140,87 +135,39 @@ namespace JCGodSwornConfigurator
                  * 4 Faction_Baltic_Bishops
                  */
 
-                for (int i = 0; i < dataManager.FactionsOptions.Factions.Count; i++)
+                var factionsData = dataManager.FactionsOptions.Factions;
+
+                for (int i = 0; i < factionsData.Count; i++)
                 {
-                    string factionName = dataManager.FactionsOptions.Factions[i].name;
+                    string factionName = factionsData[i].name;
+
                     //Starting Resources
-                    if (int.TryParse(GetValue(factionName + "_StartingWorshipperAmount"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartingWorshipperAmount = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_StartFood"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartFood.amount = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_StartWood"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartWood.amount = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_StartFaith"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartFaith.amount = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_StartWealth"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartWealth.amount = intValue;
-                    }
+                    factionsData[i].StartingWorshipperAmount = GetIntByKey(factionsData[i].StartingWorshipperAmount, factionName + "_StartingWorshipperAmount");
+                    factionsData[i].StartFood.amount = GetIntByKey(factionsData[i].StartFood.amount, factionName + "_StartFood");
+                    factionsData[i].StartWood.amount = GetIntByKey(factionsData[i].StartWood.amount, factionName + "_StartWood");
+                    factionsData[i].StartFaith.amount = GetIntByKey(factionsData[i].StartFaith.amount, factionName + "_StartFaith");
+                    factionsData[i].StartWealth.amount = GetIntByKey(factionsData[i].StartWealth.amount, factionName + "_StartWealth");
 
                     //Resource Base Incomes
-                    if (int.TryParse(GetValue(factionName + "_BaseIncomeFood"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartFood.Increase = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_BaseIncomeWood"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartWood.Increase = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_BaseIncomeFaith"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartFaith.Increase = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_BaseIncomeWealth"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartWealth.Increase = intValue;
-                    }
+                    factionsData[i].StartFood.Increase = GetIntByKey(factionsData[i].StartFood.Increase, factionName + "_BaseIncomeFood");
+                    factionsData[i].StartWood.Increase = GetIntByKey(factionsData[i].StartWood.Increase, factionName + "_BaseIncomeWood");
+                    factionsData[i].StartFaith.Increase = GetIntByKey(factionsData[i].StartFaith.Increase, factionName + "_BaseIncomeFaith");
+                    factionsData[i].StartWealth.Increase = GetIntByKey(factionsData[i].StartWealth.Increase, factionName + "_BaseIncomeWealth");
 
                     //Resource Max Caps
-                    if (int.TryParse(GetValue(factionName + "_MaxFoodCap"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartFood.Maximum = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_MaxWoodCap"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartWood.Maximum = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_MaxFaithCap"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartFaith.Maximum = intValue;
-                    }
-                    if (int.TryParse(GetValue(factionName + "_MaxWealthCap"), out intValue))
-                    {
-                        dataManager.FactionsOptions.Factions[i].StartWealth.Maximum = intValue;
-                    }
+                    factionsData[i].StartFood.Maximum = GetIntByKey(factionsData[i].StartFood.Maximum, factionName + "_MaxFoodCap");
+                    factionsData[i].StartWood.Maximum = GetIntByKey(factionsData[i].StartWood.Maximum, factionName + "_MaxWoodCap");
+                    factionsData[i].StartFaith.Maximum = GetIntByKey(factionsData[i].StartFaith.Maximum, factionName + "_MaxFaithCap");
+                    factionsData[i].StartWealth.Maximum = GetIntByKey(factionsData[i].StartWealth.Maximum, factionName + "_MaxWealthCap");
 
-                    //
-                    //if (int.TryParse(GetValue(DataManager.Instance.FactionsOptions.Factions[i].name + "_MaxWealthCap"), out intValue))
-                    //{
-                    //    DataManager.Instance.FactionsOptions.Factions[i]. = intValue;
-                    //}
+
                 }
 
                 //saule marauders
                 if (bool.TryParse(GetValue("AddMarauderToSauleWarcamp"), out boolValue) && boolValue == true)
                 {
-                    dataManager.FactionsOptions.Factions[0].DefaultUpgrades[0].AddActions = dataManager.FactionsOptions.Factions[1].DefaultUpgrades[1].AddActions;
+                    factionsData[0].DefaultUpgrades[0].AddActions = factionsData[1].DefaultUpgrades[1].AddActions;
                 }
-
-                //for (int i = 0; i < DataManager.Instance.FactionsOptions.Factions.Count; i++)
-                //{
-                //    if (int.TryParse(GetValue(DataManager.Instance.FactionsOptions.Factions[i].name + "_" + "StartWood"), out intValue))
-                //    {
-                //        DataManager.Instance.FactionsOptions.Factions[i].start.amount = intValue;
-                //    }
-                //}
 
                 #endregion
 
@@ -268,6 +215,9 @@ namespace JCGodSwornConfigurator
                 initialized = true;
             }
 
+            /// <summary>
+            /// Handles setup for config that exists outside of main menu and in game scene only
+            /// </summary>
             private void InGameSetup()
             {
                 if (DisableModMasterSwitch)
@@ -275,12 +225,27 @@ namespace JCGodSwornConfigurator
                     initializedInGame = true;
                     return;
                 }
+
+                //Damage Type Modifiers
+                Il2CppReferenceArray<DMGData.TypesCompared> comparisonSheet = damageManager.Data.ComparisonSheet;
+
+                for (int i = 0; i < comparisonSheet.Length; i++)
+                {
+                    foreach (var defType in comparisonSheet[i].defType)
+                    {
+                        string searchKey = new StringBuilder(i.ToString()).Append(wordDelimiter).Append(comparisonSheet[i].dmgType).Append(wordDelimiter).Append(defType.DefenseType.ToString()).ToString();
+                        defType.Precentage = GetFloatByKey(defType.Precentage, searchKey);
+                    }
+                }
+
                 gameManager.CorpseUnitTime = GetFloatByKey(gameManager.CorpseUnitTime, nameof (gameManager.CorpseUnitTime));
+                
                 plugin.Log.LogInfo("Finished in-game mod setup");
                 initializedInGame = true;
             }
 
             #region Utilities
+            //helper functions
 
             private float GetFloatByKey(float originalFloat, string key)
             {
@@ -316,11 +281,14 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    plugin.Log.LogInfo("Failed to parse Int: " + key);
+                    plugin.Log.LogInfo("Failed to parse Bool: " + key);
                     return originalBool;
                 }
             }
 
+            /// <summary>
+            /// Write separate config file with game's default damage modifier table
+            /// </summary>
             private void WriteDefaultDamageTypeModifierConfig()
             {
                 Il2CppReferenceArray<DMGData.TypesCompared> comparisonSheet = damageManager.Data.ComparisonSheet;
@@ -339,11 +307,11 @@ namespace JCGodSwornConfigurator
 
             #endregion
 
-            //Read config text file from mod folder
+            /// <summary>
+            /// Read config text file from mod folder
+            /// </summary>
             public void ReadModConfig()
             {
-                configPath = Directory.GetCurrentDirectory() + @"\BepInEx\plugins\GodswornConfigurator\config.txt";
-                modRootPath = Directory.GetCurrentDirectory() + @"\BepInEx\plugins\GodswornConfigurator\";
                 plugin.Log.LogInfo(configPath);
                 lines = null;
                 StreamReader reader = new StreamReader(configPath, true);
@@ -355,7 +323,9 @@ namespace JCGodSwornConfigurator
                     DisableModMasterSwitch = boolVal;
                 }
             }
-
+            /// <summary>
+            /// Write to text file
+            /// </summary>
             public void WriteConfig(string fileName, List<string> text)
             {
                 StreamWriter writer = new StreamWriter(fileName, true);
@@ -366,7 +336,9 @@ namespace JCGodSwornConfigurator
                 writer.Close();
             }
 
-            //Retrieve value from file
+            /// <summary>
+            /// Retrieve value from file
+            /// </summary>
             public string GetValue(string key)
             {
                 foreach (string line in lines)
