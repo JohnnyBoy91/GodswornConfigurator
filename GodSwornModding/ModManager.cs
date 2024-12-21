@@ -17,6 +17,7 @@ namespace JCGodSwornConfigurator
     [BepInPlugin("JCGodSwornConfigurator", "GodSwornConfigurator", "1.0.0")]
     public class Plugin : BasePlugin
     {
+        #region Plugin Core
         public GameObject GodSwornMainModObject;
         // Plugin startup logic
         public override void Load()
@@ -36,6 +37,7 @@ namespace JCGodSwornConfigurator
             }
             GodSwornMainModObject.GetComponent<ModManager>().plugin = this;
         }
+        #endregion
 
         public class ModManager : MonoBehaviour
         {
@@ -137,7 +139,9 @@ namespace JCGodSwornConfigurator
 
                 var factionsData = dataManager.FactionsOptions.Factions;
 
-                for (int i = 0; i < factionsData.Count; i++)
+                //WriteDefaultFactionDataConfig();  //internal use for creating default config
+
+                for (int i = 0; i < 5; i++)
                 {
                     string factionName = factionsData[i].name;
 
@@ -160,6 +164,21 @@ namespace JCGodSwornConfigurator
                     factionsData[i].StartFaith.Maximum = GetIntByKey(factionsData[i].StartFaith.Maximum, factionName + "_MaxFaithCap");
                     factionsData[i].StartWealth.Maximum = GetIntByKey(factionsData[i].StartWealth.Maximum, factionName + "_MaxWealthCap");
 
+                    List<string> modifiedBuildingsList = new List<string>();
+                    for (int k = 0; k < factionsData[i].Construction.Length; k++)
+                    {
+                        string buildingName = factionsData[i].Construction[k].name;
+                        if (!modifiedBuildingsList.Contains(buildingName))
+                        {
+                            modifiedBuildingsList.Add(buildingName);
+                            for (int j = 0; j < factionsData[i].Construction[k].CostData.resources.Length; j++)
+                            {
+                                string resourceName = GetSanitizedResourceName(factionsData[i].Construction[k].CostData.resources[j].resource.name);
+                                string searchKey = new StringBuilder(buildingName).Append(wordDelimiter).Append(resourceName).ToString();
+                                factionsData[i].Construction[k].CostData.resources[j].amount = GetIntByKey(factionsData[i].Construction[k].CostData.resources[j].amount, searchKey);
+                            }
+                        }
+                    }
 
                 }
 
@@ -287,6 +306,18 @@ namespace JCGodSwornConfigurator
             }
 
             /// <summary>
+            /// "2 Wood" -> "Wood"
+            /// </summary>
+            private string GetSanitizedResourceName(string inputString)
+            {
+                if (inputString.ToLower().Contains("food")) return "Food";
+                if (inputString.ToLower().Contains("wood")) return "Wood";
+                if (inputString.ToLower().Contains("faith")) return "Faith";
+                if (inputString.ToLower().Contains("wealth")) return "Wealth";
+                return inputString;
+            }
+
+            /// <summary>
             /// Write separate config file with game's default damage modifier table
             /// </summary>
             private void WriteDefaultDamageTypeModifierConfig()
@@ -303,6 +334,36 @@ namespace JCGodSwornConfigurator
                     }
                 }
                 WriteConfig(modRootPath + "DamageTypesConfig.txt", damageTypeLines);
+            }
+
+            /// <summary>
+            /// Write separate config file with game's default faction data
+            /// </summary>
+            private void WriteDefaultFactionDataConfig()
+            {
+                List<string> factionDataLines = new List<string>();
+                var factionsData = dataManager.FactionsOptions.Factions;
+                List<string> modifiedBuildingsList = new List<string>();
+                for (int i = 0; i < 5; i++)
+                {
+                    string factionName = factionsData[i].name;
+                    for (int k = 0; k < factionsData[i].Construction.Length; k++)
+                    {
+                        string buildingName = factionsData[i].Construction[k].name;
+                        if (!modifiedBuildingsList.Contains(buildingName))
+                        {
+                            modifiedBuildingsList.Add(buildingName);
+                            for (int j = 0; j < factionsData[i].Construction[k].CostData.resources.Length; j++)
+                            {
+                                string resourceName = GetSanitizedResourceName(factionsData[i].Construction[k].CostData.resources[j].resource.name);
+                                int resourceQuantity = factionsData[i].Construction[k].CostData.resources[j].amount;
+                                string searchKey = new StringBuilder(buildingName).Append(wordDelimiter).Append(resourceName).Append(keyDelimiter).Append(resourceQuantity).ToString();
+                                factionDataLines.Add(searchKey);
+                            }
+                        }
+                    }
+                }
+                WriteConfig(modRootPath + "FactionDataConfig.txt", factionDataLines);
             }
 
             #endregion

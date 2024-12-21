@@ -1,12 +1,42 @@
-//FACTION VARIABLES
 //add "//" to lines to omit specific values from being changed by this mod
+//Use this field to disable entire mod
+DisableThisMod:false
+
+//GLOBAL VARIABLES
+
+//Worshippers
+MinimumWorshipperSpawnTime:15
+MaximumWorshipperSpawnTime:80
+WorsipperSpawnTimeIncrease:4
+EmptyHouseSpawnIncrease:-1
+PopulationSpawnTimeIncrease:0
+StartingSpawnTime:30
+
+//XP Gain and Levels
+maxLevel:10
+LevelOneXPRequirement:50
+LevelOneXPRequirementUnit:10
+FlatIncreasePerLvl:80
+FlatIncreasePerLvlUnit:10
+LevelSpawnTimeIncrease:0
+IncreaseRespawnTime:10
+StartRespawnTime:25
+
+//Misc
+StrenghtScaling:0.05
+CorpseUnitTime:180
+
+//Unconfirmed, multiply by stance to control how far units aggro?
+ChaseDistance:25
+
+//FACTION VARIABLES
 
 //Saule
-Faction_Baltic_Saule_StartingWorshipperAmount:20
-Faction_Baltic_Saule_StartFood:600
-Faction_Baltic_Saule_StartWood:700
-Faction_Baltic_Saule_StartFaith:800
-Faction_Baltic_Saule_StartWealth:900
+Faction_Baltic_Saule_StartingWorshipperAmount:2
+Faction_Baltic_Saule_StartFood:350
+Faction_Baltic_Saule_StartWood:260
+Faction_Baltic_Saule_StartFaith:150
+Faction_Baltic_Saule_StartWealth:0
 Faction_Baltic_Saule_BaseIncomeFood:0
 Faction_Baltic_Saule_BaseIncomeWood:0
 Faction_Baltic_Saule_BaseIncomeFaith:5
@@ -78,28 +108,82 @@ Faction_Order_Bishops_MaxWoodCap:5000
 Faction_Order_Bishops_MaxFaithCap:2000
 Faction_Order_Bishops_MaxWealthCap:5000
 
-//GLOBAL VARIABLES
+//DAMAGE TYPE MODIFIERS
+//Index_DamageType_DefenseType:Percentage
 
-//Worshippers
-MinimumWorshipperSpawnTime:15
-MaximumWorshipperSpawnTime:80
-WorsipperSpawnTimeIncrease:4
-EmptyHouseSpawnIncrease:-1
-PopulationSpawnTimeIncrease:0
-StartingSpawnTime:30
+0_Projectile_Winged:1.2
+0_Projectile_Shielded:0.5
+0_Projectile_Constructed:0.3
+1_Blunt_Constructed:1.5
+1_Blunt_Metal:1.2
+2_Reach_Mounted:2.5
+2_Reach_Beast:2.5
+3_Siege_Constructed:4
+4_Silver_Mythical:2
+5_Fire_Constructed:2
+5_Fire_Dark:1.2
+5_Fire_Warm:0.7
+6_Radiant_Dark:1.5
+6_Radiant_Divine:1.5
+6_Radiant_Markofthebeast:1.5
+7_Foul_Humanoid:1.5
+7_Foul_Beast:1.5
+7_Foul_Mythical:0.7
+7_Foul_Divine:0.7
+7_Foul_Constructed:0.5
+8_Lightning_Winged:1.5
+8_Lightning_Metal:2
+9_Cold_Metal:1.2
+9_Cold_Warm:2
+10_Bite_Metal:0.6
+10_Bite_Constructed:0.25
 
-//XP Gain and Levels
-maxLevel:10
-LevelOneXPRequirement:50
-LevelOneXPRequirementUnit:10
-FlatIncreasePerLvl:80
-FlatIncreasePerLvlUnit:10
-LevelSpawnTimeIncrease:0
-IncreaseRespawnTime:10
-StartRespawnTime:25
-
-//Misc
-StrenghtScaling:0.05
-
-//Unconfirmed, multiply by stance to control how far units aggro?
-ChaseDistance:25
+//BUILDING COST MODIFIERS
+//Name_Resource:Cost
+Construct_Dwelling_Wood:60
+Construct_Forester_Wood:50
+Construct_Gatherhut_Wood:75
+Construct_Jeweler_Wood:75
+Construct_Hunterslodge_Wood:75
+Construct_Warcamp_Wood:125
+Construct_Witchcabin_Wood:100
+Construct_Witchcabin_Faith:50
+Construct_Wall_Wood:65
+Construct_Watchtower_Wood:200
+Construct_Farmstead_Wood:200
+Construct_WarriorHall_Wood:300
+Construct_WarriorHall_Wealth:200
+Construct_Alka_Wood:300
+Construct_Alka_Wealth:200
+Construct_Solarhold_Wood:750
+Construct_Solarhold_Wealth:300
+Construct_Lunarhold_Wood:750
+Construct_Lunarhold_Wealth:300
+Construct_Hovel_Wood:50
+Construct_Woodcutter_Wood:50
+Construct_Granary_Wood:75
+Construct_Smelter_Wood:75
+Construct_Hunter_Wood:75
+Construct_Barracks_Wood:150
+Construct_Church_Wood:125
+Construct_Church_Faith:100
+Construct_GaurdTower_Wood:220
+Construct_Guilds_Wood:300
+Construct_Farm_Wood:80
+Construct_Blacksmith_Wood:300
+Construct_Castle_Wood:400
+Construct_Castle_Wealth:250
+Construct_Bluepastures_Wood:300
+Construct_Bluepastures_Wealth:300
+Construct_TempleofEnthrallingHearts_Wood:250
+Construct_TempleofEnthrallingHearts_Wealth:250
+Construct_Barn_Wood:175
+Construct_Guilds Bishop_Wood:300
+Construct_HouseOfTheBlackHeads_Wood:300
+Construct_HouseOfTheBlackHeads_Wealth:100
+Construct_Bakery_Wood:200
+Construct_Bakery_Wealth:50
+Construct_Chapel_Wood:200
+Construct_Chapel_Faith:200
+Construct_Stronghold_Wood:200
+Construct_Stronghold_Wealth:150
