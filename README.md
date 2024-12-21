@@ -3,6 +3,7 @@
 ## Features
 
 * Customizable faction starting conditions & resource settings
+* Customize Damage Type Modifiers
 * Customizable worshipper spawn rate parameters
 * Customizable level xp requirements & stat scaling
 * Add Marauder to Saule Warcamp
