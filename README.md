@@ -1,4 +1,4 @@
-# GodswornModding
+# GodswornConfigurator
 
 ## Features
 
