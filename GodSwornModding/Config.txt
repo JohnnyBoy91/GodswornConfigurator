@@ -1,5 +1,5 @@
 //add "//" to lines to omit specific values from being changed by this mod
-//Use this field to disable entire mod
+//Use this field to disable all modded values
 DisableThisMod:false
 
 //GLOBAL VARIABLES
@@ -187,3 +187,229 @@ Construct_Chapel_Wood:200
 Construct_Chapel_Faith:200
 Construct_Stronghold_Wood:200
 Construct_Stronghold_Wealth:150
+
+//UNIT STATS MODIFIERS
+//Spigana
+Unit_Spigana_DefualtMaxHealth:350
+Unit_Spigana_DefaultHealthRegen:1
+Unit_Spigana_Speed:4.5
+Unit_Spigana_Armor:1
+Unit_Spigana_MagicResistance:4
+Unit_Spigana_Visionrange:25
+Unit_Spigana_XP:18
+//Leshi
+Unit_Leshi_DefualtMaxHealth:1400
+Unit_Leshi_DefaultHealthRegen:5
+Unit_Leshi_Speed:5
+Unit_Leshi_Armor:4
+Unit_Leshi_MagicResistance:0
+Unit_Leshi_Visionrange:30
+Unit_Leshi_XP:40
+//Stardaughter - Solar
+Unit_Stardaughter - Solar_DefualtMaxHealth:800
+Unit_Stardaughter - Solar_DefaultHealthRegen:1
+Unit_Stardaughter - Solar_Speed:8
+Unit_Stardaughter - Solar_Armor:8
+Unit_Stardaughter - Solar_MagicResistance:6
+Unit_Stardaughter - Solar_Visionrange:30
+Unit_Stardaughter - Solar_XP:40
+//Tribesman
+Unit_Tribesman_DefualtMaxHealth:300
+Unit_Tribesman_DefaultHealthRegen:1
+Unit_Tribesman_Speed:5
+Unit_Tribesman_Armor:2
+Unit_Tribesman_MagicResistance:0
+Unit_Tribesman_Visionrange:30
+Unit_Tribesman_XP:10
+//Ranger
+Unit_Ranger_DefualtMaxHealth:170
+Unit_Ranger_DefaultHealthRegen:1
+Unit_Ranger_Speed:5
+Unit_Ranger_Armor:0
+Unit_Ranger_MagicResistance:0
+Unit_Ranger_Visionrange:30
+Unit_Ranger_XP:8
+//Warrior
+Unit_Warrior_DefualtMaxHealth:540
+Unit_Warrior_DefaultHealthRegen:1
+Unit_Warrior_Speed:5
+Unit_Warrior_Armor:5
+Unit_Warrior_MagicResistance:2
+Unit_Warrior_Visionrange:30
+Unit_Warrior_XP:20
+//Raider
+Unit_Raider_DefualtMaxHealth:350
+Unit_Raider_DefaultHealthRegen:1
+Unit_Raider_Speed:8
+Unit_Raider_Armor:3
+Unit_Raider_MagicResistance:0
+Unit_Raider_Visionrange:40
+Unit_Raider_XP:25
+//Herbalist
+Unit_Herbalist_DefualtMaxHealth:140
+Unit_Herbalist_DefaultHealthRegen:1
+Unit_Herbalist_Speed:4.5
+Unit_Herbalist_Armor:0
+Unit_Herbalist_MagicResistance:2
+Unit_Herbalist_Visionrange:25
+Unit_Herbalist_XP:12
+//Witch
+Unit_Witch_DefualtMaxHealth:190
+Unit_Witch_DefaultHealthRegen:1
+Unit_Witch_Speed:5
+Unit_Witch_Armor:0
+Unit_Witch_MagicResistance:5
+Unit_Witch_Visionrange:25
+Unit_Witch_XP:10
+//Pukis
+Unit_Pukis_DefualtMaxHealth:390
+Unit_Pukis_DefaultHealthRegen:1
+Unit_Pukis_Speed:5
+Unit_Pukis_Armor:5
+Unit_Pukis_MagicResistance:8
+Unit_Pukis_Visionrange:30
+Unit_Pukis_XP:25
+//Stardaughter - Lunar
+Unit_Stardaughter - Lunar_DefualtMaxHealth:800
+Unit_Stardaughter - Lunar_DefaultHealthRegen:1
+Unit_Stardaughter - Lunar_Speed:8
+Unit_Stardaughter - Lunar_Armor:3
+Unit_Stardaughter - Lunar_MagicResistance:10
+Unit_Stardaughter - Lunar_Visionrange:30
+Unit_Stardaughter - Lunar_XP:40
+//WolfWarrior
+Unit_WolfWarrior_DefualtMaxHealth:500
+Unit_WolfWarrior_DefaultHealthRegen:1
+Unit_WolfWarrior_Speed:5.5
+Unit_WolfWarrior_Armor:3
+Unit_WolfWarrior_MagicResistance:4
+Unit_WolfWarrior_Visionrange:30
+Unit_WolfWarrior_XP:20
+//Skirmisher
+Unit_Skirmisher_DefualtMaxHealth:160
+Unit_Skirmisher_DefaultHealthRegen:1
+Unit_Skirmisher_Speed:5
+Unit_Skirmisher_Armor:0
+Unit_Skirmisher_MagicResistance:0
+Unit_Skirmisher_Visionrange:30
+Unit_Skirmisher_XP:8
+//Marauder
+Unit_Marauder_DefualtMaxHealth:240
+Unit_Marauder_DefaultHealthRegen:1
+Unit_Marauder_Speed:5
+Unit_Marauder_Armor:1
+Unit_Marauder_MagicResistance:0
+Unit_Marauder_Visionrange:30
+Unit_Marauder_XP:10
+//Werewolf
+Unit_Werewolf_DefualtMaxHealth:150
+Unit_Werewolf_DefaultHealthRegen:2
+Unit_Werewolf_Speed:8
+Unit_Werewolf_Armor:0
+Unit_Werewolf_MagicResistance:0
+Unit_Werewolf_Visionrange:30
+Unit_Werewolf_XP:10
+//Nurse
+Unit_Nurse_DefualtMaxHealth:150
+Unit_Nurse_DefaultHealthRegen:1
+Unit_Nurse_Speed:4.5
+Unit_Nurse_Armor:0
+Unit_Nurse_MagicResistance:2
+Unit_Nurse_Visionrange:25
+Unit_Nurse_XP:12
+//Zealot
+Unit_Zealot_DefualtMaxHealth:200
+Unit_Zealot_DefaultHealthRegen:1
+Unit_Zealot_Speed:5
+Unit_Zealot_Armor:0
+Unit_Zealot_MagicResistance:5
+Unit_Zealot_Visionrange:25
+Unit_Zealot_XP:15
+//Tracker
+Unit_Tracker_DefualtMaxHealth:350
+Unit_Tracker_DefaultHealthRegen:1
+Unit_Tracker_Speed:10
+Unit_Tracker_Armor:2
+Unit_Tracker_MagicResistance:2
+Unit_Tracker_Visionrange:50
+Unit_Tracker_XP:20
+//Catapult
+Unit_Catapult_DefualtMaxHealth:260
+Unit_Catapult_DefaultHealthRegen:0
+Unit_Catapult_Speed:4
+Unit_Catapult_Armor:2
+Unit_Catapult_MagicResistance:0
+Unit_Catapult_Visionrange:12
+Unit_Catapult_XP:15
+//Knight
+Unit_Knight_DefualtMaxHealth:720
+Unit_Knight_DefaultHealthRegen:1
+Unit_Knight_Speed:8
+Unit_Knight_Armor:8
+Unit_Knight_MagicResistance:0
+Unit_Knight_Visionrange:40
+Unit_Knight_XP:30
+//Militant
+Unit_Militant_DefualtMaxHealth:240
+Unit_Militant_DefaultHealthRegen:1
+Unit_Militant_Speed:5
+Unit_Militant_Armor:0
+Unit_Militant_MagicResistance:0
+Unit_Militant_Visionrange:25
+Unit_Militant_XP:6
+//Footman
+Unit_Footman_DefualtMaxHealth:450
+Unit_Footman_DefaultHealthRegen:1
+Unit_Footman_Speed:5
+Unit_Footman_Armor:5
+Unit_Footman_MagicResistance:0
+Unit_Footman_Visionrange:30
+Unit_Footman_XP:13
+//Marksman
+Unit_Marksman_DefualtMaxHealth:180
+Unit_Marksman_DefaultHealthRegen:1
+Unit_Marksman_Speed:5
+Unit_Marksman_Armor:2
+Unit_Marksman_MagicResistance:2
+Unit_Marksman_Visionrange:30
+Unit_Marksman_XP:9
+//Skybull
+Unit_Skybull_DefualtMaxHealth:1200
+Unit_Skybull_DefaultHealthRegen:1
+Unit_Skybull_Speed:7
+Unit_Skybull_Armor:0
+Unit_Skybull_MagicResistance:8
+Unit_Skybull_Visionrange:40
+Unit_Skybull_XP:40
+//Marauder
+Unit_Marauder_DefualtMaxHealth:240
+Unit_Marauder_DefaultHealthRegen:1
+Unit_Marauder_Speed:5
+Unit_Marauder_Armor:1
+Unit_Marauder_MagicResistance:0
+Unit_Marauder_Visionrange:30
+Unit_Marauder_XP:10
+//Rogue
+Unit_Rogue_DefualtMaxHealth:220
+Unit_Rogue_DefaultHealthRegen:1
+Unit_Rogue_Speed:6
+Unit_Rogue_Armor:1
+Unit_Rogue_MagicResistance:0
+Unit_Rogue_Visionrange:25
+Unit_Rogue_XP:13
+//Blackknight
+Unit_Blackknight_DefualtMaxHealth:1100
+Unit_Blackknight_DefaultHealthRegen:1
+Unit_Blackknight_Speed:4.5
+Unit_Blackknight_Armor:15
+Unit_Blackknight_MagicResistance:7
+Unit_Blackknight_Visionrange:30
+Unit_Blackknight_XP:35
+//Cannon
+Unit_Cannon_DefualtMaxHealth:300
+Unit_Cannon_DefaultHealthRegen:0
+Unit_Cannon_Speed:4
+Unit_Cannon_Armor:8
+Unit_Cannon_MagicResistance:0
+Unit_Cannon_Visionrange:10
+Unit_Cannon_XP:25

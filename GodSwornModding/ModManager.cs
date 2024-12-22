@@ -219,6 +219,8 @@ namespace JCGodSwornConfigurator
 
                 }
 
+                //WriteDefaultUnitDataConfig();
+
                 //process unit mods
                 foreach (var unit in unitDataList)
                 {
@@ -430,6 +432,24 @@ namespace JCGodSwornConfigurator
                     }
                 }
                 WriteConfig(modRootPath + "FactionDataConfig.txt", factionDataLines);
+            }
+
+            private void WriteDefaultUnitDataConfig()
+            {
+                List<string> unitDataLines = new List<string>();
+                foreach (var unit in unitDataList)
+                {
+                    unitDataLines.Add(CombineStrings("//", unit.name));
+                    string baseSearchKey = CombineStrings("Unit_", unit.name);
+                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof (unit.DefualtMaxHealth), keyDelimiter, unit.DefualtMaxHealth.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.DefaultHealthRegen), keyDelimiter, unit.DefaultHealthRegen.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Speed), keyDelimiter, unit.Speed.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Armor), keyDelimiter, unit.Armor.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.MagicResistance), keyDelimiter, unit.MagicResistance.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Visionrange), keyDelimiter, unit.Visionrange.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.XP), keyDelimiter, unit.XP.ToString()));
+                }
+                WriteConfig(modRootPath + "UnitDataConfig.txt", unitDataLines);
             }
 
             #endregion
