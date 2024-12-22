@@ -119,13 +119,12 @@ namespace JCGodSwornConfigurator
             /// </summary>
             private void MainSetup()
             {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
                 if (DisableModMasterSwitch)
                 {
                     initialized = true;
                     return;
                 }
-                int intValue;
-                float floatValue;
                 bool boolValue;
 
                 #region FactionStuff
@@ -201,6 +200,7 @@ namespace JCGodSwornConfigurator
                         }
                     }
 
+                    //unit data from upgrades
                     for (int j = 0; j < factionsData[i].DefaultUpgrades.Count; j++)
                     {
                         for (int k = 0; k < factionsData[i].DefaultUpgrades[j].AddActions.Count; k++)
@@ -223,6 +223,14 @@ namespace JCGodSwornConfigurator
                 foreach (var unit in unitDataList)
                 {
                     plugin.Log.LogInfo(unit.name);
+                    string baseSearchKey = CombineStrings("Unit_", unit.name);
+                    unit.DefualtMaxHealth = GetIntByKey(unit.DefualtMaxHealth, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.DefualtMaxHealth)));
+                    unit.DefaultHealthRegen = GetFloatByKey(unit.DefaultHealthRegen, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.DefaultHealthRegen)));
+                    unit.Speed = GetFloatByKey(unit.Speed, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Speed)));
+                    unit.Armor = GetIntByKey(unit.Armor, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Armor)));
+                    unit.MagicResistance = GetIntByKey(unit.MagicResistance, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.MagicResistance)));
+                    unit.Visionrange = GetIntByKey(unit.Visionrange, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Visionrange)));
+                    unit.XP = GetIntByKey(unit.XP, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.XP)));
                 }
 
                 //saule marauders
@@ -273,7 +281,10 @@ namespace JCGodSwornConfigurator
                 //DataManager.Instance.FactionsOptions.Factions[2].Construction[6].CreationData.Creation[0].GetComponent<Building>().BData.Actions[0].CostData.resources[0].amount = 17;
                 //DataManager.Instance.FactionsOptions.Factions[2].Construction[6].CreationData.Creation[0].GetComponent<Building>().BData.Actions[0].CreationData.Creation[0].GetComponent<Unit>().DataUnit.Speed = 17;
                 //DataManager.Instance.FactionsOptions.Factions[2].Construction[6].CreationData.Creation[0].GetComponent<Building>().BData.Actions[0].CreationData.Creation[0].GetComponent<Unit>().DataUnit.DefualtMaxHealth = 600;
-                plugin.Log.LogInfo("Finished main menu mod setup");
+
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                plugin.Log.LogInfo(CombineStrings("Finished main menu mod setup in ", elapsedMs.ToString(), " ms"));
                 initialized = true;
             }
 
@@ -295,7 +306,8 @@ namespace JCGodSwornConfigurator
                 {
                     foreach (var defType in comparisonSheet[i].defType)
                     {
-                        string searchKey = new StringBuilder(i.ToString()).Append(wordDelimiter).Append(comparisonSheet[i].dmgType).Append(wordDelimiter).Append(defType.DefenseType.ToString()).ToString();
+                        
+                        string searchKey = CombineStrings(i.ToString(), wordDelimiter, comparisonSheet[i].dmgType.ToString(), wordDelimiter, defType.DefenseType.ToString());
                         defType.Precentage = GetFloatByKey(defType.Precentage, searchKey);
                     }
                 }
@@ -346,6 +358,17 @@ namespace JCGodSwornConfigurator
                     plugin.Log.LogInfo("Failed to parse Bool: " + key);
                     return originalBool;
                 }
+            }
+
+            private StringBuilder sb = new StringBuilder();
+            private string CombineStrings(params string[] strings)
+            {
+                sb.Clear();
+                foreach (string s in strings)
+                {
+                    sb.Append(s);
+                }
+                return sb.ToString();
             }
 
             /// <summary>
