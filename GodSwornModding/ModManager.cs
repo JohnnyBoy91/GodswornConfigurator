@@ -190,6 +190,7 @@ namespace JCGodSwornConfigurator
                     factionsData[i].StartFaith.Maximum = GetIntByKey(factionsData[i].StartFaith.Maximum, factionName + "_MaxFaithCap");
                     factionsData[i].StartWealth.Maximum = GetIntByKey(factionsData[i].StartWealth.Maximum, factionName + "_MaxWealthCap");
 
+                    //Hero Stats
                     HeroData heroData = factionsData[i].MainHero;
                     heroData.DefualtMaxHealth = GetIntByKey(heroData.DefualtMaxHealth, CombineStrings(factionName, wordDelimiter, nameof(heroData.DefualtMaxHealth)));
                     heroData.DefaultHealthRegen = GetFloatByKey(heroData.DefaultHealthRegen, CombineStrings(factionName, wordDelimiter, nameof(heroData.DefaultHealthRegen)));
@@ -211,7 +212,7 @@ namespace JCGodSwornConfigurator
                             for (int k = 0; k < factionsData[i].Construction[j].CostData.resources.Length; k++)
                             {
                                 string resourceName = GetSanitizedResourceName(factionsData[i].Construction[j].CostData.resources[k].resource.name);
-                                string searchKey = new StringBuilder(buildingName).Append(wordDelimiter).Append(resourceName).ToString();
+                                string searchKey = CombineStrings(buildingName, wordDelimiter, resourceName);
                                 factionsData[i].Construction[j].CostData.resources[k].amount = GetIntByKey(factionsData[i].Construction[j].CostData.resources[k].amount, searchKey);
                             }
 
@@ -224,6 +225,11 @@ namespace JCGodSwornConfigurator
                                     var unitData = actionData.CreationData.Creation[0].GetComponent<Unit>()?.DataUnit;
                                     if (unitData != null)
                                     {
+                                        if (unitData.CreationAbility == null)
+                                        {
+                                            unitData.CreationAbility = actionData;
+                                            plugin.Log.LogInfo(CombineStrings(unitData.name, " missing creation data, patching with building action data"));
+                                        }
                                         unitDataList.Add(unitData);
                                     }
                                 }

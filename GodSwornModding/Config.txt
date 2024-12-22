@@ -487,6 +487,8 @@ Unit_Skybull_MagicResistance:8
 Unit_Skybull_Visionrange:40
 Unit_Skybull_XP:40
 Unit_Skybull_HousingUpkeep:4
+Unit_Skybull_Wealth:150
+Unit_Skybull_Faith:500
 //Marauder
 Unit_Marauder_DefualtMaxHealth:240
 Unit_Marauder_DefaultHealthRegen:1
