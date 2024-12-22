@@ -53,6 +53,8 @@ namespace JCGodSwornConfigurator
             public DataManager dataManager;
             public DamageManager damageManager;
 
+            public List<UnitData> unitDataList = new List<UnitData>();
+
             //main menu initialization
             private bool initialized;
             //initialization part 2 because some managers & values exist in game scene only
@@ -141,6 +143,9 @@ namespace JCGodSwornConfigurator
 
                 //WriteDefaultFactionDataConfig();  //internal use for creating default config
 
+                unitDataList.Clear();
+                List<string> modifiedBuildingsList = new List<string>();
+
                 for (int i = 0; i < 5; i++)
                 {
                     string factionName = factionsData[i].name;
@@ -164,22 +169,60 @@ namespace JCGodSwornConfigurator
                     factionsData[i].StartFaith.Maximum = GetIntByKey(factionsData[i].StartFaith.Maximum, factionName + "_MaxFaithCap");
                     factionsData[i].StartWealth.Maximum = GetIntByKey(factionsData[i].StartWealth.Maximum, factionName + "_MaxWealthCap");
 
-                    List<string> modifiedBuildingsList = new List<string>();
-                    for (int k = 0; k < factionsData[i].Construction.Length; k++)
+                    //building data
+                    for (int j = 0; j < factionsData[i].Construction.Length; j++)
                     {
-                        string buildingName = factionsData[i].Construction[k].name;
+                        string buildingName = factionsData[i].Construction[j].name;
                         if (!modifiedBuildingsList.Contains(buildingName))
                         {
+                            plugin.Log.LogInfo(buildingName);
                             modifiedBuildingsList.Add(buildingName);
-                            for (int j = 0; j < factionsData[i].Construction[k].CostData.resources.Length; j++)
+                            //building cost
+                            for (int k = 0; k < factionsData[i].Construction[j].CostData.resources.Length; k++)
                             {
-                                string resourceName = GetSanitizedResourceName(factionsData[i].Construction[k].CostData.resources[j].resource.name);
+                                string resourceName = GetSanitizedResourceName(factionsData[i].Construction[j].CostData.resources[k].resource.name);
                                 string searchKey = new StringBuilder(buildingName).Append(wordDelimiter).Append(resourceName).ToString();
-                                factionsData[i].Construction[k].CostData.resources[j].amount = GetIntByKey(factionsData[i].Construction[k].CostData.resources[j].amount, searchKey);
+                                factionsData[i].Construction[j].CostData.resources[k].amount = GetIntByKey(factionsData[i].Construction[j].CostData.resources[k].amount, searchKey);
+                            }
+
+                            //unit stats from creation buildings
+                            for (int k = 0; k < factionsData[i].Construction[j].CreationData.Creation[0].GetComponent<Building>().BData.Actions.Length; k++)
+                            {
+                                var actionData = factionsData[i].Construction[j].CreationData.Creation[0].GetComponent<Building>().BData.Actions[k];
+                                if (actionData.CreationData != null)
+                                {
+                                    var unitData = actionData.CreationData.Creation[0].GetComponent<Unit>()?.DataUnit;
+                                    if (unitData != null)
+                                    {
+                                        unitDataList.Add(unitData);
+                                    }
+                                }
                             }
                         }
                     }
 
+                    for (int j = 0; j < factionsData[i].DefaultUpgrades.Count; j++)
+                    {
+                        for (int k = 0; k < factionsData[i].DefaultUpgrades[j].AddActions.Count; k++)
+                        {
+                            var actionData = factionsData[i].DefaultUpgrades[j].AddActions[k];
+                            if (actionData.CreationData != null)
+                            {
+                                var unitData = actionData.CreationData.Creation[0].GetComponent<Unit>()?.DataUnit;
+                                if (unitData != null && !unitDataList.Contains(unitData))
+                                {
+                                    unitDataList.Add(unitData);
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                //process unit mods
+                foreach (var unit in unitDataList)
+                {
+                    plugin.Log.LogInfo(unit.name);
                 }
 
                 //saule marauders
