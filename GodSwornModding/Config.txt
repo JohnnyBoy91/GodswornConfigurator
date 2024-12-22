@@ -26,12 +26,19 @@ StartRespawnTime:25
 StrenghtScaling:0.05
 CorpseUnitTime:180
 
-//Unconfirmed, multiply by stance to control how far units aggro?
+//Unconfirmed, multiply by stance to control how far units aggro, or leash range before chasing units turn back to original spot?
 ChaseDistance:25
 
 //FACTION VARIABLES
 
 //Saule
+Faction_Baltic_Saule_DefualtMaxHealth:550
+Faction_Baltic_Saule_DefaultHealthRegen:5
+Faction_Baltic_Saule_Speed:5
+Faction_Baltic_Saule_Armor:4
+Faction_Baltic_Saule_MagicResistance:4
+Faction_Baltic_Saule_Visionrange:50
+Faction_Baltic_Saule_XP:100
 Faction_Baltic_Saule_StartingWorshipperAmount:2
 Faction_Baltic_Saule_StartFood:350
 Faction_Baltic_Saule_StartWood:260
@@ -49,6 +56,13 @@ Faction_Baltic_Saule_MaxWealthCap:5000
 AddMarauderToSauleWarcamp:false
 
 //Meness
+Faction_Baltic_Meness_DefualtMaxHealth:350
+Faction_Baltic_Meness_DefaultHealthRegen:3
+Faction_Baltic_Meness_Speed:6
+Faction_Baltic_Meness_Armor:2
+Faction_Baltic_Meness_MagicResistance:4
+Faction_Baltic_Meness_Visionrange:30
+Faction_Baltic_Meness_XP:100
 Faction_Baltic_Meness_StartingWorshipperAmount:2
 Faction_Baltic_Meness_StartFood:350
 Faction_Baltic_Meness_StartWood:260
@@ -64,6 +78,13 @@ Faction_Baltic_Meness_MaxFaithCap:2000
 Faction_Baltic_Meness_MaxWealthCap:5000
 
 //Michael
+Faction_Order_Michael_DefualtMaxHealth:900
+Faction_Order_Michael_DefaultHealthRegen:3
+Faction_Order_Michael_Speed:5
+Faction_Order_Michael_Armor:6
+Faction_Order_Michael_MagicResistance:6
+Faction_Order_Michael_Visionrange:30
+Faction_Order_Michael_XP:100
 Faction_Order_Michael_StartingWorshipperAmount:2
 Faction_Order_Michael_StartFood:350
 Faction_Order_Michael_StartWood:260
@@ -79,6 +100,13 @@ Faction_Order_Michael_MaxFaithCap:2000
 Faction_Order_Michael_MaxWealthCap:5000
 
 //Ausrine
+Faction_Baltic_Ausrine_DefualtMaxHealth:300
+Faction_Baltic_Ausrine_DefaultHealthRegen:3
+Faction_Baltic_Ausrine_Speed:5
+Faction_Baltic_Ausrine_Armor:0
+Faction_Baltic_Ausrine_MagicResistance:6
+Faction_Baltic_Ausrine_Visionrange:30
+Faction_Baltic_Ausrine_XP:100
 Faction_Baltic_Ausrine_StartingWorshipperAmount:2
 Faction_Baltic_Ausrine_StartFood:350
 Faction_Baltic_Ausrine_StartWood:260
@@ -94,6 +122,13 @@ Faction_Baltic_Ausrine_MaxFaithCap:2000
 Faction_Baltic_Ausrine_MaxWealthCap:5000
 
 //Bishop
+Faction_Order_Bishops_DefualtMaxHealth:275
+Faction_Order_Bishops_DefaultHealthRegen:3
+Faction_Order_Bishops_Speed:5
+Faction_Order_Bishops_Armor:0
+Faction_Order_Bishops_MagicResistance:8
+Faction_Order_Bishops_Visionrange:30
+Faction_Order_Bishops_XP:30
 Faction_Order_Bishops_StartingWorshipperAmount:2
 Faction_Order_Bishops_StartFood:350
 Faction_Order_Bishops_StartWood:260
@@ -197,6 +232,9 @@ Unit_Spigana_Armor:1
 Unit_Spigana_MagicResistance:4
 Unit_Spigana_Visionrange:25
 Unit_Spigana_XP:18
+Unit_Spigana_HousingUpkeep:2
+Unit_Spigana_Wood:330
+Unit_Spigana_Faith:85
 //Leshi
 Unit_Leshi_DefualtMaxHealth:1400
 Unit_Leshi_DefaultHealthRegen:5
@@ -205,6 +243,9 @@ Unit_Leshi_Armor:4
 Unit_Leshi_MagicResistance:0
 Unit_Leshi_Visionrange:30
 Unit_Leshi_XP:40
+Unit_Leshi_HousingUpkeep:3
+Unit_Leshi_Wood:420
+Unit_Leshi_Faith:110
 //Stardaughter - Solar
 Unit_Stardaughter - Solar_DefualtMaxHealth:800
 Unit_Stardaughter - Solar_DefaultHealthRegen:1
@@ -213,6 +254,9 @@ Unit_Stardaughter - Solar_Armor:8
 Unit_Stardaughter - Solar_MagicResistance:6
 Unit_Stardaughter - Solar_Visionrange:30
 Unit_Stardaughter - Solar_XP:40
+Unit_Stardaughter - Solar_HousingUpkeep:4
+Unit_Stardaughter - Solar_Wealth:490
+Unit_Stardaughter - Solar_Faith:160
 //Tribesman
 Unit_Tribesman_DefualtMaxHealth:300
 Unit_Tribesman_DefaultHealthRegen:1
@@ -221,6 +265,8 @@ Unit_Tribesman_Armor:2
 Unit_Tribesman_MagicResistance:0
 Unit_Tribesman_Visionrange:30
 Unit_Tribesman_XP:10
+Unit_Tribesman_HousingUpkeep:1
+Unit_Tribesman_Food:150
 //Ranger
 Unit_Ranger_DefualtMaxHealth:170
 Unit_Ranger_DefaultHealthRegen:1
@@ -229,6 +275,9 @@ Unit_Ranger_Armor:0
 Unit_Ranger_MagicResistance:0
 Unit_Ranger_Visionrange:30
 Unit_Ranger_XP:8
+Unit_Ranger_HousingUpkeep:1
+Unit_Ranger_Food:105
+Unit_Ranger_Wood:85
 //Warrior
 Unit_Warrior_DefualtMaxHealth:540
 Unit_Warrior_DefaultHealthRegen:1
@@ -237,6 +286,9 @@ Unit_Warrior_Armor:5
 Unit_Warrior_MagicResistance:2
 Unit_Warrior_Visionrange:30
 Unit_Warrior_XP:20
+Unit_Warrior_HousingUpkeep:2
+Unit_Warrior_Food:240
+Unit_Warrior_Wealth:120
 //Raider
 Unit_Raider_DefualtMaxHealth:350
 Unit_Raider_DefaultHealthRegen:1
@@ -245,6 +297,9 @@ Unit_Raider_Armor:3
 Unit_Raider_MagicResistance:0
 Unit_Raider_Visionrange:40
 Unit_Raider_XP:25
+Unit_Raider_HousingUpkeep:2
+Unit_Raider_Food:280
+Unit_Raider_Wealth:55
 //Herbalist
 Unit_Herbalist_DefualtMaxHealth:140
 Unit_Herbalist_DefaultHealthRegen:1
@@ -253,6 +308,10 @@ Unit_Herbalist_Armor:0
 Unit_Herbalist_MagicResistance:2
 Unit_Herbalist_Visionrange:25
 Unit_Herbalist_XP:12
+Unit_Herbalist_HousingUpkeep:1
+Unit_Herbalist_Food:85
+Unit_Herbalist_Wood:55
+Unit_Herbalist_Faith:30
 //Witch
 Unit_Witch_DefualtMaxHealth:190
 Unit_Witch_DefaultHealthRegen:1
@@ -261,6 +320,9 @@ Unit_Witch_Armor:0
 Unit_Witch_MagicResistance:5
 Unit_Witch_Visionrange:25
 Unit_Witch_XP:10
+Unit_Witch_HousingUpkeep:1
+Unit_Witch_Food:145
+Unit_Witch_Faith:55
 //Pukis
 Unit_Pukis_DefualtMaxHealth:390
 Unit_Pukis_DefaultHealthRegen:1
@@ -269,6 +331,9 @@ Unit_Pukis_Armor:5
 Unit_Pukis_MagicResistance:8
 Unit_Pukis_Visionrange:30
 Unit_Pukis_XP:25
+Unit_Pukis_HousingUpkeep:2
+Unit_Pukis_Wealth:40
+Unit_Pukis_Faith:140
 //Stardaughter - Lunar
 Unit_Stardaughter - Lunar_DefualtMaxHealth:800
 Unit_Stardaughter - Lunar_DefaultHealthRegen:1
@@ -277,6 +342,9 @@ Unit_Stardaughter - Lunar_Armor:3
 Unit_Stardaughter - Lunar_MagicResistance:10
 Unit_Stardaughter - Lunar_Visionrange:30
 Unit_Stardaughter - Lunar_XP:40
+Unit_Stardaughter - Lunar_HousingUpkeep:4
+Unit_Stardaughter - Lunar_Wealth:325
+Unit_Stardaughter - Lunar_Faith:215
 //WolfWarrior
 Unit_WolfWarrior_DefualtMaxHealth:500
 Unit_WolfWarrior_DefaultHealthRegen:1
@@ -285,6 +353,10 @@ Unit_WolfWarrior_Armor:3
 Unit_WolfWarrior_MagicResistance:4
 Unit_WolfWarrior_Visionrange:30
 Unit_WolfWarrior_XP:20
+Unit_WolfWarrior_HousingUpkeep:2
+Unit_WolfWarrior_Food:220
+Unit_WolfWarrior_Wealth:125
+Unit_WolfWarrior_Faith:25
 //Skirmisher
 Unit_Skirmisher_DefualtMaxHealth:160
 Unit_Skirmisher_DefaultHealthRegen:1
@@ -293,6 +365,9 @@ Unit_Skirmisher_Armor:0
 Unit_Skirmisher_MagicResistance:0
 Unit_Skirmisher_Visionrange:30
 Unit_Skirmisher_XP:8
+Unit_Skirmisher_HousingUpkeep:1
+Unit_Skirmisher_Food:70
+Unit_Skirmisher_Wood:115
 //Marauder
 Unit_Marauder_DefualtMaxHealth:240
 Unit_Marauder_DefaultHealthRegen:1
@@ -301,6 +376,9 @@ Unit_Marauder_Armor:1
 Unit_Marauder_MagicResistance:0
 Unit_Marauder_Visionrange:30
 Unit_Marauder_XP:10
+Unit_Marauder_HousingUpkeep:1
+Unit_Marauder_Food:60
+Unit_Marauder_Wealth:50
 //Werewolf
 Unit_Werewolf_DefualtMaxHealth:150
 Unit_Werewolf_DefaultHealthRegen:2
@@ -309,6 +387,8 @@ Unit_Werewolf_Armor:0
 Unit_Werewolf_MagicResistance:0
 Unit_Werewolf_Visionrange:30
 Unit_Werewolf_XP:10
+Unit_Werewolf_HousingUpkeep:1
+Unit_Werewolf_Faith:10
 //Nurse
 Unit_Nurse_DefualtMaxHealth:150
 Unit_Nurse_DefaultHealthRegen:1
@@ -317,6 +397,9 @@ Unit_Nurse_Armor:0
 Unit_Nurse_MagicResistance:2
 Unit_Nurse_Visionrange:25
 Unit_Nurse_XP:12
+Unit_Nurse_HousingUpkeep:1
+Unit_Nurse_Food:90
+Unit_Nurse_Faith:80
 //Zealot
 Unit_Zealot_DefualtMaxHealth:200
 Unit_Zealot_DefaultHealthRegen:1
@@ -325,6 +408,10 @@ Unit_Zealot_Armor:0
 Unit_Zealot_MagicResistance:5
 Unit_Zealot_Visionrange:25
 Unit_Zealot_XP:15
+Unit_Zealot_HousingUpkeep:1
+Unit_Zealot_Food:75
+Unit_Zealot_Wealth:25
+Unit_Zealot_Faith:100
 //Tracker
 Unit_Tracker_DefualtMaxHealth:350
 Unit_Tracker_DefaultHealthRegen:1
@@ -333,6 +420,10 @@ Unit_Tracker_Armor:2
 Unit_Tracker_MagicResistance:2
 Unit_Tracker_Visionrange:50
 Unit_Tracker_XP:20
+Unit_Tracker_HousingUpkeep:2
+Unit_Tracker_Food:90
+Unit_Tracker_Wealth:30
+Unit_Tracker_Faith:140
 //Catapult
 Unit_Catapult_DefualtMaxHealth:260
 Unit_Catapult_DefaultHealthRegen:0
@@ -341,6 +432,9 @@ Unit_Catapult_Armor:2
 Unit_Catapult_MagicResistance:0
 Unit_Catapult_Visionrange:12
 Unit_Catapult_XP:15
+Unit_Catapult_HousingUpkeep:3
+Unit_Catapult_Wood:380
+Unit_Catapult_Wealth:105
 //Knight
 Unit_Knight_DefualtMaxHealth:720
 Unit_Knight_DefaultHealthRegen:1
@@ -349,6 +443,9 @@ Unit_Knight_Armor:8
 Unit_Knight_MagicResistance:0
 Unit_Knight_Visionrange:40
 Unit_Knight_XP:30
+Unit_Knight_HousingUpkeep:3
+Unit_Knight_Food:150
+Unit_Knight_Wealth:250
 //Militant
 Unit_Militant_DefualtMaxHealth:240
 Unit_Militant_DefaultHealthRegen:1
@@ -357,6 +454,8 @@ Unit_Militant_Armor:0
 Unit_Militant_MagicResistance:0
 Unit_Militant_Visionrange:25
 Unit_Militant_XP:6
+Unit_Militant_HousingUpkeep:1
+Unit_Militant_Food:120
 //Footman
 Unit_Footman_DefualtMaxHealth:450
 Unit_Footman_DefaultHealthRegen:1
@@ -365,6 +464,9 @@ Unit_Footman_Armor:5
 Unit_Footman_MagicResistance:0
 Unit_Footman_Visionrange:30
 Unit_Footman_XP:13
+Unit_Footman_HousingUpkeep:1
+Unit_Footman_Food:130
+Unit_Footman_Wealth:30
 //Marksman
 Unit_Marksman_DefualtMaxHealth:180
 Unit_Marksman_DefaultHealthRegen:1
@@ -373,6 +475,9 @@ Unit_Marksman_Armor:2
 Unit_Marksman_MagicResistance:2
 Unit_Marksman_Visionrange:30
 Unit_Marksman_XP:9
+Unit_Marksman_HousingUpkeep:1
+Unit_Marksman_Food:50
+Unit_Marksman_Wood:110
 //Skybull
 Unit_Skybull_DefualtMaxHealth:1200
 Unit_Skybull_DefaultHealthRegen:1
@@ -381,6 +486,7 @@ Unit_Skybull_Armor:0
 Unit_Skybull_MagicResistance:8
 Unit_Skybull_Visionrange:40
 Unit_Skybull_XP:40
+Unit_Skybull_HousingUpkeep:4
 //Marauder
 Unit_Marauder_DefualtMaxHealth:240
 Unit_Marauder_DefaultHealthRegen:1
@@ -389,6 +495,9 @@ Unit_Marauder_Armor:1
 Unit_Marauder_MagicResistance:0
 Unit_Marauder_Visionrange:30
 Unit_Marauder_XP:10
+Unit_Marauder_HousingUpkeep:1
+Unit_Marauder_Food:60
+Unit_Marauder_Wealth:50
 //Rogue
 Unit_Rogue_DefualtMaxHealth:220
 Unit_Rogue_DefaultHealthRegen:1
@@ -397,6 +506,8 @@ Unit_Rogue_Armor:1
 Unit_Rogue_MagicResistance:0
 Unit_Rogue_Visionrange:25
 Unit_Rogue_XP:13
+Unit_Rogue_HousingUpkeep:1
+Unit_Rogue_Wealth:105
 //Blackknight
 Unit_Blackknight_DefualtMaxHealth:1100
 Unit_Blackknight_DefaultHealthRegen:1
@@ -405,6 +516,8 @@ Unit_Blackknight_Armor:15
 Unit_Blackknight_MagicResistance:7
 Unit_Blackknight_Visionrange:30
 Unit_Blackknight_XP:35
+Unit_Blackknight_HousingUpkeep:4
+Unit_Blackknight_Wealth:600
 //Cannon
 Unit_Cannon_DefualtMaxHealth:300
 Unit_Cannon_DefaultHealthRegen:0
@@ -413,3 +526,6 @@ Unit_Cannon_Armor:8
 Unit_Cannon_MagicResistance:0
 Unit_Cannon_Visionrange:10
 Unit_Cannon_XP:25
+Unit_Cannon_HousingUpkeep:3
+Unit_Cannon_Wood:300
+Unit_Cannon_Wealth:290

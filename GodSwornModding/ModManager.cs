@@ -6,11 +6,12 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using BepInEx.Configuration;
 using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using HarmonyLib;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 
 namespace JCGodSwornConfigurator
 {
@@ -46,6 +47,7 @@ namespace JCGodSwornConfigurator
             public string[] lines;
 
             public bool DisableModMasterSwitch;
+            public bool ShowUIWidget;
 
             public Plugin plugin;
 
@@ -65,6 +67,7 @@ namespace JCGodSwornConfigurator
             private readonly string listDelimiter = ", ";
             private readonly string wordDelimiter = "_";
             private readonly string keyDelimiter = ":";
+            private readonly string generatedConfigFolderPath = @"DefaultConfigData\";
 
             internal void Update()
             {
@@ -99,12 +102,27 @@ namespace JCGodSwornConfigurator
                 //hotkey to force reloading the text file values again
                 if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.F10))
                 {
-                    plugin.Log.LogInfo("Reloading mod config");
-                    ReadModConfig();
-                    MainSetup();
-                    //DataManager.Instance.FactionsOptions.Factions[0].Construction[0].CostData.resources[0].resource.
-                    //DataManager.Instance.FactionsOptions.Factions[0].DefaultUpgrades[0].AddActions.AddItem(DataManager.Instance.FactionsOptions.Factions[1].DefaultUpgrades[1].AddActions[2]);
-                    //DataManager.Instance.FactionsOptions.Factions[0].DefaultUpgrades[0].AddActions.AddItem(DataManager.Instance.FactionsOptions.Factions[1].DefaultUpgrades[1].AddActions[4]);
+                    ShowUIWidget = !ShowUIWidget;
+                }
+            }
+
+            void OnGUI()
+            {
+                if (ShowUIWidget)
+                {
+                    GUI.Box(new Rect(10, 10, 260, 120), "Godsworn Configurator");
+                    if (GUI.Button(new Rect(20, 40, 220, 20), "Reload Config Files"))
+                    {
+
+                        plugin.Log.LogInfo("Reloading mod config");
+                        ReadModConfig();
+                        initializedInGame = false;
+                        MainSetup();
+                    }
+                    if (GUI.Button(new Rect(20, 70, 220, 20), "Generate Default Config Values"))
+                    {
+                        WriteDefaultDataConfigs();
+                    }
                 }
             }
 
@@ -112,6 +130,10 @@ namespace JCGodSwornConfigurator
             {
                 modRootPath = Directory.GetCurrentDirectory() + @"\BepInEx\plugins\GodswornConfigurator\";
                 configPath = modRootPath + "config.txt";
+                if (!Directory.Exists(modRootPath + generatedConfigFolderPath))
+                {
+                    Directory.CreateDirectory(modRootPath + generatedConfigFolderPath);
+                }
             }
 
             /// <summary>
@@ -168,6 +190,15 @@ namespace JCGodSwornConfigurator
                     factionsData[i].StartFaith.Maximum = GetIntByKey(factionsData[i].StartFaith.Maximum, factionName + "_MaxFaithCap");
                     factionsData[i].StartWealth.Maximum = GetIntByKey(factionsData[i].StartWealth.Maximum, factionName + "_MaxWealthCap");
 
+                    HeroData heroData = factionsData[i].MainHero;
+                    heroData.DefualtMaxHealth = GetIntByKey(heroData.DefualtMaxHealth, CombineStrings(factionName, wordDelimiter, nameof(heroData.DefualtMaxHealth)));
+                    heroData.DefaultHealthRegen = GetFloatByKey(heroData.DefaultHealthRegen, CombineStrings(factionName, wordDelimiter, nameof(heroData.DefaultHealthRegen)));
+                    heroData.Speed = GetFloatByKey(heroData.Speed, CombineStrings(factionName, wordDelimiter, nameof(heroData.Speed)));
+                    heroData.Armor = GetIntByKey(heroData.Armor, CombineStrings(factionName, wordDelimiter, nameof(heroData.Armor)));
+                    heroData.MagicResistance = GetIntByKey(heroData.MagicResistance, CombineStrings(factionName, wordDelimiter, nameof(heroData.MagicResistance)));
+                    heroData.Visionrange = GetIntByKey(heroData.Visionrange, CombineStrings(factionName, wordDelimiter, nameof(heroData.Visionrange)));
+                    heroData.XP = GetIntByKey(heroData.XP, CombineStrings(factionName, wordDelimiter, nameof(heroData.XP)));
+
                     //building data
                     for (int j = 0; j < factionsData[i].Construction.Length; j++)
                     {
@@ -184,7 +215,7 @@ namespace JCGodSwornConfigurator
                                 factionsData[i].Construction[j].CostData.resources[k].amount = GetIntByKey(factionsData[i].Construction[j].CostData.resources[k].amount, searchKey);
                             }
 
-                            //unit stats from creation buildings
+                            //Get unit data from creation buildings
                             for (int k = 0; k < factionsData[i].Construction[j].CreationData.Creation[0].GetComponent<Building>().BData.Actions.Length; k++)
                             {
                                 var actionData = factionsData[i].Construction[j].CreationData.Creation[0].GetComponent<Building>().BData.Actions[k];
@@ -200,7 +231,7 @@ namespace JCGodSwornConfigurator
                         }
                     }
 
-                    //unit data from upgrades
+                    //Get unit data from upgrades
                     for (int j = 0; j < factionsData[i].DefaultUpgrades.Count; j++)
                     {
                         for (int k = 0; k < factionsData[i].DefaultUpgrades[j].AddActions.Count; k++)
@@ -233,12 +264,32 @@ namespace JCGodSwornConfigurator
                     unit.MagicResistance = GetIntByKey(unit.MagicResistance, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.MagicResistance)));
                     unit.Visionrange = GetIntByKey(unit.Visionrange, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Visionrange)));
                     unit.XP = GetIntByKey(unit.XP, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.XP)));
+                    unit.HousingUpkeep = GetIntByKey(unit.HousingUpkeep, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.HousingUpkeep)));
+                    //unit cost data
+                    if (unit.CreationAbility != null)
+                    {
+                        for (int i = 0; i < unit.CreationAbility.CostData.resources.Count; i++)
+                        {
+                            string resourceName = GetSanitizedResourceName(unit.CreationAbility.CostData.resources[i].resource.name);
+                            string searchKey = CombineStrings(baseSearchKey, wordDelimiter, resourceName);
+                            unit.CreationAbility.CostData.resources[i].amount = GetIntByKey(unit.CreationAbility.CostData.resources[i].amount, searchKey);
+                        }
+                    }
+                    else
+                    {
+                        plugin.Log.LogWarning(unit.name + "Missing Creation Data");
+                    }
                 }
 
                 //saule marauders
                 if (bool.TryParse(GetValue("AddMarauderToSauleWarcamp"), out boolValue) && boolValue == true)
                 {
-                    factionsData[0].DefaultUpgrades[0].AddActions = factionsData[1].DefaultUpgrades[1].AddActions;
+                    //factionsData[0].DefaultUpgrades[0].AddActions = factionsData[1].DefaultUpgrades[1].AddActions;
+                    ActionData newData1 = factionsData[1].DefaultUpgrades[1].AddActions[2];
+                    ActionData newData2 = factionsData[1].DefaultUpgrades[1].AddActions[4];
+
+                    factionsData[0].DefaultUpgrades[0].AddActions = factionsData[0].DefaultUpgrades[0].AddActions.AddItem(newData1).ToArray();
+                    factionsData[0].DefaultUpgrades[0].AddActions = factionsData[0].DefaultUpgrades[0].AddActions.AddItem(newData2).ToArray();
                 }
 
                 #endregion
@@ -331,7 +382,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    plugin.Log.LogInfo("Failed to parse Float: " + key);
+                    plugin.Log.LogInfo(CombineStrings("Failed to parse Float: ", key, listDelimiter, originalFloat.ToString()));
                     return originalFloat;
                 }
             }
@@ -344,7 +395,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    plugin.Log.LogInfo("Failed to parse Int: " + key);
+                    plugin.Log.LogInfo(CombineStrings("Failed to parse Int: ", key, listDelimiter, originalInt.ToString()));
                     return originalInt;
                 }
             }
@@ -357,7 +408,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    plugin.Log.LogInfo("Failed to parse Bool: " + key);
+                    plugin.Log.LogInfo(CombineStrings("Failed to parse Bool: ", key, originalBool.ToString()));
                     return originalBool;
                 }
             }
@@ -385,11 +436,23 @@ namespace JCGodSwornConfigurator
                 return inputString;
             }
 
+
+            private void WriteDefaultDataConfigs()
+            {
+                WriteDefaultDamageTypeModifierConfig();
+                WriteDefaultFactionDataConfig();
+                WriteDefaultUnitDataConfig();
+            }
             /// <summary>
             /// Write separate config file with game's default damage modifier table
             /// </summary>
             private void WriteDefaultDamageTypeModifierConfig()
             {
+                if (damageManager == null)
+                {
+                    plugin.Log.LogWarning("Cannot generate damage modifier data from main menu");
+                    return;
+                }
                 Il2CppReferenceArray<DMGData.TypesCompared> comparisonSheet = damageManager.Data.ComparisonSheet;
                 List<string> damageTypeLines = new List<string>();
                 for (int i = 0; i < comparisonSheet.Length; i++)
@@ -401,7 +464,7 @@ namespace JCGodSwornConfigurator
                         damageTypeLines.Add(new StringBuilder(i.ToString()).Append(wordDelimiter).Append(comparisonSheet[i].dmgType).Append(wordDelimiter).Append(defType.DefenseType.ToString()).Append(keyDelimiter).Append(defType.Precentage).ToString());
                     }
                 }
-                WriteConfig(modRootPath + "DamageTypesConfig.txt", damageTypeLines);
+                WriteConfig(modRootPath + generatedConfigFolderPath + "DefaultDamageTypesConfig.txt", damageTypeLines);
             }
 
             /// <summary>
@@ -415,6 +478,16 @@ namespace JCGodSwornConfigurator
                 for (int i = 0; i < 5; i++)
                 {
                     string factionName = factionsData[i].name;
+
+                    HeroData heroData = factionsData[i].MainHero;
+                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.DefualtMaxHealth), keyDelimiter, heroData.DefualtMaxHealth.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.DefaultHealthRegen), keyDelimiter, heroData.DefaultHealthRegen.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.Speed), keyDelimiter, heroData.Speed.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.Armor), keyDelimiter, heroData.Armor.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.MagicResistance), keyDelimiter, heroData.MagicResistance.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.Visionrange), keyDelimiter, heroData.Visionrange.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.XP), keyDelimiter, heroData.XP.ToString()));
+
                     for (int k = 0; k < factionsData[i].Construction.Length; k++)
                     {
                         string buildingName = factionsData[i].Construction[k].name;
@@ -425,13 +498,13 @@ namespace JCGodSwornConfigurator
                             {
                                 string resourceName = GetSanitizedResourceName(factionsData[i].Construction[k].CostData.resources[j].resource.name);
                                 int resourceQuantity = factionsData[i].Construction[k].CostData.resources[j].amount;
-                                string searchKey = new StringBuilder(buildingName).Append(wordDelimiter).Append(resourceName).Append(keyDelimiter).Append(resourceQuantity).ToString();
+                                string searchKey = CombineStrings(buildingName, wordDelimiter, resourceName, keyDelimiter, resourceQuantity.ToString());
                                 factionDataLines.Add(searchKey);
                             }
                         }
                     }
                 }
-                WriteConfig(modRootPath + "FactionDataConfig.txt", factionDataLines);
+                WriteConfig(modRootPath + generatedConfigFolderPath + "DefaultFactionDataConfig.txt", factionDataLines);
             }
 
             private void WriteDefaultUnitDataConfig()
@@ -448,8 +521,23 @@ namespace JCGodSwornConfigurator
                     unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.MagicResistance), keyDelimiter, unit.MagicResistance.ToString()));
                     unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Visionrange), keyDelimiter, unit.Visionrange.ToString()));
                     unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.XP), keyDelimiter, unit.XP.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.HousingUpkeep), keyDelimiter, unit.HousingUpkeep.ToString()));
+                    //unit cost data
+                    if (unit.CreationAbility != null)
+                    {
+                        for (int i = 0; i < unit.CreationAbility.CostData.resources.Count; i++)
+                        {
+                            string resourceName = GetSanitizedResourceName(unit.CreationAbility.CostData.resources[i].resource.name);
+                            string searchKey = CombineStrings(baseSearchKey, wordDelimiter, resourceName);
+                            unitDataLines.Add(CombineStrings(searchKey, keyDelimiter, unit.CreationAbility.CostData.resources[i].amount.ToString()));
+                        }
+                    }
+                    else
+                    {
+                        plugin.Log.LogWarning(unit.name + "Missing Creation Data");
+                    }
                 }
-                WriteConfig(modRootPath + "UnitDataConfig.txt", unitDataLines);
+                WriteConfig(modRootPath + generatedConfigFolderPath + "DefaultUnitDataConfig.txt", unitDataLines);
             }
 
             #endregion
@@ -500,6 +588,7 @@ namespace JCGodSwornConfigurator
                         }
                     }
                 }
+                plugin.Log.LogInfo(CombineStrings("Failed to find key: ", key));
                 return null;
             }
 
