@@ -28,7 +28,7 @@ namespace JCGodSwornConfigurator
             if (GodSwornMainModObject == null)
             {
                 GodSwornMainModObject = new GameObject("GodSwornConfiguratorMaster");
-                GameObject.DontDestroyOnLoad(GodSwornMainModObject);
+                UnityEngine.Object.DontDestroyOnLoad(GodSwornMainModObject);
                 GodSwornMainModObject.hideFlags = HideFlags.HideAndDontSave;
                 GodSwornMainModObject.AddComponent<ModManager>();
             }
@@ -56,6 +56,14 @@ namespace JCGodSwornConfigurator
             public DamageManager damageManager;
 
             public List<UnitData> unitDataList = new List<UnitData>();
+            public List<BuildingData> buildingDataList = new List<BuildingData>();
+            public List<HeroData> heroDataList = new List<HeroData>();
+            public List<ActionDataConfig> actionDataList = new List<ActionDataConfig>();
+            public List<EffectDataConfig> effectDataList = new List<EffectDataConfig>();
+            public List<TargetDataConfig> targetDataList = new List<TargetDataConfig>();
+            public List<CastsDataConfig> castsDataList = new List<CastsDataConfig>();
+            public List<ProjectileDataConfig> projectileDataList = new List<ProjectileDataConfig>();
+            public List<string> actionDataNameLink = new List<string>();
 
             //main menu initialization
             private bool initialized;
@@ -94,7 +102,7 @@ namespace JCGodSwornConfigurator
                     //WriteDefaultDamageTypeModifierConfig();   //internal use for creating default config
 
                     InGameSetup();
-                    plugin.Log.LogInfo("In-Game Init Complete");
+                    Log("In-Game Init Complete");
                     initializedInGame = true;
                 }
 
@@ -114,7 +122,7 @@ namespace JCGodSwornConfigurator
                     if (GUI.Button(new Rect(20, 40, 220, 20), "Reload Config Files"))
                     {
 
-                        plugin.Log.LogInfo("Reloading mod config");
+                        Log("Reloading mod config");
                         ReadModConfig();
                         initializedInGame = false;
                         MainSetup();
@@ -165,6 +173,14 @@ namespace JCGodSwornConfigurator
                 //WriteDefaultFactionDataConfig();  //internal use for creating default config
 
                 unitDataList.Clear();
+                heroDataList.Clear();
+                actionDataList.Clear();
+                buildingDataList.Clear();
+                projectileDataList.Clear();
+                castsDataList.Clear();
+                effectDataList.Clear();
+                targetDataList.Clear();
+
                 List<string> modifiedBuildingsList = new List<string>();
 
                 for (int i = 0; i < 5; i++)
@@ -192,6 +208,7 @@ namespace JCGodSwornConfigurator
 
                     //Hero Stats
                     HeroData heroData = factionsData[i].MainHero;
+                    heroDataList.Add(heroData);
                     heroData.DefualtMaxHealth = GetIntByKey(heroData.DefualtMaxHealth, CombineStrings(factionName, wordDelimiter, nameof(heroData.DefualtMaxHealth)));
                     heroData.DefaultHealthRegen = GetFloatByKey(heroData.DefaultHealthRegen, CombineStrings(factionName, wordDelimiter, nameof(heroData.DefaultHealthRegen)));
                     heroData.Speed = GetFloatByKey(heroData.Speed, CombineStrings(factionName, wordDelimiter, nameof(heroData.Speed)));
@@ -206,7 +223,8 @@ namespace JCGodSwornConfigurator
                         string buildingName = factionsData[i].Construction[j].name;
                         if (!modifiedBuildingsList.Contains(buildingName))
                         {
-                            plugin.Log.LogInfo(buildingName);
+                            var buildingData = factionsData[i].Construction[j].CreationData.Creation[0].GetComponent<Building>()?.BData;
+                            if (buildingData != null) buildingDataList.Add(buildingData);
                             modifiedBuildingsList.Add(buildingName);
                             //building cost
                             for (int k = 0; k < factionsData[i].Construction[j].CostData.resources.Length; k++)
@@ -228,7 +246,7 @@ namespace JCGodSwornConfigurator
                                         if (unitData.CreationAbility == null)
                                         {
                                             unitData.CreationAbility = actionData;
-                                            plugin.Log.LogInfo(CombineStrings(unitData.name, " missing creation data, patching with building action data"));
+                                            Log(CombineStrings(unitData.name, " missing creation data, patching with building action data"));
                                         }
                                         unitDataList.Add(unitData);
                                     }
@@ -256,12 +274,90 @@ namespace JCGodSwornConfigurator
 
                 }
 
+                var unitsAndHeroList = new List<UnitData>();
+                unitsAndHeroList.AddRange(unitDataList);
+                unitsAndHeroList.AddRange(heroDataList);
+
+                //actionData has cooldown and duration(swing time?) trigger delay?
+                //Cast has damage data for projectiles
+
+                //TargetData has damage for melee attacks - casttarget.effectDat
+
+                //TargetData has projectile launch data for ranged attacks - TargetData.CastProjectile
+                //Casts.ProjectileData is projectile
+                //ProjectileData has TargetData - TargetData.CastProjectile deals damage for meness,ranger maybe all? casttarget on projectile is maybe just vfx or interchangeable?
+
+
+                //collectActionData
+                for (int i = 0; i < unitsAndHeroList.Count; i++)
+                {
+                    for (int j = 0; j < unitsAndHeroList[i].Actions.Count; j++)
+                    {
+                        if(!actionDataList.Any(x => x.actionData == unitsAndHeroList[i].Actions[j]))
+                        {
+                            actionDataList.Add(new ActionDataConfig(unitsAndHeroList[i].Actions[j], unitsAndHeroList[i]) );
+                            actionDataNameLink.Add(CombineStrings(unitsAndHeroList[i].name, wordDelimiter));
+                        }
+                    }
+
+                    for (int j = 0; j < unitsAndHeroList[i].DefaultUpgrades.Count; j++)
+                    {
+                        for (int k = 0; k < unitsAndHeroList[i].DefaultUpgrades[j].AddActions.Count; k++)
+                        {
+                            if (!actionDataList.Any(x => x.actionData == unitsAndHeroList[i].DefaultUpgrades[j].AddActions[k]))
+                            {
+                                actionDataList.Add(new ActionDataConfig(unitsAndHeroList[i].DefaultUpgrades[j].AddActions[k], unitsAndHeroList[i]));
+                                actionDataNameLink.Add(CombineStrings(unitsAndHeroList[i].name, wordDelimiter));
+                            }
+                        }
+                    }
+                }
+
+                //collect targetData
+                CollectTargetDataFromActions();
+
+                //collect castData
+                CollectCastsData();
+
+                //collect effect & projectileData
+                CollectEffectAndProjectileData();
+
+                //2nd pass for targetdata since they can be chained for aoe etc
+                CollectTargetDataFromProjectiles();
+
+                //2nd targetdata pass
+                CollectCastsData(true);
+                //foreach (var targetData in targetDataList)
+                //{
+                //    Log(CombineStrings(targetData.ownerUnit.name, wordDelimiter, targetData.targetData.name));
+                //    for (int i = 0; i < targetData.targetData.CastTarget.Count; i++)
+                //    {
+                //        castsDataList.Add(new CastsDataConfig(targetData.targetData.CastTarget[i], targetData.ownerUnit));
+                //    }
+                //    for (int i = 0; i < targetData.targetData.CastSelf.Count; i++)
+                //    {
+                //        castsDataList.Add(new CastsDataConfig(targetData.targetData.CastSelf[i], targetData.ownerUnit));
+                //    }
+                //    for (int i = 0; i < targetData.targetData.CastProjecitle.Count; i++)
+                //    {
+                //        castsDataList.Add(new CastsDataConfig(targetData.targetData.CastProjecitle[i], targetData.ownerUnit));
+                //    }
+                //}
+
+                //2nd castdata pass
+                CollectEffectAndProjectileData(true);
+
+                //2nd effect pass
+                foreach (var effectData in effectDataList)
+                {
+                    Log(CombineStrings(effectData.ownerUnit.name, wordDelimiter, effectData.effectData.name));
+                }
                 //WriteDefaultUnitDataConfig();
 
                 //process unit mods
                 foreach (var unit in unitDataList)
                 {
-                    plugin.Log.LogInfo(unit.name);
+                    Log(unit.name);
                     string baseSearchKey = CombineStrings("Unit_", unit.name);
                     unit.DefualtMaxHealth = GetIntByKey(unit.DefualtMaxHealth, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.DefualtMaxHealth)));
                     unit.DefaultHealthRegen = GetFloatByKey(unit.DefaultHealthRegen, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.DefaultHealthRegen)));
@@ -286,6 +382,11 @@ namespace JCGodSwornConfigurator
                         plugin.Log.LogWarning(unit.name + "Missing Creation Data");
                     }
                 }
+
+                //foreach (var item in buildingDataList)
+                //{
+                //    plugin.Log.LogInfo(item.name);
+                //}
 
                 //saule marauders
                 if (bool.TryParse(GetValue("AddMarauderToSauleWarcamp"), out boolValue) && boolValue == true)
@@ -336,14 +437,9 @@ namespace JCGodSwornConfigurator
 
                 #endregion
 
-                //nurse
-                //DataManager.Instance.FactionsOptions.Factions[2].Construction[6].CreationData.Creation[0].GetComponent<Building>().BData.Actions[0].CostData.resources[0].amount = 17;
-                //DataManager.Instance.FactionsOptions.Factions[2].Construction[6].CreationData.Creation[0].GetComponent<Building>().BData.Actions[0].CreationData.Creation[0].GetComponent<Unit>().DataUnit.Speed = 17;
-                //DataManager.Instance.FactionsOptions.Factions[2].Construction[6].CreationData.Creation[0].GetComponent<Building>().BData.Actions[0].CreationData.Creation[0].GetComponent<Unit>().DataUnit.DefualtMaxHealth = 600;
-
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
-                plugin.Log.LogInfo(CombineStrings("Finished main menu mod setup in ", elapsedMs.ToString(), " ms"));
+                Log(CombineStrings("Finished main menu mod setup in ", elapsedMs.ToString(), " ms"));
                 initialized = true;
             }
 
@@ -373,8 +469,91 @@ namespace JCGodSwornConfigurator
 
                 gameManager.CorpseUnitTime = GetFloatByKey(gameManager.CorpseUnitTime, nameof (gameManager.CorpseUnitTime));
                 
-                plugin.Log.LogInfo("Finished in-game mod setup");
+                Log("Finished in-game mod setup");
                 initializedInGame = true;
+            }
+
+            private void CollectTargetDataFromActions()
+            {
+                foreach (var actionData in actionDataList)
+                {
+                    Log(CombineStrings(actionData.ownerUnit.name, wordDelimiter, actionData.actionData.name));
+                    targetDataList.Add(new TargetDataConfig(actionData.actionData.TargetData, actionData.ownerUnit));
+                    //actionData.actionData.TargetData.CastTarget
+                    //actionData.actionData.TargetData.Ranged
+                    //actionData.actionData.CoolDown
+                }
+            }
+
+            private void CollectTargetDataFromProjectiles()
+            {
+                foreach (var projectileData in projectileDataList)
+                {
+                    Log(CombineStrings(projectileData.ownerUnit.name, wordDelimiter, projectileData.projectileData.name));
+                    if (projectileData.projectileData.TarData != null)
+                    {
+                        targetDataList.Add(new TargetDataConfig(projectileData.projectileData.TarData, projectileData.ownerUnit));
+                    }
+                }
+            }
+
+            private void CollectProjectileData()
+            {
+
+            }
+
+            private void CollectCastsData(bool logging = false)
+            {
+                foreach (var targetData in targetDataList)
+                {
+                    if (logging) Log(CombineStrings(targetData.ownerUnit.name, wordDelimiter, targetData.targetData.name));
+                    for (int i = 0; i < targetData.targetData.CastTarget.Count; i++)
+                    {
+                        if (!castsDataList.Any(x => x.castsData == targetData.targetData.CastTarget[i]))
+                        {
+                            castsDataList.Add(new CastsDataConfig(targetData.targetData.CastTarget[i], targetData.ownerUnit));
+                        }
+                    }
+                    for (int i = 0; i < targetData.targetData.CastSelf.Count; i++)
+                    {
+                        if (!castsDataList.Any(x => x.castsData == targetData.targetData.CastSelf[i]))
+                        {
+                            castsDataList.Add(new CastsDataConfig(targetData.targetData.CastSelf[i], targetData.ownerUnit));
+                        }
+                    }
+                    for (int i = 0; i < targetData.targetData.CastProjecitle.Count; i++)
+                    {
+                        if (!castsDataList.Any(x => x.castsData == targetData.targetData.CastProjecitle[i]))
+                        {
+                            castsDataList.Add(new CastsDataConfig(targetData.targetData.CastProjecitle[i], targetData.ownerUnit));
+                        }
+                    }
+                }
+            }
+
+            private void CollectEffectAndProjectileData(bool logging = false)
+            {
+                foreach (var castData in castsDataList)
+                {
+                    if (castData.castsData.EffectDat != null && !effectDataList.Any(x => x.effectData == castData.castsData.EffectDat))
+                    {
+                        effectDataList.Add(new EffectDataConfig(castData.castsData.EffectDat, castData.ownerUnit));
+                    }
+                    if (castData.castsData.ProjectileData != null && !projectileDataList.Any(x => x.projectileData == castData.castsData.ProjectileData))
+                    {
+                        if (logging) Log(CombineStrings(castData.ownerUnit.name, wordDelimiter, castData.castsData.ProjectileData.name));
+                        //Log("added more projectiles in 2nd cast pass");
+                        projectileDataList.Add(new ProjectileDataConfig(castData.castsData.ProjectileData, castData.ownerUnit));
+                    }
+                }
+
+                if (logging)
+                {
+                    foreach (var effectData in effectDataList)
+                    {
+                        Log(CombineStrings(effectData.ownerUnit.name, wordDelimiter, effectData.effectData.name));
+                    }
+                }
             }
 
             #region Utilities
@@ -388,7 +567,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    plugin.Log.LogInfo(CombineStrings("Failed to parse Float: ", key, listDelimiter, originalFloat.ToString()));
+                    Log(CombineStrings("Failed to parse Float: ", key, listDelimiter, originalFloat.ToString()));
                     return originalFloat;
                 }
             }
@@ -401,7 +580,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    plugin.Log.LogInfo(CombineStrings("Failed to parse Int: ", key, listDelimiter, originalInt.ToString()));
+                    Log(CombineStrings("Failed to parse Int: ", key, listDelimiter, originalInt.ToString()));
                     return originalInt;
                 }
             }
@@ -414,7 +593,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    plugin.Log.LogInfo(CombineStrings("Failed to parse Bool: ", key, originalBool.ToString()));
+                    Log(CombineStrings("Failed to parse Bool: ", key, originalBool.ToString()));
                     return originalBool;
                 }
             }
@@ -463,10 +642,10 @@ namespace JCGodSwornConfigurator
                 List<string> damageTypeLines = new List<string>();
                 for (int i = 0; i < comparisonSheet.Length; i++)
                 {
-                    plugin.Log.LogInfo(new StringBuilder(i.ToString()).Append(listDelimiter).Append(comparisonSheet[i].dmgType).ToString());
+                    Log(new StringBuilder(i.ToString()).Append(listDelimiter).Append(comparisonSheet[i].dmgType).ToString());
                     foreach (var defType in comparisonSheet[i].defType)
                     {
-                        plugin.Log.LogInfo(new StringBuilder(defType.DefenseType.ToString()).Append(listDelimiter).Append(defType.Precentage).ToString());
+                        Log(new StringBuilder(defType.DefenseType.ToString()).Append(listDelimiter).Append(defType.Precentage).ToString());
                         damageTypeLines.Add(new StringBuilder(i.ToString()).Append(wordDelimiter).Append(comparisonSheet[i].dmgType).Append(wordDelimiter).Append(defType.DefenseType.ToString()).Append(keyDelimiter).Append(defType.Precentage).ToString());
                     }
                 }
@@ -553,7 +732,7 @@ namespace JCGodSwornConfigurator
             /// </summary>
             public void ReadModConfig()
             {
-                plugin.Log.LogInfo(configPath);
+                Log(configPath);
                 lines = null;
                 StreamReader reader = new StreamReader(configPath, true);
                 lines = reader.ReadToEnd().Split('\n');
@@ -594,10 +773,77 @@ namespace JCGodSwornConfigurator
                         }
                     }
                 }
-                plugin.Log.LogInfo(CombineStrings("Failed to find key: ", key));
+                Log(CombineStrings("Failed to find key: ", key));
                 return null;
             }
 
+            private void Log(string logString, int level = 1)
+            {
+                if (level == 1)
+                {
+                    plugin.Log.LogInfo(logString);
+                }
+                else if (level == 2)
+                {
+                    plugin.Log.LogWarning(logString);
+                }
+                else if (level == 3)
+                {
+                    plugin.Log.LogError(logString);
+                }
+            }
+
+            public class ActionDataConfig
+            {
+                public ActionData actionData;
+                public UnitData ownerUnit;
+
+                public ActionDataConfig(ActionData actionData, UnitData ownerUnit)
+                {
+                    this.actionData = actionData;
+                    this.ownerUnit = ownerUnit;
+                }
+            }
+            public class TargetDataConfig
+            {
+                public TargetData targetData;
+                public UnitData ownerUnit;
+                public TargetDataConfig(TargetData targetData, UnitData ownerUnit)
+                {
+                    this.targetData = targetData;
+                    this.ownerUnit = ownerUnit;
+                }
+            }
+            public class EffectDataConfig
+            {
+                public EffectData effectData;
+                public UnitData ownerUnit;
+                public EffectDataConfig(EffectData effectData, UnitData ownerUnit)
+                { 
+                    this.effectData = effectData; 
+                    this.ownerUnit = ownerUnit; 
+                }
+            }
+            public class CastsDataConfig
+            {
+                public Casts castsData;
+                public UnitData ownerUnit;
+                public CastsDataConfig(Casts castsData, UnitData ownerUnit)
+                {
+                    this.castsData = castsData;
+                    this.ownerUnit = ownerUnit;
+                }
+            }
+            public class ProjectileDataConfig
+            {
+                public ProjectileData projectileData;
+                public UnitData ownerUnit;
+                public ProjectileDataConfig(ProjectileData projectileData, UnitData ownerUnit)
+                {
+                    this.projectileData = projectileData;
+                    this.ownerUnit = ownerUnit;
+                }
+            }
         }
 
     }
