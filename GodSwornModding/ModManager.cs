@@ -72,9 +72,10 @@ namespace JCGodSwornConfigurator
             //wait before modding datamanager
             private int waitFrames = 120;
 
-            private readonly string listDelimiter = ", ";
-            private readonly string wordDelimiter = "_";
-            private readonly string keyDelimiter = ":";
+            //config delimiters
+            private readonly string dlmList = ", ";
+            private readonly string dlmWord = "_";
+            private readonly string dlmKey = ":";
             private readonly string generatedConfigFolderPath = @"DefaultConfigData\";
 
             internal void Update()
@@ -209,13 +210,13 @@ namespace JCGodSwornConfigurator
                     //Hero Stats
                     HeroData heroData = factionsData[i].MainHero;
                     heroDataList.Add(heroData);
-                    heroData.DefualtMaxHealth = GetIntByKey(heroData.DefualtMaxHealth, CombineStrings(factionName, wordDelimiter, nameof(heroData.DefualtMaxHealth)));
-                    heroData.DefaultHealthRegen = GetFloatByKey(heroData.DefaultHealthRegen, CombineStrings(factionName, wordDelimiter, nameof(heroData.DefaultHealthRegen)));
-                    heroData.Speed = GetFloatByKey(heroData.Speed, CombineStrings(factionName, wordDelimiter, nameof(heroData.Speed)));
-                    heroData.Armor = GetIntByKey(heroData.Armor, CombineStrings(factionName, wordDelimiter, nameof(heroData.Armor)));
-                    heroData.MagicResistance = GetIntByKey(heroData.MagicResistance, CombineStrings(factionName, wordDelimiter, nameof(heroData.MagicResistance)));
-                    heroData.Visionrange = GetIntByKey(heroData.Visionrange, CombineStrings(factionName, wordDelimiter, nameof(heroData.Visionrange)));
-                    heroData.XP = GetIntByKey(heroData.XP, CombineStrings(factionName, wordDelimiter, nameof(heroData.XP)));
+                    heroData.DefualtMaxHealth = GetIntByKey(heroData.DefualtMaxHealth, CombineStrings(factionName, dlmWord, nameof(heroData.DefualtMaxHealth)));
+                    heroData.DefaultHealthRegen = GetFloatByKey(heroData.DefaultHealthRegen, CombineStrings(factionName, dlmWord, nameof(heroData.DefaultHealthRegen)));
+                    heroData.Speed = GetFloatByKey(heroData.Speed, CombineStrings(factionName, dlmWord, nameof(heroData.Speed)));
+                    heroData.Armor = GetIntByKey(heroData.Armor, CombineStrings(factionName, dlmWord, nameof(heroData.Armor)));
+                    heroData.MagicResistance = GetIntByKey(heroData.MagicResistance, CombineStrings(factionName, dlmWord, nameof(heroData.MagicResistance)));
+                    heroData.Visionrange = GetIntByKey(heroData.Visionrange, CombineStrings(factionName, dlmWord, nameof(heroData.Visionrange)));
+                    heroData.XP = GetIntByKey(heroData.XP, CombineStrings(factionName, dlmWord, nameof(heroData.XP)));
 
                     //building data
                     for (int j = 0; j < factionsData[i].Construction.Length; j++)
@@ -230,7 +231,7 @@ namespace JCGodSwornConfigurator
                             for (int k = 0; k < factionsData[i].Construction[j].CostData.resources.Length; k++)
                             {
                                 string resourceName = GetSanitizedResourceName(factionsData[i].Construction[j].CostData.resources[k].resource.name);
-                                string searchKey = CombineStrings(buildingName, wordDelimiter, resourceName);
+                                string searchKey = CombineStrings(buildingName, dlmWord, resourceName);
                                 factionsData[i].Construction[j].CostData.resources[k].amount = GetIntByKey(factionsData[i].Construction[j].CostData.resources[k].amount, searchKey);
                             }
 
@@ -296,7 +297,7 @@ namespace JCGodSwornConfigurator
                         if(!actionDataList.Any(x => x.actionData == unitsAndHeroList[i].Actions[j]))
                         {
                             actionDataList.Add(new ActionDataConfig(unitsAndHeroList[i].Actions[j], unitsAndHeroList[i]) );
-                            actionDataNameLink.Add(CombineStrings(unitsAndHeroList[i].name, wordDelimiter));
+                            actionDataNameLink.Add(CombineStrings(unitsAndHeroList[i].name, dlmWord));
                         }
                     }
 
@@ -307,51 +308,24 @@ namespace JCGodSwornConfigurator
                             if (!actionDataList.Any(x => x.actionData == unitsAndHeroList[i].DefaultUpgrades[j].AddActions[k]))
                             {
                                 actionDataList.Add(new ActionDataConfig(unitsAndHeroList[i].DefaultUpgrades[j].AddActions[k], unitsAndHeroList[i]));
-                                actionDataNameLink.Add(CombineStrings(unitsAndHeroList[i].name, wordDelimiter));
+                                actionDataNameLink.Add(CombineStrings(unitsAndHeroList[i].name, dlmWord));
                             }
                         }
                     }
                 }
 
-                //collect targetData
-                CollectTargetDataFromActions();
+                CollectDataFromActions();
 
-                //collect castData
-                CollectCastsData();
-
-                //collect effect & projectileData
-                CollectEffectAndProjectileData();
-
-                //2nd pass for targetdata since they can be chained for aoe etc
-                CollectTargetDataFromProjectiles();
-
-                //2nd targetdata pass
-                CollectCastsData(true);
-                //foreach (var targetData in targetDataList)
-                //{
-                //    Log(CombineStrings(targetData.ownerUnit.name, wordDelimiter, targetData.targetData.name));
-                //    for (int i = 0; i < targetData.targetData.CastTarget.Count; i++)
-                //    {
-                //        castsDataList.Add(new CastsDataConfig(targetData.targetData.CastTarget[i], targetData.ownerUnit));
-                //    }
-                //    for (int i = 0; i < targetData.targetData.CastSelf.Count; i++)
-                //    {
-                //        castsDataList.Add(new CastsDataConfig(targetData.targetData.CastSelf[i], targetData.ownerUnit));
-                //    }
-                //    for (int i = 0; i < targetData.targetData.CastProjecitle.Count; i++)
-                //    {
-                //        castsDataList.Add(new CastsDataConfig(targetData.targetData.CastProjecitle[i], targetData.ownerUnit));
-                //    }
-                //}
-
-                //2nd castdata pass
-                CollectEffectAndProjectileData(true);
+                //process action data
+                foreach (ActionDataConfig actionData in actionDataList)
+                {
+                    ActionData data = actionData.actionData;
+                    data.CoolDown = GetFloatByKey(data.CoolDown, CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof (data.CoolDown)));
+                    data.Duration = GetFloatByKey(data.Duration, CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration)));
+                    data.TriggerDelay = GetFloatByKey(data.TriggerDelay, CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay)));
+                }
 
                 //2nd effect pass
-                foreach (var effectData in effectDataList)
-                {
-                    Log(CombineStrings(effectData.ownerUnit.name, wordDelimiter, effectData.effectData.name));
-                }
                 //WriteDefaultUnitDataConfig();
 
                 //process unit mods
@@ -359,21 +333,21 @@ namespace JCGodSwornConfigurator
                 {
                     Log(unit.name);
                     string baseSearchKey = CombineStrings("Unit_", unit.name);
-                    unit.DefualtMaxHealth = GetIntByKey(unit.DefualtMaxHealth, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.DefualtMaxHealth)));
-                    unit.DefaultHealthRegen = GetFloatByKey(unit.DefaultHealthRegen, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.DefaultHealthRegen)));
-                    unit.Speed = GetFloatByKey(unit.Speed, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Speed)));
-                    unit.Armor = GetIntByKey(unit.Armor, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Armor)));
-                    unit.MagicResistance = GetIntByKey(unit.MagicResistance, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.MagicResistance)));
-                    unit.Visionrange = GetIntByKey(unit.Visionrange, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Visionrange)));
-                    unit.XP = GetIntByKey(unit.XP, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.XP)));
-                    unit.HousingUpkeep = GetIntByKey(unit.HousingUpkeep, CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.HousingUpkeep)));
+                    unit.DefualtMaxHealth = GetIntByKey(unit.DefualtMaxHealth, CombineStrings(baseSearchKey, dlmWord, nameof(unit.DefualtMaxHealth)));
+                    unit.DefaultHealthRegen = GetFloatByKey(unit.DefaultHealthRegen, CombineStrings(baseSearchKey, dlmWord, nameof(unit.DefaultHealthRegen)));
+                    unit.Speed = GetFloatByKey(unit.Speed, CombineStrings(baseSearchKey, dlmWord, nameof(unit.Speed)));
+                    unit.Armor = GetIntByKey(unit.Armor, CombineStrings(baseSearchKey, dlmWord, nameof(unit.Armor)));
+                    unit.MagicResistance = GetIntByKey(unit.MagicResistance, CombineStrings(baseSearchKey, dlmWord, nameof(unit.MagicResistance)));
+                    unit.Visionrange = GetIntByKey(unit.Visionrange, CombineStrings(baseSearchKey, dlmWord, nameof(unit.Visionrange)));
+                    unit.XP = GetIntByKey(unit.XP, CombineStrings(baseSearchKey, dlmWord, nameof(unit.XP)));
+                    unit.HousingUpkeep = GetIntByKey(unit.HousingUpkeep, CombineStrings(baseSearchKey, dlmWord, nameof(unit.HousingUpkeep)));
                     //unit cost data
                     if (unit.CreationAbility != null)
                     {
                         for (int i = 0; i < unit.CreationAbility.CostData.resources.Count; i++)
                         {
                             string resourceName = GetSanitizedResourceName(unit.CreationAbility.CostData.resources[i].resource.name);
-                            string searchKey = CombineStrings(baseSearchKey, wordDelimiter, resourceName);
+                            string searchKey = CombineStrings(baseSearchKey, dlmWord, resourceName);
                             unit.CreationAbility.CostData.resources[i].amount = GetIntByKey(unit.CreationAbility.CostData.resources[i].amount, searchKey);
                         }
                     }
@@ -462,7 +436,7 @@ namespace JCGodSwornConfigurator
                     foreach (var defType in comparisonSheet[i].defType)
                     {
                         
-                        string searchKey = CombineStrings(i.ToString(), wordDelimiter, comparisonSheet[i].dmgType.ToString(), wordDelimiter, defType.DefenseType.ToString());
+                        string searchKey = CombineStrings(i.ToString(), dlmWord, comparisonSheet[i].dmgType.ToString(), dlmWord, defType.DefenseType.ToString());
                         defType.Precentage = GetFloatByKey(defType.Precentage, searchKey);
                     }
                 }
@@ -473,11 +447,34 @@ namespace JCGodSwornConfigurator
                 initializedInGame = true;
             }
 
+            #region Data Collection
+
+            private void CollectDataFromActions()
+            {
+                //collect targetData
+                CollectTargetDataFromActions();
+
+                //collect castData
+                CollectCastsData();
+
+                //collect effect & projectileData
+                CollectEffectAndProjectileData();
+
+                //2nd pass for targetdata since they can be chained for aoe etc
+                CollectTargetDataFromProjectiles();
+
+                //2nd targetdata pass
+                CollectCastsData(true);
+
+                //2nd castdata pass
+                CollectEffectAndProjectileData(true);
+            }
+
             private void CollectTargetDataFromActions()
             {
                 foreach (var actionData in actionDataList)
                 {
-                    Log(CombineStrings(actionData.ownerUnit.name, wordDelimiter, actionData.actionData.name));
+                    Log(CombineStrings(actionData.ownerUnit.name, dlmWord, actionData.actionData.name));
                     targetDataList.Add(new TargetDataConfig(actionData.actionData.TargetData, actionData.ownerUnit));
                     //actionData.actionData.TargetData.CastTarget
                     //actionData.actionData.TargetData.Ranged
@@ -489,7 +486,7 @@ namespace JCGodSwornConfigurator
             {
                 foreach (var projectileData in projectileDataList)
                 {
-                    Log(CombineStrings(projectileData.ownerUnit.name, wordDelimiter, projectileData.projectileData.name));
+                    Log(CombineStrings(projectileData.ownerUnit.name, dlmWord, projectileData.projectileData.name));
                     if (projectileData.projectileData.TarData != null)
                     {
                         targetDataList.Add(new TargetDataConfig(projectileData.projectileData.TarData, projectileData.ownerUnit));
@@ -506,7 +503,7 @@ namespace JCGodSwornConfigurator
             {
                 foreach (var targetData in targetDataList)
                 {
-                    if (logging) Log(CombineStrings(targetData.ownerUnit.name, wordDelimiter, targetData.targetData.name));
+                    if (logging) Log(CombineStrings(targetData.ownerUnit.name, dlmWord, targetData.targetData.name));
                     for (int i = 0; i < targetData.targetData.CastTarget.Count; i++)
                     {
                         if (!castsDataList.Any(x => x.castsData == targetData.targetData.CastTarget[i]))
@@ -541,7 +538,7 @@ namespace JCGodSwornConfigurator
                     }
                     if (castData.castsData.ProjectileData != null && !projectileDataList.Any(x => x.projectileData == castData.castsData.ProjectileData))
                     {
-                        if (logging) Log(CombineStrings(castData.ownerUnit.name, wordDelimiter, castData.castsData.ProjectileData.name));
+                        if (logging) Log(CombineStrings(castData.ownerUnit.name, dlmWord, castData.castsData.ProjectileData.name));
                         //Log("added more projectiles in 2nd cast pass");
                         projectileDataList.Add(new ProjectileDataConfig(castData.castsData.ProjectileData, castData.ownerUnit));
                     }
@@ -551,10 +548,12 @@ namespace JCGodSwornConfigurator
                 {
                     foreach (var effectData in effectDataList)
                     {
-                        Log(CombineStrings(effectData.ownerUnit.name, wordDelimiter, effectData.effectData.name));
+                        Log(CombineStrings(effectData.ownerUnit.name, dlmWord, effectData.effectData.name));
                     }
                 }
             }
+
+            #endregion
 
             #region Utilities
             //helper functions
@@ -567,7 +566,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    Log(CombineStrings("Failed to parse Float: ", key, listDelimiter, originalFloat.ToString()));
+                    Log(CombineStrings("Failed to parse Float: ", key, dlmList, originalFloat.ToString()));
                     return originalFloat;
                 }
             }
@@ -580,7 +579,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    Log(CombineStrings("Failed to parse Int: ", key, listDelimiter, originalInt.ToString()));
+                    Log(CombineStrings("Failed to parse Int: ", key, dlmList, originalInt.ToString()));
                     return originalInt;
                 }
             }
@@ -642,11 +641,11 @@ namespace JCGodSwornConfigurator
                 List<string> damageTypeLines = new List<string>();
                 for (int i = 0; i < comparisonSheet.Length; i++)
                 {
-                    Log(new StringBuilder(i.ToString()).Append(listDelimiter).Append(comparisonSheet[i].dmgType).ToString());
+                    Log(new StringBuilder(i.ToString()).Append(dlmList).Append(comparisonSheet[i].dmgType).ToString());
                     foreach (var defType in comparisonSheet[i].defType)
                     {
-                        Log(new StringBuilder(defType.DefenseType.ToString()).Append(listDelimiter).Append(defType.Precentage).ToString());
-                        damageTypeLines.Add(new StringBuilder(i.ToString()).Append(wordDelimiter).Append(comparisonSheet[i].dmgType).Append(wordDelimiter).Append(defType.DefenseType.ToString()).Append(keyDelimiter).Append(defType.Precentage).ToString());
+                        Log(new StringBuilder(defType.DefenseType.ToString()).Append(dlmList).Append(defType.Precentage).ToString());
+                        damageTypeLines.Add(new StringBuilder(i.ToString()).Append(dlmWord).Append(comparisonSheet[i].dmgType).Append(dlmWord).Append(defType.DefenseType.ToString()).Append(dlmKey).Append(defType.Precentage).ToString());
                     }
                 }
                 WriteConfig(modRootPath + generatedConfigFolderPath + "DefaultDamageTypesConfig.txt", damageTypeLines);
@@ -665,13 +664,13 @@ namespace JCGodSwornConfigurator
                     string factionName = factionsData[i].name;
 
                     HeroData heroData = factionsData[i].MainHero;
-                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.DefualtMaxHealth), keyDelimiter, heroData.DefualtMaxHealth.ToString()));
-                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.DefaultHealthRegen), keyDelimiter, heroData.DefaultHealthRegen.ToString()));
-                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.Speed), keyDelimiter, heroData.Speed.ToString()));
-                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.Armor), keyDelimiter, heroData.Armor.ToString()));
-                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.MagicResistance), keyDelimiter, heroData.MagicResistance.ToString()));
-                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.Visionrange), keyDelimiter, heroData.Visionrange.ToString()));
-                    factionDataLines.Add(CombineStrings(factionName, wordDelimiter, nameof(heroData.XP), keyDelimiter, heroData.XP.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, dlmWord, nameof(heroData.DefualtMaxHealth), dlmKey, heroData.DefualtMaxHealth.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, dlmWord, nameof(heroData.DefaultHealthRegen), dlmKey, heroData.DefaultHealthRegen.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, dlmWord, nameof(heroData.Speed), dlmKey, heroData.Speed.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, dlmWord, nameof(heroData.Armor), dlmKey, heroData.Armor.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, dlmWord, nameof(heroData.MagicResistance), dlmKey, heroData.MagicResistance.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, dlmWord, nameof(heroData.Visionrange), dlmKey, heroData.Visionrange.ToString()));
+                    factionDataLines.Add(CombineStrings(factionName, dlmWord, nameof(heroData.XP), dlmKey, heroData.XP.ToString()));
 
                     for (int k = 0; k < factionsData[i].Construction.Length; k++)
                     {
@@ -683,7 +682,7 @@ namespace JCGodSwornConfigurator
                             {
                                 string resourceName = GetSanitizedResourceName(factionsData[i].Construction[k].CostData.resources[j].resource.name);
                                 int resourceQuantity = factionsData[i].Construction[k].CostData.resources[j].amount;
-                                string searchKey = CombineStrings(buildingName, wordDelimiter, resourceName, keyDelimiter, resourceQuantity.ToString());
+                                string searchKey = CombineStrings(buildingName, dlmWord, resourceName, dlmKey, resourceQuantity.ToString());
                                 factionDataLines.Add(searchKey);
                             }
                         }
@@ -699,22 +698,22 @@ namespace JCGodSwornConfigurator
                 {
                     unitDataLines.Add(CombineStrings("//", unit.name));
                     string baseSearchKey = CombineStrings("Unit_", unit.name);
-                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof (unit.DefualtMaxHealth), keyDelimiter, unit.DefualtMaxHealth.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.DefaultHealthRegen), keyDelimiter, unit.DefaultHealthRegen.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Speed), keyDelimiter, unit.Speed.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Armor), keyDelimiter, unit.Armor.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.MagicResistance), keyDelimiter, unit.MagicResistance.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.Visionrange), keyDelimiter, unit.Visionrange.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.XP), keyDelimiter, unit.XP.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, wordDelimiter, nameof(unit.HousingUpkeep), keyDelimiter, unit.HousingUpkeep.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof (unit.DefualtMaxHealth), dlmKey, unit.DefualtMaxHealth.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.DefaultHealthRegen), dlmKey, unit.DefaultHealthRegen.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.Speed), dlmKey, unit.Speed.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.Armor), dlmKey, unit.Armor.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.MagicResistance), dlmKey, unit.MagicResistance.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.Visionrange), dlmKey, unit.Visionrange.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.XP), dlmKey, unit.XP.ToString()));
+                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.HousingUpkeep), dlmKey, unit.HousingUpkeep.ToString()));
                     //unit cost data
                     if (unit.CreationAbility != null)
                     {
                         for (int i = 0; i < unit.CreationAbility.CostData.resources.Count; i++)
                         {
                             string resourceName = GetSanitizedResourceName(unit.CreationAbility.CostData.resources[i].resource.name);
-                            string searchKey = CombineStrings(baseSearchKey, wordDelimiter, resourceName);
-                            unitDataLines.Add(CombineStrings(searchKey, keyDelimiter, unit.CreationAbility.CostData.resources[i].amount.ToString()));
+                            string searchKey = CombineStrings(baseSearchKey, dlmWord, resourceName);
+                            unitDataLines.Add(CombineStrings(searchKey, dlmKey, unit.CreationAbility.CostData.resources[i].amount.ToString()));
                         }
                     }
                     else
@@ -773,7 +772,7 @@ namespace JCGodSwornConfigurator
                         }
                     }
                 }
-                Log(CombineStrings("Failed to find key: ", key));
+                //Log(CombineStrings("Failed to find key: ", key));
                 return null;
             }
 
@@ -793,10 +792,18 @@ namespace JCGodSwornConfigurator
                 }
             }
 
-            public class ActionDataConfig
+            public class DataConfig
+            {
+                public UnitData ownerUnit;
+                public string unitName()
+                {
+                    return ownerUnit.name;
+                }
+            }
+
+            public class ActionDataConfig : DataConfig
             {
                 public ActionData actionData;
-                public UnitData ownerUnit;
 
                 public ActionDataConfig(ActionData actionData, UnitData ownerUnit)
                 {
@@ -804,40 +811,36 @@ namespace JCGodSwornConfigurator
                     this.ownerUnit = ownerUnit;
                 }
             }
-            public class TargetDataConfig
+            public class TargetDataConfig : DataConfig
             {
                 public TargetData targetData;
-                public UnitData ownerUnit;
                 public TargetDataConfig(TargetData targetData, UnitData ownerUnit)
                 {
                     this.targetData = targetData;
                     this.ownerUnit = ownerUnit;
                 }
             }
-            public class EffectDataConfig
+            public class EffectDataConfig : DataConfig
             {
                 public EffectData effectData;
-                public UnitData ownerUnit;
                 public EffectDataConfig(EffectData effectData, UnitData ownerUnit)
                 { 
                     this.effectData = effectData; 
                     this.ownerUnit = ownerUnit; 
                 }
             }
-            public class CastsDataConfig
+            public class CastsDataConfig : DataConfig
             {
                 public Casts castsData;
-                public UnitData ownerUnit;
                 public CastsDataConfig(Casts castsData, UnitData ownerUnit)
                 {
                     this.castsData = castsData;
                     this.ownerUnit = ownerUnit;
                 }
             }
-            public class ProjectileDataConfig
+            public class ProjectileDataConfig : DataConfig
             {
                 public ProjectileData projectileData;
-                public UnitData ownerUnit;
                 public ProjectileDataConfig(ProjectileData projectileData, UnitData ownerUnit)
                 {
                     this.projectileData = projectileData;
