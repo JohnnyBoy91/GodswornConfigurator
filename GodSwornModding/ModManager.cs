@@ -158,6 +158,17 @@ namespace JCGodSwornConfigurator
                 }
                 bool boolValue;
 
+                //foreach (var map in dataManager.availableMaps)
+                //{
+                //    if (!map.IsCampaignMap && !map.IsChallangeMap)
+                //    {
+                //        map.MaxParticipants++;
+                //        map.MaxPlayers++;
+                //        map.SpawnerLocations.Add(Vector2.zero);
+                //        map.HerospawnLocations.Add(Vector2.zero);
+                //    }
+                //}
+
                 #region FactionStuff
 
                 //Faction Stuff
