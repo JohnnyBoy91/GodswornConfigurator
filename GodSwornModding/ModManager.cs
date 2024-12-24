@@ -164,9 +164,9 @@ namespace JCGodSwornConfigurator
                     return;
                 }
 
-                verboseLogging = GetBoolByKey(verboseLogging, "VerboseLogging", true);
+                verboseLogging = GetBoolByKey(verboseLogging, "VerboseLogging");
 
-                if (bool.TryParse(GetValue("EnableSpectatorMode", true), out bool boolValue) && boolValue == true)
+                if (bool.TryParse(GetValue("EnableSpectatorMode"), out bool boolValue) && boolValue == true)
                 {
                     modSpectatorMode.InitializeSpectatorMode(dataManager);
                 }
@@ -637,9 +637,9 @@ namespace JCGodSwornConfigurator
                 }
             }
 
-            private bool GetBoolByKey(bool originalBool, string key, bool settings = false)
+            private bool GetBoolByKey(bool originalBool, string key)
             {
-                if (bool.TryParse(GetValue(key, settings), out bool boolVal))
+                if (bool.TryParse(GetValue(key), out bool boolVal))
                 {
                     return boolVal;
                 }
@@ -834,6 +834,8 @@ namespace JCGodSwornConfigurator
                 settingslines = reader.ReadToEnd().Split("\n");
                 reader.Close();
 
+                datalines = datalines.Concat(settingslines).ToArray();
+
                 //master disable switch field
                 if (bool.TryParse(GetValue("DisableThisMod"), out bool boolVal))
                 {
@@ -844,11 +846,10 @@ namespace JCGodSwornConfigurator
             /// <summary>
             /// Retrieve value from file
             /// </summary>
-            public string GetValue(string key, bool settings = false)
+            public string GetValue(string key)
             {
                 string[] linesToCheck;
                 linesToCheck = datalines;
-                if (settings) linesToCheck = settingslines;
 
                 foreach (string line in linesToCheck)
                 {
