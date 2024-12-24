@@ -325,6 +325,39 @@ namespace JCGodSwornConfigurator
                     data.TriggerDelay = GetFloatByKey(data.TriggerDelay, CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay)));
                 }
 
+                //process effect data
+                foreach (EffectDataConfig effectData in effectDataList)
+                {
+                    EffectData data = effectData.effectData;
+                    data.Damage = GetIntByKey(data.Damage, CombineStrings(effectData.unitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage)));
+                    data.ScaleWithStrenght = GetBoolByKey(data.ScaleWithStrenght, CombineStrings(effectData.unitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght)));
+                    data.ScaleWithPower = GetBoolByKey(data.ScaleWithPower, CombineStrings(effectData.unitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower)));
+                    //TODO damage type
+                }
+
+                //process projectile data 
+                foreach (ProjectileDataConfig projectileData in projectileDataList)
+                {
+                    ProjectileData data = projectileData.projectileData;
+                    data.Homing = GetBoolByKey(data.Homing, CombineStrings(projectileData.unitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing)));
+                    data.LifeTime = GetFloatByKey(data.LifeTime, CombineStrings(projectileData.unitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime)));
+                    data.StartSpeed = GetFloatByKey(data.StartSpeed, CombineStrings(projectileData.unitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed)));
+                }
+                
+                //process target data 
+                foreach (TargetDataConfig targetData in targetDataList)
+                {
+                    TargetData data = targetData.targetData;
+                    data.MinUseRange = GetFloatByKey(data.MinUseRange, CombineStrings(targetData.unitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange)));
+                    data.MaxUseRange = GetFloatByKey(data.MaxUseRange, CombineStrings(targetData.unitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange)));
+                }
+
+                //process effect data TODO 
+                //foreach (CastsDataConfig castData in castsDataList)
+                //{
+                //    Casts data = castData.castsData;
+                //}
+
                 //2nd effect pass
                 //WriteDefaultUnitDataConfig();
 
@@ -566,7 +599,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    Log(CombineStrings("Failed to parse Float: ", key, dlmList, originalFloat.ToString()));
+                    Log(CombineStrings("Failed to parse Float: ", key, dlmKey, originalFloat.ToString()));
                     return originalFloat;
                 }
             }
@@ -579,7 +612,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    Log(CombineStrings("Failed to parse Int: ", key, dlmList, originalInt.ToString()));
+                    Log(CombineStrings("Failed to parse Int: ", key, dlmKey, originalInt.ToString()));
                     return originalInt;
                 }
             }
@@ -592,7 +625,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    Log(CombineStrings("Failed to parse Bool: ", key, originalBool.ToString()));
+                    Log(CombineStrings("Failed to parse Bool: ", key, dlmKey, originalBool.ToString()));
                     return originalBool;
                 }
             }
