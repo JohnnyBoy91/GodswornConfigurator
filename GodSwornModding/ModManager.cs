@@ -42,9 +42,11 @@ namespace JCGodSwornConfigurator
 
         public class ModManager : MonoBehaviour
         {
-            public string configPath;
+            public string dataConfigPath;
+            public string modSettingsPath;
             public string modRootPath;
-            public string[] lines;
+            public string[] datalines;
+            public string[] settingslines;
 
             public bool DisableModMasterSwitch;
             public bool ShowUIWidget;
@@ -138,7 +140,8 @@ namespace JCGodSwornConfigurator
             private void Initialize()
             {
                 modRootPath = Directory.GetCurrentDirectory() + @"\BepInEx\plugins\GodswornConfigurator\";
-                configPath = modRootPath + "config.txt";
+                dataConfigPath = modRootPath + "ModDataConfig.txt";
+                modSettingsPath = modRootPath + "ModSettings.txt";
                 if (!Directory.Exists(modRootPath + generatedConfigFolderPath))
                 {
                     Directory.CreateDirectory(modRootPath + generatedConfigFolderPath);
@@ -158,16 +161,19 @@ namespace JCGodSwornConfigurator
                 }
                 bool boolValue;
 
-                //foreach (var map in dataManager.availableMaps)
-                //{
-                //    if (!map.IsCampaignMap && !map.IsChallangeMap)
-                //    {
-                //        map.MaxParticipants++;
-                //        map.MaxPlayers++;
-                //        map.SpawnerLocations.Add(Vector2.zero);
-                //        map.HerospawnLocations.Add(Vector2.zero);
-                //    }
-                //}
+                if (bool.TryParse(GetValue("EnableSpectatorMode", true), out boolValue) && boolValue == true)
+                {
+                    foreach (var map in dataManager.availableMaps)
+                    {
+                        if (!map.IsCampaignMap && !map.IsChallangeMap)
+                        {
+                            map.MaxParticipants++;
+                            map.MaxPlayers++;
+                            map.SpawnerLocations.Add(Vector2.zero);
+                            map.HerospawnLocations.Add(Vector2.zero);
+                        }
+                    }
+                }
 
                 #region FactionStuff
 
@@ -822,11 +828,16 @@ namespace JCGodSwornConfigurator
             /// </summary>
             public void ReadModConfig()
             {
-                Log(configPath);
-                lines = null;
-                StreamReader reader = new StreamReader(configPath, true);
-                lines = reader.ReadToEnd().Split('\n');
+                Log(dataConfigPath);
+                datalines = null;
+                StreamReader reader = new StreamReader(dataConfigPath, true);
+                datalines = reader.ReadToEnd().Split('\n');
                 reader.Close();
+
+                reader = new StreamReader(modSettingsPath, true);
+                settingslines = reader.ReadToEnd().Split("\n");
+                reader.Close();
+
                 //master disable switch field
                 if (bool.TryParse(GetValue("DisableThisMod"), out bool boolVal))
                 {
@@ -837,9 +848,13 @@ namespace JCGodSwornConfigurator
             /// <summary>
             /// Retrieve value from file
             /// </summary>
-            public string GetValue(string key)
+            public string GetValue(string key, bool settings = false)
             {
-                foreach (string line in lines)
+                string[] linesToCheck;
+                linesToCheck = datalines;
+                if (settings) linesToCheck = settingslines;
+
+                foreach (string line in linesToCheck)
                 {
                     //ignore commented lines
                     if (!line.Contains("//"))
