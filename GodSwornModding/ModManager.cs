@@ -53,6 +53,8 @@ namespace JCGodSwornConfigurator
 
             public Plugin plugin;
 
+            private ModSpectatorMode modSpectatorMode = new ModSpectatorMode();
+
             public GameManager gameManager;
             public DataManager dataManager;
             public DamageManager damageManager;
@@ -66,6 +68,8 @@ namespace JCGodSwornConfigurator
             public List<CastsDataConfig> castsDataList = new List<CastsDataConfig>();
             public List<ProjectileDataConfig> projectileDataList = new List<ProjectileDataConfig>();
             public List<string> actionDataNameLink = new List<string>();
+
+            private bool verboseLogging;
 
             //main menu initialization
             private bool initialized;
@@ -159,20 +163,12 @@ namespace JCGodSwornConfigurator
                     initialized = true;
                     return;
                 }
-                bool boolValue;
 
-                if (bool.TryParse(GetValue("EnableSpectatorMode", true), out boolValue) && boolValue == true)
+                verboseLogging = GetBoolByKey(verboseLogging, "VerboseLogging", true);
+
+                if (bool.TryParse(GetValue("EnableSpectatorMode", true), out bool boolValue) && boolValue == true)
                 {
-                    foreach (var map in dataManager.availableMaps)
-                    {
-                        if (!map.IsCampaignMap && !map.IsChallangeMap)
-                        {
-                            map.MaxParticipants++;
-                            map.MaxPlayers++;
-                            map.SpawnerLocations.Add(Vector2.zero);
-                            map.HerospawnLocations.Add(Vector2.zero);
-                        }
-                    }
+                    modSpectatorMode.InitializeSpectatorMode(dataManager);
                 }
 
                 #region FactionStuff
@@ -331,18 +327,18 @@ namespace JCGodSwornConfigurator
                 foreach (ActionDataConfig actionData in actionDataList)
                 {
                     ActionData data = actionData.actionData;
-                    data.CoolDown = GetFloatByKey(data.CoolDown, CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof (data.CoolDown)));
-                    data.Duration = GetFloatByKey(data.Duration, CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration)));
-                    data.TriggerDelay = GetFloatByKey(data.TriggerDelay, CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay)));
+                    data.CoolDown = GetFloatByKey(data.CoolDown, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof (data.CoolDown)));
+                    data.Duration = GetFloatByKey(data.Duration, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration)));
+                    data.TriggerDelay = GetFloatByKey(data.TriggerDelay, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay)));
                 }
 
                 //process effect data
                 foreach (EffectDataConfig effectData in effectDataList)
                 {
                     EffectData data = effectData.effectData;
-                    data.Damage = GetIntByKey(data.Damage, CombineStrings(effectData.unitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage)));
-                    data.ScaleWithStrenght = GetBoolByKey(data.ScaleWithStrenght, CombineStrings(effectData.unitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght)));
-                    data.ScaleWithPower = GetBoolByKey(data.ScaleWithPower, CombineStrings(effectData.unitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower)));
+                    data.Damage = GetIntByKey(data.Damage, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage)));
+                    data.ScaleWithStrenght = GetBoolByKey(data.ScaleWithStrenght, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght)));
+                    data.ScaleWithPower = GetBoolByKey(data.ScaleWithPower, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower)));
                     //TODO damage type
                 }
 
@@ -350,17 +346,17 @@ namespace JCGodSwornConfigurator
                 foreach (ProjectileDataConfig projectileData in projectileDataList)
                 {
                     ProjectileData data = projectileData.projectileData;
-                    data.Homing = GetBoolByKey(data.Homing, CombineStrings(projectileData.unitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing)));
-                    data.LifeTime = GetFloatByKey(data.LifeTime, CombineStrings(projectileData.unitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime)));
-                    data.StartSpeed = GetFloatByKey(data.StartSpeed, CombineStrings(projectileData.unitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed)));
+                    data.Homing = GetBoolByKey(data.Homing, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing)));
+                    data.LifeTime = GetFloatByKey(data.LifeTime, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime)));
+                    data.StartSpeed = GetFloatByKey(data.StartSpeed, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed)));
                 }
                 
                 //process target data 
                 foreach (TargetDataConfig targetData in targetDataList)
                 {
                     TargetData data = targetData.targetData;
-                    data.MinUseRange = GetFloatByKey(data.MinUseRange, CombineStrings(targetData.unitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange)));
-                    data.MaxUseRange = GetFloatByKey(data.MaxUseRange, CombineStrings(targetData.unitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange)));
+                    data.MinUseRange = GetFloatByKey(data.MinUseRange, CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange)));
+                    data.MaxUseRange = GetFloatByKey(data.MaxUseRange, CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange)));
                     //data.MustHaveTarget = GetBoolByKey(data.MustHaveTarget, CombineStrings(targetData.unitName(), dlmWord, nameof(targetData), dlmWord, data.name, dlmWord, nameof(data.MustHaveTarget)));
                 }
 
@@ -376,7 +372,7 @@ namespace JCGodSwornConfigurator
                 //process unit mods
                 foreach (var unit in unitDataList)
                 {
-                    Log(unit.name);
+                    if (verboseLogging) Log(unit.name);
                     string baseSearchKey = CombineStrings("Unit_", unit.name);
                     unit.DefualtMaxHealth = GetIntByKey(unit.DefualtMaxHealth, CombineStrings(baseSearchKey, dlmWord, nameof(unit.DefualtMaxHealth)));
                     unit.DefaultHealthRegen = GetFloatByKey(unit.DefaultHealthRegen, CombineStrings(baseSearchKey, dlmWord, nameof(unit.DefaultHealthRegen)));
@@ -531,7 +527,7 @@ namespace JCGodSwornConfigurator
             {
                 foreach (var actionData in actionDataList)
                 {
-                    Log(CombineStrings(actionData.ownerUnit.name, dlmWord, actionData.actionData.name));
+                    if (verboseLogging) Log(CombineStrings(actionData.ownerUnit.name, dlmWord, actionData.actionData.name));
                     targetDataList.Add(new TargetDataConfig(actionData.actionData.TargetData, actionData.ownerUnit));
                     //actionData.actionData.TargetData.CastTarget
                     //actionData.actionData.TargetData.Ranged
@@ -543,7 +539,7 @@ namespace JCGodSwornConfigurator
             {
                 foreach (var projectileData in projectileDataList)
                 {
-                    Log(CombineStrings(projectileData.ownerUnit.name, dlmWord, projectileData.projectileData.name));
+                    if (verboseLogging) Log(CombineStrings(projectileData.ownerUnit.name, dlmWord, projectileData.projectileData.name));
                     if (projectileData.projectileData.TarData != null)
                     {
                         targetDataList.Add(new TargetDataConfig(projectileData.projectileData.TarData, projectileData.ownerUnit));
@@ -560,7 +556,7 @@ namespace JCGodSwornConfigurator
             {
                 foreach (var targetData in targetDataList)
                 {
-                    if (logging) Log(CombineStrings(targetData.ownerUnit.name, dlmWord, targetData.targetData.name));
+                    if (logging && verboseLogging) Log(CombineStrings(targetData.ownerUnit.name, dlmWord, targetData.targetData.name));
                     for (int i = 0; i < targetData.targetData.CastTarget.Count; i++)
                     {
                         if (!castsDataList.Any(x => x.castsData == targetData.targetData.CastTarget[i]))
@@ -595,7 +591,7 @@ namespace JCGodSwornConfigurator
                     }
                     if (castData.castsData.ProjectileData != null && !projectileDataList.Any(x => x.projectileData == castData.castsData.ProjectileData))
                     {
-                        if (logging) Log(CombineStrings(castData.ownerUnit.name, dlmWord, castData.castsData.ProjectileData.name));
+                        if (logging && verboseLogging) Log(CombineStrings(castData.ownerUnit.name, dlmWord, castData.castsData.ProjectileData.name));
                         //Log("added more projectiles in 2nd cast pass");
                         projectileDataList.Add(new ProjectileDataConfig(castData.castsData.ProjectileData, castData.ownerUnit));
                     }
@@ -605,7 +601,7 @@ namespace JCGodSwornConfigurator
                 {
                     foreach (var effectData in effectDataList)
                     {
-                        Log(CombineStrings(effectData.ownerUnit.name, dlmWord, effectData.effectData.name));
+                        if (verboseLogging) Log(CombineStrings(effectData.ownerUnit.name, dlmWord, effectData.effectData.name));
                     }
                 }
             }
@@ -623,7 +619,7 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    Log(CombineStrings("Failed to parse Float: ", key, dlmKey, originalFloat.ToString()));
+                    if(verboseLogging) Log(CombineStrings("Failed to parse Float: ", key, dlmKey, originalFloat.ToString()));
                     return originalFloat;
                 }
             }
@@ -636,20 +632,20 @@ namespace JCGodSwornConfigurator
                 }
                 else
                 {
-                    Log(CombineStrings("Failed to parse Int: ", key, dlmKey, originalInt.ToString()));
+                    if (verboseLogging) Log(CombineStrings("Failed to parse Int: ", key, dlmKey, originalInt.ToString()));
                     return originalInt;
                 }
             }
 
-            private bool GetBoolByKey(bool originalBool, string key)
+            private bool GetBoolByKey(bool originalBool, string key, bool settings = false)
             {
-                if (bool.TryParse(GetValue(key), out bool boolVal))
+                if (bool.TryParse(GetValue(key, settings), out bool boolVal))
                 {
                     return boolVal;
                 }
                 else
                 {
-                    Log(CombineStrings("Failed to parse Bool: ", key, dlmKey, originalBool.ToString()));
+                    if (verboseLogging) Log(CombineStrings("Failed to parse Bool: ", key, dlmKey, originalBool.ToString()));
                     return originalBool;
                 }
             }
@@ -782,39 +778,39 @@ namespace JCGodSwornConfigurator
                     }
                 }
 
-                actionDataList = actionDataList.OrderBy(x => x.unitName()).ToList();
-                effectDataList = effectDataList.OrderBy(x => x.unitName()).ToList();
-                projectileDataList = projectileDataList.OrderBy(x => x.unitName()).ToList();
-                targetDataList = targetDataList.OrderBy(x => x.unitName()).ToList();
+                actionDataList = actionDataList.OrderBy(x => x.UnitName()).ToList();
+                effectDataList = effectDataList.OrderBy(x => x.UnitName()).ToList();
+                projectileDataList = projectileDataList.OrderBy(x => x.UnitName()).ToList();
+                targetDataList = targetDataList.OrderBy(x => x.UnitName()).ToList();
 
                 foreach (var unitName in unitNames)
                 {
-                    foreach (ActionDataConfig actionData in actionDataList.Where(x => x.unitName() == unitName))
+                    foreach (ActionDataConfig actionData in actionDataList.Where(x => x.UnitName() == unitName))
                     {
                         ActionData data = actionData.actionData;
-                        actionDataLines.Add(CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.CoolDown), dlmKey, data.CoolDown.ToString()));
-                        actionDataLines.Add(CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration), dlmKey, data.Duration.ToString()));
-                        actionDataLines.Add(CombineStrings(actionData.unitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay), dlmKey, data.TriggerDelay.ToString()));
+                        actionDataLines.Add(CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.CoolDown), dlmKey, data.CoolDown.ToString()));
+                        actionDataLines.Add(CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration), dlmKey, data.Duration.ToString()));
+                        actionDataLines.Add(CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay), dlmKey, data.TriggerDelay.ToString()));
                     }
-                    foreach (EffectDataConfig effectData in effectDataList.Where(x => x.unitName() == unitName))
+                    foreach (EffectDataConfig effectData in effectDataList.Where(x => x.UnitName() == unitName))
                     {
                         EffectData data = effectData.effectData;
-                        actionDataLines.Add(CombineStrings(effectData.unitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage), dlmKey, data.Damage.ToString()));
-                        actionDataLines.Add(CombineStrings(effectData.unitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght), dlmKey, data.ScaleWithStrenght.ToString()));
-                        actionDataLines.Add(CombineStrings(effectData.unitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower), dlmKey, data.ScaleWithPower.ToString()));
+                        actionDataLines.Add(CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage), dlmKey, data.Damage.ToString()));
+                        actionDataLines.Add(CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght), dlmKey, data.ScaleWithStrenght.ToString()));
+                        actionDataLines.Add(CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower), dlmKey, data.ScaleWithPower.ToString()));
                     }
-                    foreach (ProjectileDataConfig projectileData in projectileDataList.Where(x => x.unitName() == unitName))
+                    foreach (ProjectileDataConfig projectileData in projectileDataList.Where(x => x.UnitName() == unitName))
                     {
                         ProjectileData data = projectileData.projectileData;
-                        actionDataLines.Add(CombineStrings(projectileData.unitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing), dlmKey, data.Homing.ToString()));
-                        actionDataLines.Add(CombineStrings(projectileData.unitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime), dlmKey, data.LifeTime.ToString()));
-                        actionDataLines.Add(CombineStrings(projectileData.unitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed), dlmKey, data.StartSpeed.ToString()));
+                        actionDataLines.Add(CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing), dlmKey, data.Homing.ToString()));
+                        actionDataLines.Add(CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime), dlmKey, data.LifeTime.ToString()));
+                        actionDataLines.Add(CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed), dlmKey, data.StartSpeed.ToString()));
                     }
-                    foreach (TargetDataConfig targetData in targetDataList.Where(x => x.unitName() == unitName))
+                    foreach (TargetDataConfig targetData in targetDataList.Where(x => x.UnitName() == unitName))
                     {
                         TargetData data = targetData.targetData;
-                        actionDataLines.Add(CombineStrings(targetData.unitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange), dlmKey, data.MinUseRange.ToString()));
-                        actionDataLines.Add(CombineStrings(targetData.unitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange), dlmKey, data.MaxUseRange.ToString()));
+                        actionDataLines.Add(CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange), dlmKey, data.MinUseRange.ToString()));
+                        actionDataLines.Add(CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange), dlmKey, data.MaxUseRange.ToString()));
                     }
                 }
 

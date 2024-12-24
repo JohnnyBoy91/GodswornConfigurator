@@ -1,0 +1,2 @@
+﻿VerboseLogging:False
+EnableSpectatorMode:False

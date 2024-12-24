@@ -15,7 +15,7 @@ namespace JCGodSwornConfigurator
     public class DataConfig
     {
         public UnitData ownerUnit;
-        public string unitName()
+        public string UnitName()
         {
             return ownerUnit.name;
         }
