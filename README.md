@@ -1,5 +1,5 @@
 # GodswornConfigurator
-
+Features tested and working on single player only
 ## Features
 
 * Customizable faction starting conditions & resource settings
@@ -9,7 +9,7 @@
 * Customizable level xp requirements & stat scaling
 * Add Marauder to Saule Warcamp
 * Customize other miscellaneous settings
-* WIP spectator mode
+* WIP spectator mode(not working in multiplayer, need to test with all players having mod installed?)
 
 * Full config list here: https://github.com/JohnnyBoy91/GodswornModding/blob/main/GodSwornModding/Config.txt
 
@@ -35,4 +35,9 @@ https://docs.bepinex.dev/master/articles/user_guide/installation/unity_il2cpp.ht
 3. Run the game and allow some time to generate modding files
 4. Download this mod from the "Releases" section
 5. Drop this mod into "Bepinex/plugins" folder.
-6. This mod contains a config.txt file in it's folder, configure it to suit your needs and play the game.
+6. This mod contains a DataConfig.txt file in it's folder, configure it to suit your needs and play the game.
+
+## Uninstallation
+
+To remove completely, delete bepinex folder and files from game directory(the folder and files added during installation step 3). May have to also verify game files on steam.
+To disable the mod temporarily, move the mod folder out of the "Bepinex/plugins" folder, also the ModDataConfig file has a true/false toggle at the top to disable modding settings like unit stats on startup if you want to quickly switch back to vanilla stats
