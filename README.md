@@ -3,11 +3,13 @@
 ## Features
 
 * Customizable faction starting conditions & resource settings
+* Customize Unit and Hero stats
 * Customize Damage Type Modifiers
 * Customizable worshipper spawn rate parameters
 * Customizable level xp requirements & stat scaling
 * Add Marauder to Saule Warcamp
 * Customize other miscellaneous settings
+* WIP spectator mode
 
 * Full config list here: https://github.com/JohnnyBoy91/GodswornModding/blob/main/GodSwornModding/Config.txt
 
