@@ -334,6 +334,12 @@ namespace JCGodSwornConfigurator
                     data.CoolDown = GetFloatByKey(data.CoolDown, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof (data.CoolDown)));
                     data.Duration = GetFloatByKey(data.Duration, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration)));
                     data.TriggerDelay = GetFloatByKey(data.TriggerDelay, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay)));
+                    if (data.RandomizeData != null)
+                    {
+                        var randomizeData = data.RandomizeData;
+                        randomizeData.RepeatAmount = GetIntByKey(randomizeData.RepeatAmount, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatAmount)));
+                        randomizeData.RepeatIntervall = GetFloatByKey(randomizeData.RepeatIntervall, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatIntervall)));
+                    }
                 }
 
                 //process effect data
@@ -774,7 +780,7 @@ namespace JCGodSwornConfigurator
                             for (int i = 0; i < unit.CreationAbility.CostData.resources.Count; i++)
                             {
                                 string resourceName = Utilities.GetSanitizedResourceName(unit.CreationAbility.CostData.resources[i].resource.name);
-                                string searchKey = CombineStrings(baseSearchKey, dlmWord, resourceName);
+                                string searchKey = CombineStrings(baseSearchKey, resourceName);
                                 unitDataLines.Add(CombineStrings(searchKey, dlmKey, unit.CreationAbility.CostData.resources[i].amount.ToString()));
                             }
                         }
@@ -791,6 +797,12 @@ namespace JCGodSwornConfigurator
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.CoolDown), dlmKey, data.CoolDown.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration), dlmKey, data.Duration.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay), dlmKey, data.TriggerDelay.ToString()));
+                        if (data.RandomizeData != null)
+                        {
+                            var randomizeData = data.RandomizeData;
+                            unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatAmount), dlmKey, randomizeData.RepeatAmount.ToString()));
+                            unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatIntervall), dlmKey, randomizeData.RepeatIntervall.ToString()));
+                        }
                     }
                     foreach (EffectDataConfig effectData in effectDataList.Where(x => x.UnitName() == unitName))
                     {
