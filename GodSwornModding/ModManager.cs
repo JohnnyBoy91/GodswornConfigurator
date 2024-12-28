@@ -76,17 +76,22 @@ namespace JCGodSwornConfigurator
             //initialization part 2 because some managers & values exist in game scene only
             private bool initializedInGame;
             //wait before modding datamanager
-            private int waitFrames = 120;
+            private int waitFrames = 0;
+
+            private const string prefixUnit = "Unit";
 
             //config delimiters
             private readonly string dlmList = ", ";
             private readonly string dlmWord = "_";
             private readonly string dlmKey = ":";
+            private readonly string dlmComment = "//";
+            private readonly string dlmNewLine = "\n";
             private readonly string generatedConfigFolderPath = @"DefaultConfigData\";
 
             internal void Update()
             {
-                //Bepinex is angry if I don't wait here, probably some time between inject and unity/scene load? Can't use unity event either here for some reason
+                //Takes time to grab refs here, probably some time between inject and unity/scene load?
+                //Can't use unity event either here for some reason(stripped?)
                 if (waitFrames > 0)
                 {
                     waitFrames--;
@@ -665,7 +670,6 @@ namespace JCGodSwornConfigurator
                 WriteDefaultDamageTypeModifierConfig();
                 WriteDefaultFactionDataConfig();
                 WriteDefaultUnitDataConfig();
-                WriteDefaultActionDataConfig();
             }
             /// <summary>
             /// Write separate config file with game's default damage modifier table
@@ -733,41 +737,8 @@ namespace JCGodSwornConfigurator
 
             private void WriteDefaultUnitDataConfig()
             {
-                List<string> unitDataLines = new List<string>();
-                foreach (var unit in unitDataList)
-                {
-                    unitDataLines.Add(CombineStrings("//", unit.name));
-                    string baseSearchKey = CombineStrings("Unit_", unit.name);
-                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof (unit.DefualtMaxHealth), dlmKey, unit.DefualtMaxHealth.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.DefaultHealthRegen), dlmKey, unit.DefaultHealthRegen.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.Speed), dlmKey, unit.Speed.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.Armor), dlmKey, unit.Armor.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.MagicResistance), dlmKey, unit.MagicResistance.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.Visionrange), dlmKey, unit.Visionrange.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.XP), dlmKey, unit.XP.ToString()));
-                    unitDataLines.Add(CombineStrings(baseSearchKey, dlmWord, nameof(unit.HousingUpkeep), dlmKey, unit.HousingUpkeep.ToString()));
-                    //unit cost data
-                    if (unit.CreationAbility != null)
-                    {
-                        for (int i = 0; i < unit.CreationAbility.CostData.resources.Count; i++)
-                        {
-                            string resourceName = Utilities.GetSanitizedResourceName(unit.CreationAbility.CostData.resources[i].resource.name);
-                            string searchKey = CombineStrings(baseSearchKey, dlmWord, resourceName);
-                            unitDataLines.Add(CombineStrings(searchKey, dlmKey, unit.CreationAbility.CostData.resources[i].amount.ToString()));
-                        }
-                    }
-                    else
-                    {
-                        plugin.Log.LogWarning(unit.name + "Missing Creation Data");
-                    }
-                }
-                Utilities.WriteConfig(modRootPath + generatedConfigFolderPath + "DefaultUnitDataConfig.txt", unitDataLines);
-            }
-
-            private void WriteDefaultActionDataConfig()
-            {
-                List<string> actionDataLines = new List<string>();
                 List<string> unitNames = new List<string>();
+                List<string> unitDataLines = new List<string>();
 
                 foreach (var actionData in actionDataList)
                 {
@@ -781,39 +752,69 @@ namespace JCGodSwornConfigurator
                 effectDataList = effectDataList.OrderBy(x => x.UnitName()).ToList();
                 projectileDataList = projectileDataList.OrderBy(x => x.UnitName()).ToList();
                 targetDataList = targetDataList.OrderBy(x => x.UnitName()).ToList();
+                unitDataList = unitDataList.OrderBy(x => x.name).ToList();
 
                 foreach (var unitName in unitNames)
                 {
+                    string baseSearchKey = CombineStrings(prefixUnit, dlmWord, unitName, dlmWord);
+                    foreach (var unit in unitDataList.Where(x => x.name == unitName))
+                    {
+                        unitDataLines.Add(CombineStrings(dlmNewLine, dlmComment, unit.name));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.DefualtMaxHealth), dlmKey, unit.DefualtMaxHealth.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.DefaultHealthRegen), dlmKey, unit.DefaultHealthRegen.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.Speed), dlmKey, unit.Speed.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.Armor), dlmKey, unit.Armor.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.MagicResistance), dlmKey, unit.MagicResistance.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.Visionrange), dlmKey, unit.Visionrange.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.XP), dlmKey, unit.XP.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.HousingUpkeep), dlmKey, unit.HousingUpkeep.ToString()));
+                        //unit cost data
+                        if (unit.CreationAbility != null)
+                        {
+                            for (int i = 0; i < unit.CreationAbility.CostData.resources.Count; i++)
+                            {
+                                string resourceName = Utilities.GetSanitizedResourceName(unit.CreationAbility.CostData.resources[i].resource.name);
+                                string searchKey = CombineStrings(baseSearchKey, dlmWord, resourceName);
+                                unitDataLines.Add(CombineStrings(searchKey, dlmKey, unit.CreationAbility.CostData.resources[i].amount.ToString()));
+                            }
+                        }
+                        else
+                        {
+                            plugin.Log.LogWarning(unit.name + "Missing Creation Data");
+                        }
+                    }
+
+                    unitDataLines.Add("");
                     foreach (ActionDataConfig actionData in actionDataList.Where(x => x.UnitName() == unitName))
                     {
                         ActionData data = actionData.actionData;
-                        actionDataLines.Add(CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.CoolDown), dlmKey, data.CoolDown.ToString()));
-                        actionDataLines.Add(CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration), dlmKey, data.Duration.ToString()));
-                        actionDataLines.Add(CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay), dlmKey, data.TriggerDelay.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.CoolDown), dlmKey, data.CoolDown.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration), dlmKey, data.Duration.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay), dlmKey, data.TriggerDelay.ToString()));
                     }
                     foreach (EffectDataConfig effectData in effectDataList.Where(x => x.UnitName() == unitName))
                     {
                         EffectData data = effectData.effectData;
-                        actionDataLines.Add(CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage), dlmKey, data.Damage.ToString()));
-                        actionDataLines.Add(CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght), dlmKey, data.ScaleWithStrenght.ToString()));
-                        actionDataLines.Add(CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower), dlmKey, data.ScaleWithPower.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage), dlmKey, data.Damage.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght), dlmKey, data.ScaleWithStrenght.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower), dlmKey, data.ScaleWithPower.ToString()));
                     }
                     foreach (ProjectileDataConfig projectileData in projectileDataList.Where(x => x.UnitName() == unitName))
                     {
                         ProjectileData data = projectileData.projectileData;
-                        actionDataLines.Add(CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing), dlmKey, data.Homing.ToString()));
-                        actionDataLines.Add(CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime), dlmKey, data.LifeTime.ToString()));
-                        actionDataLines.Add(CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed), dlmKey, data.StartSpeed.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing), dlmKey, data.Homing.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime), dlmKey, data.LifeTime.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed), dlmKey, data.StartSpeed.ToString()));
                     }
                     foreach (TargetDataConfig targetData in targetDataList.Where(x => x.UnitName() == unitName))
                     {
                         TargetData data = targetData.targetData;
-                        actionDataLines.Add(CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange), dlmKey, data.MinUseRange.ToString()));
-                        actionDataLines.Add(CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange), dlmKey, data.MaxUseRange.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange), dlmKey, data.MinUseRange.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange), dlmKey, data.MaxUseRange.ToString()));
                     }
                 }
 
-                Utilities.WriteConfig(modRootPath + generatedConfigFolderPath + "DefaultActionDataConfig.txt", actionDataLines);
+                Utilities.WriteConfig(modRootPath + generatedConfigFolderPath + "DefaultUnitDataConfig.txt", unitDataLines);
             }
 
             #endregion

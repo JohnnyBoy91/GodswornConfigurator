@@ -13,6 +13,10 @@ namespace JCGodSwornConfigurator
         /// </summary>
         public static void WriteConfig(string fileName, List<string> text)
         {
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
             StreamWriter writer = new StreamWriter(fileName, true);
             for (int i = 0; i < text.Count; i++)
             {
