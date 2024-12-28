@@ -101,9 +101,9 @@ namespace JCGodSwornConfigurator
                     MainSetup();
                 }
 
-                if (DataManager.Instance.gameMgr != null && !initializedInGame)
+                if (dataManager?.gameMgr != null && !initializedInGame)
                 {
-                    gameManager = DataManager.Instance.gameMgr;
+                    gameManager = dataManager.gameMgr;
                     damageManager = gameManager.DmgMgr;
 
                     //WriteDefaultDamageTypeModifierConfig();   //internal use for creating default config
@@ -112,7 +112,6 @@ namespace JCGodSwornConfigurator
                     Log("In-Game Init Complete");
                     initializedInGame = true;
                 }
-
 
                 //hotkey to force reloading the text file values again
                 if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.F10))
