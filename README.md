@@ -11,7 +11,7 @@ Features tested and working on single player only
 * Customize other miscellaneous settings
 * WIP spectator mode(not working in multiplayer, need to test with all players having mod installed?)
 
-* Full config list here: https://github.com/JohnnyBoy91/GodswornModding/blob/main/GodSwornModding/Config.txt
+* Full config list here: [https://github.com/JohnnyBoy91/GodswornModding/blob/main/GodSwornModding/Config.txt](https://github.com/JohnnyBoy91/GodswornConfigurator/blob/main/GodSwornModding/ModDataConfig.txt)
 
 ## Download
 
@@ -39,5 +39,5 @@ https://docs.bepinex.dev/master/articles/user_guide/installation/unity_il2cpp.ht
 
 ## Uninstallation
 
-To remove completely, delete bepinex folder and files from game directory(the folder and files added during installation step 3). May have to also verify game files on steam.
-To disable the mod temporarily, move the mod folder out of the "Bepinex/plugins" folder, also the ModDataConfig file has a true/false toggle at the top to disable modding settings like unit stats on startup if you want to quickly switch back to vanilla stats
+* To remove completely, delete bepinex folder and files from game directory(the folder and files added during installation step 3). May have to also verify game files on steam.
+* To disable the mod temporarily, move the mod folder out of the "Bepinex/plugins" folder, also the ModDataConfig file has a true/false toggle at the top to disable modding settings like unit stats on startup if you want to quickly switch back to vanilla stats
