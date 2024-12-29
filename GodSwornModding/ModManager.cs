@@ -15,7 +15,7 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 
 namespace JCGodSwornConfigurator
 {
-    [BepInPlugin("JCGodSwornConfigurator", "GodSwornConfigurator", "1.0.0")]
+    [BepInPlugin("JCGodSwornConfigurator", "GodSwornConfigurator", "1.0.01")]
     public class Plugin : BasePlugin
     {
         #region Plugin Core
@@ -49,6 +49,7 @@ namespace JCGodSwornConfigurator
             public string[] settingslines;
 
             public bool DisableModMasterSwitch;
+            public bool RetrieveDataMode;
             public bool ShowUIWidget;
 
             public Plugin plugin;
@@ -79,6 +80,7 @@ namespace JCGodSwornConfigurator
             private int waitFrames = 0;
 
             private const string prefixUnit = "Unit";
+            private const string prefixHeroSkill = "DivineSkill";
 
             //config delimiters
             private readonly string dlmList = ", ";
@@ -118,7 +120,7 @@ namespace JCGodSwornConfigurator
                     initializedInGame = true;
                 }
 
-                //hotkey to force reloading the text file values again
+                //hotkey for dev commands
                 if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.F10))
                 {
                     ShowUIWidget = !ShowUIWidget;
@@ -162,17 +164,23 @@ namespace JCGodSwornConfigurator
             private void MainSetup()
             {
                 var watch = System.Diagnostics.Stopwatch.StartNew();
-                if (DisableModMasterSwitch)
-                {
-                    initialized = true;
-                    return;
-                }
 
                 verboseLogging = GetBoolByKey(verboseLogging, "VerboseLogging");
 
-                if (bool.TryParse(GetValue("EnableSpectatorMode"), out bool boolValue) && boolValue == true)
+                if (bool.TryParse(GetValue("RetrieveDataMode"), out bool boolValue) && boolValue == true)
+                {
+                    RetrieveDataMode = true;
+                }
+
+                if (bool.TryParse(GetValue("EnableSpectatorMode"), out boolValue) && boolValue == true)
                 {
                     modSpectatorMode.InitializeSpectatorMode(dataManager);
+                }
+
+                if (DisableModMasterSwitch && !RetrieveDataMode)
+                {
+                    initialized = true;
+                    return;
                 }
 
                 #region FactionStuff
@@ -284,6 +292,21 @@ namespace JCGodSwornConfigurator
                         }
                     }
 
+                    //get ability data from factions
+                    foreach (var divineSkillPairs in factionsData[i].DivineSkills)
+                    {
+                        foreach (var divineSkill in divineSkillPairs.PossibleAbilitiesLvl)
+                        {
+                            foreach (var upgrade in divineSkill.upgrades)
+                            {
+                                foreach (var action in upgrade.AddActions)
+                                {
+                                    actionDataList.Add(new ActionDataConfig(action, heroData, true));
+                                }
+                            }
+                        }
+                    }
+
                 }
 
                 var unitsAndHeroList = new List<UnitData>();
@@ -327,6 +350,13 @@ namespace JCGodSwornConfigurator
 
                 CollectDataFromActions();
 
+
+                if (DisableModMasterSwitch)
+                {
+                    initialized = true;
+                    return;
+                }
+
                 //process action data
                 foreach (ActionDataConfig actionData in actionDataList)
                 {
@@ -334,11 +364,21 @@ namespace JCGodSwornConfigurator
                     data.CoolDown = GetFloatByKey(data.CoolDown, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof (data.CoolDown)));
                     data.Duration = GetFloatByKey(data.Duration, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration)));
                     data.TriggerDelay = GetFloatByKey(data.TriggerDelay, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay)));
+                    data.Charges = GetIntByKey(data.Charges, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Charges)));
                     if (data.RandomizeData != null)
                     {
                         var randomizeData = data.RandomizeData;
                         randomizeData.RepeatAmount = GetIntByKey(randomizeData.RepeatAmount, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatAmount)));
                         randomizeData.RepeatIntervall = GetFloatByKey(randomizeData.RepeatIntervall, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatIntervall)));
+                    }
+                    if (data.CostData != null)
+                    {
+                        foreach (var resourceData in data.CostData.resources)
+                        {
+                            string resourceName = Utilities.GetSanitizedResourceName(resourceData.resource.name);
+                            string searchKey = CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(CostsData), dlmWord, resourceName);
+                            resourceData.amount = GetIntByKey(resourceData.amount, searchKey);
+                        }
                     }
                 }
 
@@ -349,6 +389,7 @@ namespace JCGodSwornConfigurator
                     data.Damage = GetIntByKey(data.Damage, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage)));
                     data.ScaleWithStrenght = GetBoolByKey(data.ScaleWithStrenght, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght)));
                     data.ScaleWithPower = GetBoolByKey(data.ScaleWithPower, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower)));
+                    
                     //TODO damage type
                 }
 
@@ -359,6 +400,8 @@ namespace JCGodSwornConfigurator
                     data.Homing = GetBoolByKey(data.Homing, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing)));
                     data.LifeTime = GetFloatByKey(data.LifeTime, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime)));
                     data.StartSpeed = GetFloatByKey(data.StartSpeed, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed)));
+                    data.AccuracyPenalty = GetFloatByKey(data.AccuracyPenalty, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.AccuracyPenalty)));
+                    
                 }
                 
                 //process target data 
@@ -367,6 +410,7 @@ namespace JCGodSwornConfigurator
                     TargetData data = targetData.targetData;
                     data.MinUseRange = GetFloatByKey(data.MinUseRange, CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange)));
                     data.MaxUseRange = GetFloatByKey(data.MaxUseRange, CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange)));
+                    
                     //data.MustHaveTarget = GetBoolByKey(data.MustHaveTarget, CombineStrings(targetData.unitName(), dlmWord, nameof(targetData), dlmWord, data.name, dlmWord, nameof(data.MustHaveTarget)));
                 }
 
@@ -537,8 +581,16 @@ namespace JCGodSwornConfigurator
             {
                 foreach (var actionData in actionDataList)
                 {
-                    if (verboseLogging) Log(CombineStrings(actionData.ownerUnit.name, dlmWord, actionData.actionData.name));
-                    targetDataList.Add(new TargetDataConfig(actionData.actionData.TargetData, actionData.ownerUnit));
+                    if (actionData.actionData.TargetData != null)
+                    {
+                        if (verboseLogging) Log(CombineStrings("CollectTargetDataFromActions", actionData.ownerUnit.name, dlmWord, actionData.actionData.name));
+                        targetDataList.Add(new TargetDataConfig(actionData.actionData.TargetData, actionData.ownerUnit));
+                    }
+                    else
+                    {
+                        if (verboseLogging) Log(CombineStrings(actionData.actionData.name, " has no target data"));
+                    }
+                    //actionData.actionData.CostData
                     //actionData.actionData.TargetData.CastTarget
                     //actionData.actionData.TargetData.Ranged
                     //actionData.actionData.CoolDown
@@ -797,11 +849,21 @@ namespace JCGodSwornConfigurator
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.CoolDown), dlmKey, data.CoolDown.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration), dlmKey, data.Duration.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay), dlmKey, data.TriggerDelay.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Charges), dlmKey, data.Charges.ToString()));
                         if (data.RandomizeData != null)
                         {
                             var randomizeData = data.RandomizeData;
                             unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatAmount), dlmKey, randomizeData.RepeatAmount.ToString()));
                             unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatIntervall), dlmKey, randomizeData.RepeatIntervall.ToString()));
+                        }
+                        if (data.CostData != null)
+                        {
+                            foreach (var resourceData in data.CostData.resources)
+                            {
+                                string resourceName = Utilities.GetSanitizedResourceName(resourceData.resource.name);
+                                string searchKey = CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(CostsData), dlmWord, resourceName);
+                                unitDataLines.Add(CombineStrings(searchKey, dlmKey, resourceData.amount.ToString()));
+                            }
                         }
                     }
                     foreach (EffectDataConfig effectData in effectDataList.Where(x => x.UnitName() == unitName))
@@ -817,6 +879,7 @@ namespace JCGodSwornConfigurator
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing), dlmKey, data.Homing.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime), dlmKey, data.LifeTime.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed), dlmKey, data.StartSpeed.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.AccuracyPenalty), dlmKey, data.AccuracyPenalty.ToString()));
                     }
                     foreach (TargetDataConfig targetData in targetDataList.Where(x => x.UnitName() == unitName))
                     {
