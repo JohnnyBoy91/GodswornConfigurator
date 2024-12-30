@@ -80,6 +80,7 @@ namespace JCGodSwornConfigurator
             private int waitFrames = 0;
 
             private const string prefixUnit = "Unit";
+            private const string prefixHero = "Hero";
             private const string prefixHeroSkill = "DivineSkill";
 
             //config delimiters
@@ -308,6 +309,9 @@ namespace JCGodSwornConfigurator
                     }
 
                 }
+
+                //collect spawnedUnit Data
+                CollectSpawnedUnitDataFromActions();
 
                 var unitsAndHeroList = new List<UnitData>();
                 unitsAndHeroList.AddRange(unitDataList);
@@ -597,6 +601,28 @@ namespace JCGodSwornConfigurator
                 }
             }
 
+            private void CollectSpawnedUnitDataFromActions()
+            {
+                foreach (var actionData in actionDataList)
+                {
+                    if (actionData.actionData.CreationData != null)
+                    {
+                        //get units created by abilities
+                        foreach (var creationData in actionData.actionData.CreationData.Creation)
+                        {
+                            if (creationData.GetComponent<Unit>() != null)
+                            {
+                                var createdUnit = creationData.GetComponent<Unit>().DataUnit;
+                                if (!unitDataList.Contains(createdUnit))
+                                {
+                                    unitDataList.Add(createdUnit);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             private void CollectTargetDataFromProjectiles()
             {
                 foreach (var projectileData in projectileDataList)
@@ -861,7 +887,7 @@ namespace JCGodSwornConfigurator
                             foreach (var resourceData in data.CostData.resources)
                             {
                                 string resourceName = Utilities.GetSanitizedResourceName(resourceData.resource.name);
-                                string searchKey = CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(CostsData), dlmWord, resourceName);
+                                string searchKey = CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(CostsData), dlmWord, resourceName);
                                 unitDataLines.Add(CombineStrings(searchKey, dlmKey, resourceData.amount.ToString()));
                             }
                         }
