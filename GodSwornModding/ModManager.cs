@@ -393,7 +393,7 @@ namespace JCGodSwornConfigurator
                     data.Damage = GetIntByKey(data.Damage, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage)));
                     data.ScaleWithStrenght = GetBoolByKey(data.ScaleWithStrenght, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght)));
                     data.ScaleWithPower = GetBoolByKey(data.ScaleWithPower, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower)));
-                    
+                    data.LifestealPercentrage = GetFloatByKey(data.LifestealPercentrage, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.LifestealPercentrage)));
                     //TODO damage type
                 }
 
@@ -431,7 +431,7 @@ namespace JCGodSwornConfigurator
                 foreach (var unit in unitDataList)
                 {
                     if (verboseLogging) Log(unit.name);
-                    string baseSearchKey = CombineStrings("Unit_", unit.name);
+                    string baseSearchKey = CombineStrings(prefixUnit, dlmWord, unit.name);
                     unit.DefualtMaxHealth = GetIntByKey(unit.DefualtMaxHealth, CombineStrings(baseSearchKey, dlmWord, nameof(unit.DefualtMaxHealth)));
                     unit.DefaultHealthRegen = GetFloatByKey(unit.DefaultHealthRegen, CombineStrings(baseSearchKey, dlmWord, nameof(unit.DefaultHealthRegen)));
                     unit.Speed = GetFloatByKey(unit.Speed, CombineStrings(baseSearchKey, dlmWord, nameof(unit.Speed)));
@@ -898,6 +898,7 @@ namespace JCGodSwornConfigurator
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage), dlmKey, data.Damage.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght), dlmKey, data.ScaleWithStrenght.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower), dlmKey, data.ScaleWithPower.ToString()));
+                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.LifestealPercentrage), dlmKey, data.LifestealPercentrage.ToString()));
                     }
                     foreach (ProjectileDataConfig projectileData in projectileDataList.Where(x => x.UnitName() == unitName))
                     {
