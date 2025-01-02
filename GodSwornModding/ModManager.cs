@@ -68,6 +68,7 @@ namespace JCGodSwornConfigurator
             public List<TargetDataConfig> targetDataList = new List<TargetDataConfig>();
             public List<CastsDataConfig> castsDataList = new List<CastsDataConfig>();
             public List<ProjectileDataConfig> projectileDataList = new List<ProjectileDataConfig>();
+            public List<CreationData> creationDataList = new List<CreationData>();
             public List<string> actionDataNameLink = new List<string>();
 
             private bool verboseLogging;
@@ -82,6 +83,7 @@ namespace JCGodSwornConfigurator
             private const string prefixUnit = "Unit";
             private const string prefixHero = "Hero";
             private const string prefixHeroSkill = "DivineSkill";
+            private const string prefixRPGSkill = "RPGModeSkill";
 
             //config delimiters
             private readonly string dlmList = ", ";
@@ -122,7 +124,7 @@ namespace JCGodSwornConfigurator
                 }
 
                 //hotkey for dev commands
-                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.F10))
+                if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyUp(KeyCode.F10))
                 {
                     ShowUIWidget = !ShowUIWidget;
                 }
@@ -307,7 +309,25 @@ namespace JCGodSwornConfigurator
                             }
                         }
                     }
-
+                    //get rpg ability data from factions
+                    foreach (var divineSkillPairs in factionsData[i].DivineSkills_RPG)
+                    {
+                        foreach (var divineSkill in divineSkillPairs.PossibleAbilitiesLvl)
+                        {
+                            Log(divineSkill.name);
+                            foreach (var upgrade in divineSkill.upgrades)
+                            {
+                                foreach (var action in upgrade.AddActions)
+                                {
+                                    ActionDataConfig newActionData = new ActionDataConfig(action, heroData, true, true);
+                                    if (!actionDataList.Any(x => x.actionData == newActionData.actionData))
+                                    {
+                                        actionDataList.Add(newActionData);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 //collect spawnedUnit Data
@@ -365,22 +385,25 @@ namespace JCGodSwornConfigurator
                 foreach (ActionDataConfig actionData in actionDataList)
                 {
                     ActionData data = actionData.actionData;
-                    data.CoolDown = GetFloatByKey(data.CoolDown, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof (data.CoolDown)));
-                    data.Duration = GetFloatByKey(data.Duration, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration)));
-                    data.TriggerDelay = GetFloatByKey(data.TriggerDelay, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay)));
-                    data.Charges = GetIntByKey(data.Charges, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Charges)));
+                    string baseSearchKey = CombineStrings(actionData.UnitName(), dlmWord);
+                    if (actionData.rpgSkill) baseSearchKey = CombineStrings(baseSearchKey, prefixRPGSkill, dlmWord);
+
+                    data.CoolDown = GetFloatByKey(data.CoolDown, CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof (data.CoolDown)));
+                    data.Duration = GetFloatByKey(data.Duration, CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration)));
+                    data.TriggerDelay = GetFloatByKey(data.TriggerDelay, CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay)));
+                    data.Charges = GetIntByKey(data.Charges, CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Charges)));
                     if (data.RandomizeData != null)
                     {
                         var randomizeData = data.RandomizeData;
-                        randomizeData.RepeatAmount = GetIntByKey(randomizeData.RepeatAmount, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatAmount)));
-                        randomizeData.RepeatIntervall = GetFloatByKey(randomizeData.RepeatIntervall, CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatIntervall)));
+                        randomizeData.RepeatAmount = GetIntByKey(randomizeData.RepeatAmount, CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatAmount)));
+                        randomizeData.RepeatIntervall = GetFloatByKey(randomizeData.RepeatIntervall, CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, "MultiShot", dlmWord, nameof(randomizeData.RepeatIntervall)));
                     }
                     if (data.CostData != null)
                     {
                         foreach (var resourceData in data.CostData.resources)
                         {
                             string resourceName = Utilities.GetSanitizedResourceName(resourceData.resource.name);
-                            string searchKey = CombineStrings(actionData.UnitName(), dlmWord, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(CostsData), dlmWord, resourceName);
+                            string searchKey = CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(CostsData), dlmWord, resourceName);
                             resourceData.amount = GetIntByKey(resourceData.amount, searchKey);
                         }
                     }
@@ -390,10 +413,13 @@ namespace JCGodSwornConfigurator
                 foreach (EffectDataConfig effectData in effectDataList)
                 {
                     EffectData data = effectData.effectData;
-                    data.Damage = GetIntByKey(data.Damage, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage)));
-                    data.ScaleWithStrenght = GetBoolByKey(data.ScaleWithStrenght, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght)));
-                    data.ScaleWithPower = GetBoolByKey(data.ScaleWithPower, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower)));
-                    data.LifestealPercentrage = GetFloatByKey(data.LifestealPercentrage, CombineStrings(effectData.UnitName(), dlmWord, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.LifestealPercentrage)));
+                    string baseSearchKey = CombineStrings(effectData.UnitName(), dlmWord);
+                    if (effectData.rpgSkill) baseSearchKey = CombineStrings(baseSearchKey, prefixRPGSkill, dlmWord);
+
+                    data.Damage = GetIntByKey(data.Damage, CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage)));
+                    data.ScaleWithStrenght = GetBoolByKey(data.ScaleWithStrenght, CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght)));
+                    data.ScaleWithPower = GetBoolByKey(data.ScaleWithPower, CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower)));
+                    data.LifestealPercentrage = GetFloatByKey(data.LifestealPercentrage, CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.LifestealPercentrage)));
                     //TODO damage type
                 }
 
@@ -401,10 +427,13 @@ namespace JCGodSwornConfigurator
                 foreach (ProjectileDataConfig projectileData in projectileDataList)
                 {
                     ProjectileData data = projectileData.projectileData;
-                    data.Homing = GetBoolByKey(data.Homing, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing)));
-                    data.LifeTime = GetFloatByKey(data.LifeTime, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime)));
-                    data.StartSpeed = GetFloatByKey(data.StartSpeed, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed)));
-                    data.AccuracyPenalty = GetFloatByKey(data.AccuracyPenalty, CombineStrings(projectileData.UnitName(), dlmWord, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.AccuracyPenalty)));
+                    string baseSearchKey = CombineStrings(projectileData.UnitName(), dlmWord);
+                    if (projectileData.rpgSkill) baseSearchKey = CombineStrings(baseSearchKey, prefixRPGSkill, dlmWord);
+
+                    data.Homing = GetBoolByKey(data.Homing, CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing)));
+                    data.LifeTime = GetFloatByKey(data.LifeTime, CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime)));
+                    data.StartSpeed = GetFloatByKey(data.StartSpeed, CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed)));
+                    data.AccuracyPenalty = GetFloatByKey(data.AccuracyPenalty, CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.AccuracyPenalty)));
                     
                 }
                 
@@ -412,8 +441,11 @@ namespace JCGodSwornConfigurator
                 foreach (TargetDataConfig targetData in targetDataList)
                 {
                     TargetData data = targetData.targetData;
-                    data.MinUseRange = GetFloatByKey(data.MinUseRange, CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange)));
-                    data.MaxUseRange = GetFloatByKey(data.MaxUseRange, CombineStrings(targetData.UnitName(), dlmWord, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange)));
+                    string baseSearchKey = CombineStrings(targetData.UnitName(), dlmWord);
+                    if (targetData.rpgSkill) baseSearchKey = CombineStrings(baseSearchKey, prefixRPGSkill, dlmWord);
+
+                    data.MinUseRange = GetFloatByKey(data.MinUseRange, CombineStrings(baseSearchKey, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange)));
+                    data.MaxUseRange = GetFloatByKey(data.MaxUseRange, CombineStrings(baseSearchKey, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange)));
                     
                     //data.MustHaveTarget = GetBoolByKey(data.MustHaveTarget, CombineStrings(targetData.unitName(), dlmWord, nameof(targetData), dlmWord, data.name, dlmWord, nameof(data.MustHaveTarget)));
                 }
@@ -441,7 +473,7 @@ namespace JCGodSwornConfigurator
                     unit.XP = GetIntByKey(unit.XP, CombineStrings(baseSearchKey, dlmWord, nameof(unit.XP)));
                     unit.HousingUpkeep = GetIntByKey(unit.HousingUpkeep, CombineStrings(baseSearchKey, dlmWord, nameof(unit.HousingUpkeep)));
                     //unit cost data
-                    if (unit.CreationAbility != null)
+                    if (unit.CreationAbility != null && unit.CreationAbility.CostData != null)
                     {
                         for (int i = 0; i < unit.CreationAbility.CostData.resources.Count; i++)
                         {
@@ -588,7 +620,7 @@ namespace JCGodSwornConfigurator
                     if (actionData.actionData.TargetData != null)
                     {
                         if (verboseLogging) Log(CombineStrings("CollectTargetDataFromActions", actionData.ownerUnit.name, dlmWord, actionData.actionData.name));
-                        targetDataList.Add(new TargetDataConfig(actionData.actionData.TargetData, actionData.ownerUnit));
+                        targetDataList.Add(new TargetDataConfig(actionData.actionData.TargetData, actionData.ownerUnit, actionData.divineSkill, actionData.rpgSkill));
                     }
                     else
                     {
@@ -630,7 +662,7 @@ namespace JCGodSwornConfigurator
                     if (verboseLogging) Log(CombineStrings(projectileData.ownerUnit.name, dlmWord, projectileData.projectileData.name));
                     if (projectileData.projectileData.TarData != null)
                     {
-                        targetDataList.Add(new TargetDataConfig(projectileData.projectileData.TarData, projectileData.ownerUnit));
+                        targetDataList.Add(new TargetDataConfig(projectileData.projectileData.TarData, projectileData.ownerUnit, projectileData.divineSkill, projectileData.rpgSkill));
                     }
                 }
             }
@@ -649,21 +681,21 @@ namespace JCGodSwornConfigurator
                     {
                         if (!castsDataList.Any(x => x.castsData == targetData.targetData.CastTarget[i]))
                         {
-                            castsDataList.Add(new CastsDataConfig(targetData.targetData.CastTarget[i], targetData.ownerUnit));
+                            castsDataList.Add(new CastsDataConfig(targetData.targetData.CastTarget[i], targetData.ownerUnit, targetData.divineSkill, targetData.rpgSkill));
                         }
                     }
                     for (int i = 0; i < targetData.targetData.CastSelf.Count; i++)
                     {
                         if (!castsDataList.Any(x => x.castsData == targetData.targetData.CastSelf[i]))
                         {
-                            castsDataList.Add(new CastsDataConfig(targetData.targetData.CastSelf[i], targetData.ownerUnit));
+                            castsDataList.Add(new CastsDataConfig(targetData.targetData.CastSelf[i], targetData.ownerUnit, targetData.divineSkill, targetData.rpgSkill));
                         }
                     }
                     for (int i = 0; i < targetData.targetData.CastProjecitle.Count; i++)
                     {
                         if (!castsDataList.Any(x => x.castsData == targetData.targetData.CastProjecitle[i]))
                         {
-                            castsDataList.Add(new CastsDataConfig(targetData.targetData.CastProjecitle[i], targetData.ownerUnit));
+                            castsDataList.Add(new CastsDataConfig(targetData.targetData.CastProjecitle[i], targetData.ownerUnit, targetData.divineSkill, targetData.rpgSkill));
                         }
                     }
                 }
@@ -675,13 +707,13 @@ namespace JCGodSwornConfigurator
                 {
                     if (castData.castsData.EffectDat != null && !effectDataList.Any(x => x.effectData == castData.castsData.EffectDat))
                     {
-                        effectDataList.Add(new EffectDataConfig(castData.castsData.EffectDat, castData.ownerUnit));
+                        effectDataList.Add(new EffectDataConfig(castData.castsData.EffectDat, castData.ownerUnit, castData.divineSkill, castData.rpgSkill));
                     }
                     if (castData.castsData.ProjectileData != null && !projectileDataList.Any(x => x.projectileData == castData.castsData.ProjectileData))
                     {
                         if (logging && verboseLogging) Log(CombineStrings(castData.ownerUnit.name, dlmWord, castData.castsData.ProjectileData.name));
                         //Log("added more projectiles in 2nd cast pass");
-                        projectileDataList.Add(new ProjectileDataConfig(castData.castsData.ProjectileData, castData.ownerUnit));
+                        projectileDataList.Add(new ProjectileDataConfig(castData.castsData.ProjectileData, castData.ownerUnit, castData.divineSkill, castData.rpgSkill));
                     }
                 }
 
@@ -840,25 +872,25 @@ namespace JCGodSwornConfigurator
 
                 foreach (var unitName in unitNames)
                 {
-                    string baseSearchKey = CombineStrings(prefixUnit, dlmWord, unitName, dlmWord);
+                    string baseUnitKey = CombineStrings(prefixUnit, dlmWord, unitName, dlmWord);
                     foreach (var unit in unitDataList.Where(x => x.name == unitName))
                     {
                         unitDataLines.Add(CombineStrings(dlmNewLine, dlmComment, unit.name));
-                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.DefualtMaxHealth), dlmKey, unit.DefualtMaxHealth.ToString()));
-                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.DefaultHealthRegen), dlmKey, unit.DefaultHealthRegen.ToString()));
-                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.Speed), dlmKey, unit.Speed.ToString()));
-                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.Armor), dlmKey, unit.Armor.ToString()));
-                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.MagicResistance), dlmKey, unit.MagicResistance.ToString()));
-                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.Visionrange), dlmKey, unit.Visionrange.ToString()));
-                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.XP), dlmKey, unit.XP.ToString()));
-                        unitDataLines.Add(CombineStrings(baseSearchKey, nameof(unit.HousingUpkeep), dlmKey, unit.HousingUpkeep.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.DefualtMaxHealth), dlmKey, unit.DefualtMaxHealth.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.DefaultHealthRegen), dlmKey, unit.DefaultHealthRegen.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.Speed), dlmKey, unit.Speed.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.Armor), dlmKey, unit.Armor.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.MagicResistance), dlmKey, unit.MagicResistance.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.Visionrange), dlmKey, unit.Visionrange.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.XP), dlmKey, unit.XP.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.HousingUpkeep), dlmKey, unit.HousingUpkeep.ToString()));
                         //unit cost data
                         if (unit.CreationAbility != null)
                         {
                             for (int i = 0; i < unit.CreationAbility.CostData.resources.Count; i++)
                             {
                                 string resourceName = Utilities.GetSanitizedResourceName(unit.CreationAbility.CostData.resources[i].resource.name);
-                                string searchKey = CombineStrings(baseSearchKey, resourceName);
+                                string searchKey = CombineStrings(baseUnitKey, resourceName);
                                 unitDataLines.Add(CombineStrings(searchKey, dlmKey, unit.CreationAbility.CostData.resources[i].amount.ToString()));
                             }
                         }
@@ -872,6 +904,9 @@ namespace JCGodSwornConfigurator
                     foreach (ActionDataConfig actionData in actionDataList.Where(x => x.UnitName() == unitName))
                     {
                         ActionData data = actionData.actionData;
+                        string baseSearchKey = baseUnitKey;
+                        if (actionData.rpgSkill) baseSearchKey = CombineStrings(baseUnitKey, prefixRPGSkill, dlmWord);
+
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.CoolDown), dlmKey, data.CoolDown.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.Duration), dlmKey, data.Duration.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ActionData), dlmWord, data.name, dlmWord, nameof(data.TriggerDelay), dlmKey, data.TriggerDelay.ToString()));
@@ -895,6 +930,9 @@ namespace JCGodSwornConfigurator
                     foreach (EffectDataConfig effectData in effectDataList.Where(x => x.UnitName() == unitName))
                     {
                         EffectData data = effectData.effectData;
+                        string baseSearchKey = baseUnitKey;
+                        if (effectData.rpgSkill) baseSearchKey = CombineStrings(baseUnitKey, prefixRPGSkill, dlmWord);
+
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.Damage), dlmKey, data.Damage.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithStrenght), dlmKey, data.ScaleWithStrenght.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(EffectData), dlmWord, data.name, dlmWord, nameof(data.ScaleWithPower), dlmKey, data.ScaleWithPower.ToString()));
@@ -903,6 +941,9 @@ namespace JCGodSwornConfigurator
                     foreach (ProjectileDataConfig projectileData in projectileDataList.Where(x => x.UnitName() == unitName))
                     {
                         ProjectileData data = projectileData.projectileData;
+                        string baseSearchKey = baseUnitKey;
+                        if (projectileData.rpgSkill) baseSearchKey = CombineStrings(baseUnitKey, prefixRPGSkill, dlmWord);
+
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.Homing), dlmKey, data.Homing.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.LifeTime), dlmKey, data.LifeTime.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(ProjectileData), dlmWord, data.name, dlmWord, nameof(data.StartSpeed), dlmKey, data.StartSpeed.ToString()));
@@ -911,6 +952,9 @@ namespace JCGodSwornConfigurator
                     foreach (TargetDataConfig targetData in targetDataList.Where(x => x.UnitName() == unitName))
                     {
                         TargetData data = targetData.targetData;
+                        string baseSearchKey = baseUnitKey;
+                        if (targetData.rpgSkill) baseSearchKey = CombineStrings(baseUnitKey, prefixRPGSkill, dlmWord);
+
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange), dlmKey, data.MinUseRange.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange), dlmKey, data.MaxUseRange.ToString()));
                     }
