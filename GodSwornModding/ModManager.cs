@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using HarmonyLib;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
+using static JCGodSwornConfigurator.Utilities;
 
 namespace JCGodSwornConfigurator
 {
@@ -42,6 +43,8 @@ namespace JCGodSwornConfigurator
 
         public class ModManager : MonoBehaviour
         {
+            private static ModManager instance;
+
             public string dataConfigPath;
             public string modSettingsPath;
             public string modRootPath;
@@ -60,6 +63,7 @@ namespace JCGodSwornConfigurator
             public DataManager dataManager;
             public DamageManager damageManager;
 
+            public Dictionary<string, GameObject> unitGOs;
             public List<UnitData> unitDataList = new List<UnitData>();
             public List<BuildingData> buildingDataList = new List<BuildingData>();
             public List<HeroData> heroDataList = new List<HeroData>();
@@ -68,10 +72,11 @@ namespace JCGodSwornConfigurator
             public List<TargetDataConfig> targetDataList = new List<TargetDataConfig>();
             public List<CastsDataConfig> castsDataList = new List<CastsDataConfig>();
             public List<ProjectileDataConfig> projectileDataList = new List<ProjectileDataConfig>();
-            public List<CreationData> creationDataList = new List<CreationData>();
+            public List<CreationDataConfig> creationDataList = new List<CreationDataConfig>();
             public List<string> actionDataNameLink = new List<string>();
 
             private bool verboseLogging;
+            public static bool VerboseLogging() => Instance.verboseLogging;
 
             //main menu initialization
             private bool initialized;
@@ -80,18 +85,32 @@ namespace JCGodSwornConfigurator
             //wait before modding datamanager
             private int waitFrames = 0;
 
-            private const string prefixUnit = "Unit";
-            private const string prefixHero = "Hero";
-            private const string prefixHeroSkill = "DivineSkill";
-            private const string prefixRPGSkill = "RPGModeSkill";
+            public const string prefixUnit = "Unit";
+            public const string prefixHero = "Hero";
+            public const string prefixHeroSkill = "DivineSkill";
+            public const string prefixRPGSkill = "RPGModeSkill";
+            public const string prefixSpawnedUnit = "SpawnedUnit";
 
             //config delimiters
-            private readonly string dlmList = ", ";
-            private readonly string dlmWord = "_";
-            private readonly string dlmKey = ":";
-            private readonly string dlmComment = "//";
-            private readonly string dlmNewLine = "\n";
-            private readonly string generatedConfigFolderPath = @"DefaultConfigData\";
+            public const string dlmList = ", ";
+            public const string dlmWord = "_";
+            public const string dlmKey = ":";
+            public const string dlmComment = "//";
+            public const string dlmNewLine = "\n";
+            public const string generatedConfigFolderPath = @"DefaultConfigData\";
+
+            public static ModManager Instance
+            {
+                get
+                {
+                    return instance;
+                }
+            }
+
+            internal void Awake()
+            {
+                instance = this;
+            }
 
             internal void Update()
             {
@@ -295,7 +314,7 @@ namespace JCGodSwornConfigurator
                         }
                     }
 
-                    //get ability data from factions
+                    //get hero skills data from factions
                     foreach (var divineSkillPairs in factionsData[i].DivineSkills)
                     {
                         foreach (var divineSkill in divineSkillPairs.PossibleAbilitiesLvl)
@@ -304,22 +323,24 @@ namespace JCGodSwornConfigurator
                             {
                                 foreach (var action in upgrade.AddActions)
                                 {
-                                    actionDataList.Add(new ActionDataConfig(action, heroData, true));
+                                    ActionDataConfig newActionData = new ActionDataConfig(action, heroData, true, false, divineSkill);
+                                    newActionData.refDivineSkillData = divineSkill;
+                                    actionDataList.Add(newActionData);
                                 }
                             }
                         }
                     }
-                    //get rpg ability data from factions
+                    //get rpg hero skills data from factions
                     foreach (var divineSkillPairs in factionsData[i].DivineSkills_RPG)
                     {
                         foreach (var divineSkill in divineSkillPairs.PossibleAbilitiesLvl)
                         {
-                            Log(divineSkill.name);
                             foreach (var upgrade in divineSkill.upgrades)
                             {
                                 foreach (var action in upgrade.AddActions)
                                 {
-                                    ActionDataConfig newActionData = new ActionDataConfig(action, heroData, true, true);
+                                    ActionDataConfig newActionData = new ActionDataConfig(action, heroData, true, true, divineSkill);
+                                    newActionData.refDivineSkillData = divineSkill;
                                     if (!actionDataList.Any(x => x.actionData == newActionData.actionData))
                                     {
                                         actionDataList.Add(newActionData);
@@ -450,7 +471,66 @@ namespace JCGodSwornConfigurator
                     //data.MustHaveTarget = GetBoolByKey(data.MustHaveTarget, CombineStrings(targetData.unitName(), dlmWord, nameof(targetData), dlmWord, data.name, dlmWord, nameof(data.MustHaveTarget)));
                 }
 
-                //process effect data TODO 
+                //process creation data for spawned units
+
+                unitGOs = new Dictionary<string, GameObject>();
+
+                foreach (UnitData unitData in unitDataList.Concat(heroDataList))
+                {
+                    if (!unitGOs.ContainsKey(unitData.name))
+                    {
+                        if (verboseLogging) Log("Adding to unit GOs " + unitData.name, 1);
+                        unitGOs.Add(unitData.name, unitData.Prefablink[0]);
+                        if (unitData.Prefablink.Count > 1)
+                        {
+                            if (verboseLogging) Log(unitData.name + " contains more than one GO", 2);
+                        }
+                    }
+                }
+
+
+
+                foreach (CreationDataConfig creationData in creationDataList)
+                {
+                    CreationData data = creationData.creationData;
+                    var creationObjects = data.Creation;
+                    string unitName = GetValue(CombineStrings(creationData.BaseUnitKey(), nameof(CreationData), dlmWord, data.name, dlmWord, "SpawnedUnit"));
+                    if (unitName != null)
+                    {
+                        if (unitGOs.ContainsKey(unitName))
+                        {
+                            var newUnit = unitGOs[unitName];
+                            if (!data.Creation.Any(x => x.name == unitName))
+                            {
+                                if (newUnit.GetComponent<Unit>() != null)
+                                {
+                                    creationData.refActionData.IconUIData.ButtonIcon = newUnit.GetComponent<Unit>().DataUnit.Icon;
+                                    if (creationData.refActionDataConfig != null && creationData.refActionDataConfig.refDivineSkillData != null)
+                                    {
+                                        creationData.refActionDataConfig.refDivineSkillData.Icon = newUnit.GetComponent<Unit>().DataUnit.Icon;
+                                    }
+                                }
+                                for (int i = 0; i < data.Creation.Count; i++)
+                                {
+                                    if (data.Creation[i].GetComponent<Unit>() != null)
+                                    {
+                                        data.Creation[i] = newUnit;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (verboseLogging) Log("Unit GOs missing key " + unitName + "_", 1);
+                        }
+                    }
+                    else
+                    {
+                        if (verboseLogging) Log("did not find " + unitName, 1);
+                    }
+                }
+
+                //process cast data TODO 
                 //foreach (CastsDataConfig castData in castsDataList)
                 //{
                 //    Casts data = castData.castsData;
@@ -639,6 +719,13 @@ namespace JCGodSwornConfigurator
                 {
                     if (actionData.actionData.CreationData != null)
                     {
+                        if (verboseLogging) Log("creationdata: " + actionData.actionData.name, 2);
+                        if (!creationDataList.Any(x => x.creationData == actionData.actionData.CreationData))
+                        {
+                            CreationDataConfig newCreationData = new CreationDataConfig(actionData.actionData.CreationData, actionData.actionData, actionData.ownerUnit, actionData.divineSkill, actionData.rpgSkill);
+                            newCreationData.refActionDataConfig = actionData;
+                            creationDataList.Add(newCreationData);
+                        }
                         //get units created by abilities
                         foreach (var creationData in actionData.actionData.CreationData.Creation)
                         {
@@ -651,6 +738,7 @@ namespace JCGodSwornConfigurator
                                 }
                             }
                         }
+                        //todo buildings
                     }
                 }
             }
@@ -729,57 +817,6 @@ namespace JCGodSwornConfigurator
             #endregion
 
             #region Utilities
-            //helper functions
-
-            private float GetFloatByKey(float originalFloat, string key)
-            {
-                if (float.TryParse(GetValue(key), out float outVal))
-                {
-                    return outVal;
-                }
-                else
-                {
-                    if(verboseLogging) Log(CombineStrings("Failed to parse Float: ", key, dlmKey, originalFloat.ToString()));
-                    return originalFloat;
-                }
-            }
-
-            private int GetIntByKey(int originalInt, string key)
-            {
-                if (int.TryParse(GetValue(key), out int outVal))
-                {
-                    return outVal;
-                }
-                else
-                {
-                    if (verboseLogging) Log(CombineStrings("Failed to parse Int: ", key, dlmKey, originalInt.ToString()));
-                    return originalInt;
-                }
-            }
-
-            private bool GetBoolByKey(bool originalBool, string key)
-            {
-                if (bool.TryParse(GetValue(key), out bool boolVal))
-                {
-                    return boolVal;
-                }
-                else
-                {
-                    if (verboseLogging) Log(CombineStrings("Failed to parse Bool: ", key, dlmKey, originalBool.ToString()));
-                    return originalBool;
-                }
-            }
-
-            private StringBuilder sb = new StringBuilder();
-            private string CombineStrings(params string[] strings)
-            {
-                sb.Clear();
-                foreach (string s in strings)
-                {
-                    sb.Append(s);
-                }
-                return sb.ToString();
-            }
 
             private void WriteDefaultDataConfigs()
             {
@@ -868,6 +905,7 @@ namespace JCGodSwornConfigurator
                 effectDataList = effectDataList.OrderBy(x => x.UnitName()).ToList();
                 projectileDataList = projectileDataList.OrderBy(x => x.UnitName()).ToList();
                 targetDataList = targetDataList.OrderBy(x => x.UnitName()).ToList();
+                creationDataList = creationDataList.OrderBy(x => x.UnitName()).ToList();
                 unitDataList = unitDataList.OrderBy(x => x.name).ToList();
 
                 foreach (var unitName in unitNames)
@@ -958,6 +996,14 @@ namespace JCGodSwornConfigurator
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MinUseRange), dlmKey, data.MinUseRange.ToString()));
                         unitDataLines.Add(CombineStrings(baseSearchKey, nameof(TargetData), dlmWord, data.name, dlmWord, nameof(data.MaxUseRange), dlmKey, data.MaxUseRange.ToString()));
                     }
+                    foreach (CreationDataConfig creationdata in creationDataList.Where(x => x.UnitName() == unitName))
+                    {
+                        CreationData data = creationdata.creationData;
+                        if (data.Creation[0].GetComponent<Unit>() != null)
+                        {
+                            unitDataLines.Add(CombineStrings(creationdata.BaseUnitKey(), nameof(CreationData), dlmWord, data.name, dlmWord, prefixSpawnedUnit, dlmKey));
+                        }
+                    }
                 }
 
                 Utilities.WriteConfig(modRootPath + generatedConfigFolderPath + "DefaultUnitDataConfig.txt", unitDataLines);
@@ -992,10 +1038,10 @@ namespace JCGodSwornConfigurator
             /// <summary>
             /// Retrieve value from file
             /// </summary>
-            public string GetValue(string key)
+            public static string GetValue(string key)
             {
                 string[] linesToCheck;
-                linesToCheck = datalines;
+                linesToCheck = Instance.datalines;
 
                 foreach (string line in linesToCheck)
                 {
@@ -1004,28 +1050,28 @@ namespace JCGodSwornConfigurator
                     {
                         if (line.Split(':')[0].Contains(key))
                         {
-                            string value = line.Split(':')[1];
+                            string value = line.Split(':')[1].TrimEnd();
                             return value;
                         }
                     }
                 }
-                //Log(CombineStrings("Failed to find key: ", key));
+                if (VerboseLogging()) Log(CombineStrings("Failed to find key: ", key));
                 return null;
             }
 
-            private void Log(string logString, int level = 1)
+            public static void Log(string logString, int level = 1)
             {
                 if (level == 1)
                 {
-                    plugin.Log.LogInfo(logString);
+                    Instance.plugin.Log.LogInfo(logString);
                 }
                 else if (level == 2)
                 {
-                    plugin.Log.LogWarning(logString);
+                    Instance.plugin.Log.LogWarning(logString);
                 }
                 else if (level == 3)
                 {
-                    plugin.Log.LogError(logString);
+                    Instance.plugin.Log.LogError(logString);
                 }
             }
 

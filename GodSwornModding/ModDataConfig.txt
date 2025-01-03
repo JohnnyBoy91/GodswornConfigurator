@@ -319,7 +319,7 @@ Unit_Leshi_TargetData_Slam_Target_Attack_Melee_MaxUseRange:1.5
 
 //Stardaughter - Solar
 Unit_Stardaughter - Solar_DefualtMaxHealth:800
-Unit_Stardaughter - Solar_DefaultHealthRegen:1
+Unit_Stardaughter - Solar_DefaultHealthRegen:2.5
 Unit_Stardaughter - Solar_Speed:8
 Unit_Stardaughter - Solar_Armor:8
 Unit_Stardaughter - Solar_MagicResistance:6
@@ -669,7 +669,7 @@ Unit_Pukis_TargetData_Proj_Regurgitate_Target_MaxUseRange:0
 
 //Stardaughter - Lunar
 Unit_Stardaughter - Lunar_DefualtMaxHealth:800
-Unit_Stardaughter - Lunar_DefaultHealthRegen:1
+Unit_Stardaughter - Lunar_DefaultHealthRegen:2.5
 Unit_Stardaughter - Lunar_Speed:8
 Unit_Stardaughter - Lunar_Armor:3
 Unit_Stardaughter - Lunar_MagicResistance:10
@@ -1264,7 +1264,6 @@ Unit_Cherub - Eagle_MagicResistance:4
 Unit_Cherub - Eagle_Visionrange:40
 Unit_Cherub - Eagle_XP:12
 Unit_Cherub - Eagle_HousingUpkeep:1
-Unit_Cherub - Eagle_Faith:60
 
 Unit_Cherub - Eagle_ActionData_Bolt__Attack_Ranged_Lighting_CoolDown:2
 Unit_Cherub - Eagle_ActionData_Bolt__Attack_Ranged_Lighting_Duration:1.5
@@ -1302,7 +1301,6 @@ Unit_Cherub - Lion_MagicResistance:4
 Unit_Cherub - Lion_Visionrange:40
 Unit_Cherub - Lion_XP:12
 Unit_Cherub - Lion_HousingUpkeep:1
-Unit_Cherub - Lion_Faith:60
 
 Unit_Cherub - Lion_ActionData_Bolt__Attack_Ranged_Fire_CoolDown:2
 Unit_Cherub - Lion_ActionData_Bolt__Attack_Ranged_Fire_Duration:1.5
@@ -1336,7 +1334,6 @@ Unit_Cherub - Ox_MagicResistance:4
 Unit_Cherub - Ox_Visionrange:40
 Unit_Cherub - Ox_XP:12
 Unit_Cherub - Ox_HousingUpkeep:1
-Unit_Cherub - Ox_Faith:60
 
 Unit_Cherub - Ox_ActionData_Bolt__Attack_Ranged_Divine_CoolDown:2
 Unit_Cherub - Ox_ActionData_Bolt__Attack_Ranged_Divine_Duration:1.5
@@ -1374,7 +1371,6 @@ Unit_Avenging Angel_MagicResistance:7
 Unit_Avenging Angel_Visionrange:30
 Unit_Avenging Angel_XP:40
 Unit_Avenging Angel_HousingUpkeep:3
-Unit_Avenging Angel_Faith:250
 
 Unit_Avenging Angel_ActionData_BladeOfSouls__Attack_Mellee_CoolDown:1
 Unit_Avenging Angel_ActionData_BladeOfSouls__Attack_Mellee_Duration:0.8
@@ -1391,7 +1387,7 @@ Unit_Avenging Angel_ActionData_Retribution__ActionOnDeath_MultiShot_RepeatInterv
 Unit_Avenging Angel_EffectData_BladeOfSouls_Effect_Damage:38
 Unit_Avenging Angel_EffectData_BladeOfSouls_Effect_ScaleWithStrenght:True
 Unit_Avenging Angel_EffectData_BladeOfSouls_Effect_ScaleWithPower:False
-Unit_Avenging Angel_EffectData_BladeOfSouls_Effect_LifestealPercentrage:0.25
+Unit_Avenging Angel_EffectData_BladeOfSouls_Effect_LifestealPercentrage:0.5
 Unit_Avenging Angel_EffectData_Retribution_Effect_Damage:60
 Unit_Avenging Angel_EffectData_Retribution_Effect_ScaleWithStrenght:False
 Unit_Avenging Angel_EffectData_Retribution_Effect_ScaleWithPower:True
@@ -1626,6 +1622,7 @@ Unit_Saule_RPGModeSkill_TargetData_Hit_Rejuvenate_Target_MinUseRange:0
 Unit_Saule_RPGModeSkill_TargetData_Hit_Rejuvenate_Target_MaxUseRange:4
 Unit_Saule_RPGModeSkill_TargetData_Flare_Target_Attack_Range_MinUseRange:0
 Unit_Saule_RPGModeSkill_TargetData_Flare_Target_Attack_Range_MaxUseRange:10
+Unit_Saule_RPGModeSkill_CreationData_Summon_SolarDaughters_Creation_SpawnedUnit:
 
 Unit_Meness_ActionData_Cresent__Ability_CoolDown:25
 Unit_Meness_ActionData_Cresent__Ability_Duration:1
@@ -1847,6 +1844,9 @@ Unit_Meness_TargetData_Proj_MenessDagger_Target_MinUseRange:0
 Unit_Meness_TargetData_Proj_MenessDagger_Target_MaxUseRange:0
 Unit_Meness_TargetData_HornedStride_Target Units_MinUseRange:0
 Unit_Meness_TargetData_HornedStride_Target Units_MaxUseRange:10
+Unit_Meness_CreationData_Ritualofthewolf_Creation_SpawnedUnit:
+Unit_Meness_CreationData_Shadows_Creation_SpawnedUnit:
+Unit_Meness_RPGModeSkill_CreationData_SummonShadowWolf_Creation_SpawnedUnit:
 
 Unit_Michael_ActionData_FlameSword__Attack_Mellee_CoolDown:2
 Unit_Michael_ActionData_FlameSword__Attack_Mellee_Duration:2.4
@@ -2073,6 +2073,8 @@ Unit_Michael_TargetData_Cast_Atonement_Target_MinUseRange:0
 Unit_Michael_TargetData_Cast_Atonement_Target_MaxUseRange:7.5
 Unit_Michael_TargetData_Hit_Meteor_Target_MinUseRange:0
 Unit_Michael_TargetData_Hit_Meteor_Target_MaxUseRange:10
+Unit_Michael_CreationData_SummonCherubs_Creation_SpawnedUnit:
+Unit_Michael_CreationData_SummonAvenging Angel_Creation_SpawnedUnit:
 
 Unit_Ausrine_ActionData_Charm__Attack_Ranged_CoolDown:25
 Unit_Ausrine_ActionData_Charm__Attack_Ranged_Duration:0.8
@@ -2308,6 +2310,7 @@ Unit_Ausrine_RPGModeSkill_TargetData_Cast_Attraction_Target_MinUseRange:0
 Unit_Ausrine_RPGModeSkill_TargetData_Cast_Attraction_Target_MaxUseRange:12
 Unit_Ausrine_TargetData_Proj_Blast_Target_MinUseRange:0
 Unit_Ausrine_TargetData_Proj_Blast_Target_MaxUseRange:0
+Unit_Ausrine_RPGModeSkill_CreationData_Summon_Skybull_Creation_SpawnedUnit:
 
 Unit_Bishop_Albert_ActionData_Conversion_CoolDown:60
 Unit_Bishop_Albert_ActionData_Conversion_Duration:5
@@ -2515,3 +2518,5 @@ Unit_Bishop_Albert_TargetData_Cast_Banishment_Target_MinUseRange:0
 Unit_Bishop_Albert_TargetData_Cast_Banishment_Target_MaxUseRange:5
 Unit_Bishop_Albert_TargetData_Hit_Revivify_Targeting_MinUseRange:0
 Unit_Bishop_Albert_TargetData_Hit_Revivify_Targeting_MaxUseRange:2
+Unit_Bishop_Albert_RPGModeSkill_CreationData_CallForCrusade_Creation_SpawnedUnit:
+Unit_Bishop_Albert_RPGModeSkill_CreationData_Summon Black Order_Creation_SpawnedUnit:
