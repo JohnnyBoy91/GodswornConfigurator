@@ -16,7 +16,7 @@ using static JCGodSwornConfigurator.Utilities;
 
 namespace JCGodSwornConfigurator
 {
-    [BepInPlugin("JCGodSwornConfigurator", "GodSwornConfigurator", "1.0.01")]
+    [BepInPlugin("JCGodSwornConfigurator", "GodSwornConfigurator", "1.0.02")]
     public class Plugin : BasePlugin
     {
         #region Plugin Core
