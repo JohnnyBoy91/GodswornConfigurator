@@ -4,6 +4,7 @@ Features tested and working on single player only
 
 * Customizable faction starting conditions & resource settings
 * Customize Unit and Hero stats
+* Customize Hero Skills
 * Customize Damage Type Modifiers
 * Customizable worshipper spawn rate parameters
 * Customizable level xp requirements & stat scaling
