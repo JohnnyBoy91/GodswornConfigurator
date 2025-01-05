@@ -658,66 +658,105 @@ namespace JCGodSwornConfigurator
 
             private void HandleCustomDivineSkillTree()
             {
+                bool rpgMode = false;
+                if (RetrieveDataMode)
+                {
+                    moddedDivineSkillTreeData = new List<DivineSkillTreeDataBlueprint>();
+                    //get defaults
+                    rpgMode = false;
+                    for (int i = 0; i < factionCount; i++)
+                    {
+                        DivineSkillTreeDataBlueprint newBlueprint = new DivineSkillTreeDataBlueprint();
+                        FactionData faction = FactionsDatabase.Factions[i];
+                        newBlueprint.factionName = faction.name;
+                        newBlueprint.rpgModeSkillTree = rpgMode;
+                        foreach (var divineSkillGroup in rpgMode ? faction.DivineSkills_RPG : faction.DivineSkills)
+                        {
+                            DivineSkillTreeDataBlueprint.DivineSkillGroup newSkillGroup = new DivineSkillTreeDataBlueprint.DivineSkillGroup { level = divineSkillGroup.Lvl };
+                            foreach (var divineSkillName in divineSkillGroup.PossibleAbilitiesLvl)
+                            {
+                                newSkillGroup.divineSkillNames.Add(divineSkillName.name);
+                            }
+                            newBlueprint.divineSkillSets.Add(newSkillGroup);
+                        }
+                        moddedDivineSkillTreeData.Add(newBlueprint);
+                        if (i == factionCount - 1 && !rpgMode)
+                        {
+                            rpgMode = true;
+                            i = -1;
+                        }
+                    }
 
-                var options = new JsonSerializerOptions { WriteIndented = true, IncludeFields = true };
-                string jsonString = JsonSerializer.Serialize(moddedDivineSkillTreeData, options);
-                WriteConfig(modRootPath + generatedConfigFolderPath + "SkillTreeConfig.json", jsonString);
+                    //write defaults
+                    var options = new JsonSerializerOptions { WriteIndented = true, IncludeFields = true };
+                    string jsonString = JsonSerializer.Serialize(moddedDivineSkillTreeData, options);
+                    WriteConfig(modRootPath + generatedConfigFolderPath + "SkillTreeConfig.json", jsonString);
+                }
 
+                //read mod
                 StreamReader reader = new StreamReader(modRootPath + "SkillTreeConfig.json", true);
                 string jsonStringRead = reader.ReadToEnd();
                 reader.Close();
 
-                moddedDivineSkillTreeData = JsonSerializer.Deserialize<List<DivineSkillTreeDataBlueprint>>(jsonStringRead);
+                var optionsRead = new JsonSerializerOptions { WriteIndented = true, IncludeFields = true };
+                moddedDivineSkillTreeData = JsonSerializer.Deserialize<List<DivineSkillTreeDataBlueprint>>(jsonStringRead, optionsRead);
 
-                var factionsData = FactionsDatabase.Factions;
+                if (DisableModMasterSwitch) return;
+
+                rpgMode = false;
                 for (int i = 0; i < factionCount; i++)
                 {
-                    string factionName = factionsData[i].name;
-                    HeroData heroData = factionsData[i].MainHero;
+                    FactionData faction = FactionsDatabase.Factions[i];
+                    DivineSkillTreeDataBlueprint moddedSkillTree = moddedDivineSkillTreeData.Where(x => x.factionName == faction.name && x.rpgModeSkillTree == rpgMode).FirstOrDefault();
+                    string factionName = faction.name;
+                    HeroData heroData = faction.MainHero;
+
                     //divine skill tree
-                    if (!DisableModMasterSwitch)
+                    Il2CppReferenceArray<DivineSKillDataLvlGroups> newDivineSkillGroup = new Il2CppReferenceArray<DivineSKillDataLvlGroups>(moddedSkillTree.divineSkillSets.Count);
+                    int k = 0;
+                    foreach (var divineSkillGroup in moddedSkillTree.divineSkillSets)
                     {
-                        int treeDepth = GetIntByKey(factionsData[i].DivineSkills.Count, CombineStrings(factionName, dlmWord, "TreeDepth"));
-                        Il2CppReferenceArray<DivineSKillDataLvlGroups> newDivineSkillSet = new Il2CppReferenceArray<DivineSKillDataLvlGroups>(treeDepth);
-                        for (int j = 0; j < treeDepth; j++)
+                        DivineSKillDataLvlGroups newSkillGroup = new DivineSKillDataLvlGroups();
+                        newSkillGroup.Lvl = divineSkillGroup.level;
+                        List<DivineSkillData> newDivineSkillData = new List<DivineSkillData>();
+                        foreach (var divineSkillName in divineSkillGroup.divineSkillNames)
                         {
-                            int choicesCount = GetIntByKey(factionsData[i].DivineSkills.Count, CombineStrings(factionName, dlmWord, "ChoicesCount", dlmWord, j.ToString()));
-                            List<DivineSkillData> newDivineSkillData = new List<DivineSkillData>();
-                            for (int k = 0; k < choicesCount; k++)
+                            DivineSkillData skillPick = divineSkillDataList.Where(x => x.name == divineSkillName).FirstOrDefault();
+                            if (skillPick != null && skillPick.upgrades != null && skillPick.upgrades.Count > 0)
                             {
-                                string skillSearchName = CombineStrings(factionName, dlmWord, nameof(DivineSkillData), dlmWord, j.ToString(), dlmWord, k.ToString());
-                                string searchedKey = GetValue(skillSearchName);
-                                DivineSkillData skillPick = divineSkillDataList.Where(x => x.name == searchedKey).FirstOrDefault();
-                                if (skillPick != null && skillPick.upgrades != null && skillPick.upgrades.Count > 0)
+                                foreach (var upgrade in skillPick.upgrades)
                                 {
-                                    foreach (var upgrade in skillPick.upgrades)
+                                    //add to hero or global, depending on skill type
+                                    if (skillPick.SkillType == DivineSkillType.HeroAbility || skillPick.SkillType == DivineSkillType.HeroPassive)
                                     {
-                                        //add to hero or global, depending on skill type
-                                        if (skillPick.SkillType == DivineSkillType.HeroAbility || skillPick.SkillType == DivineSkillType.HeroPassive)
-                                        {
-                                            heroData.PossibleUpgrades.Add(upgrade);
-                                        }
-                                        else
-                                        {
-                                            factionsData[i].PossibleUpgrades.Add(upgrade);
-                                        }
+                                        heroData.PossibleUpgrades.Add(upgrade);
+                                    }
+                                    else
+                                    {
+                                        faction.PossibleUpgrades.Add(upgrade);
                                     }
                                 }
                                 newDivineSkillData.Add(skillPick);
                             }
-                            DivineSKillDataLvlGroups newSkillGroup = new DivineSKillDataLvlGroups();
-                            newSkillGroup.Lvl = GetIntByKey(factionsData[i].DivineSkills[i].Lvl, CombineStrings(factionName, dlmWord, nameof(DivineSKillDataLvlGroups.Lvl), dlmWord, j.ToString()));
-                            newSkillGroup.PossibleAbilitiesLvl = newDivineSkillData.ToArray();
-                            newDivineSkillSet[j] = newSkillGroup;
                         }
-                        factionsData[i].DivineSkills = newDivineSkillSet;
+                        newSkillGroup.PossibleAbilitiesLvl = newDivineSkillData.ToArray();
+                        newDivineSkillGroup[k++] = newSkillGroup;
+                    }
+
+                    if (rpgMode)
+                    {
+                        faction.DivineSkills_RPG = newDivineSkillGroup;
+                    }
+                    else
+                    {
+                        faction.DivineSkills = newDivineSkillGroup;
+                    }
+                    if (i == factionCount - 1 && !rpgMode)
+                    {
+                        rpgMode = true;
+                        i = -1;
                     }
                 }
-
-                //newtonsoft
-                //using StreamWriter file = File.CreateText(modRootPath + generatedConfigFolderPath + "testjson.txt");
-                //JsonSerializer serializer = new JsonSerializer { Formatting = Formatting.Indented };
-                //serializer.Serialize(file, actionDataList);
             }
 
             /// <summary>

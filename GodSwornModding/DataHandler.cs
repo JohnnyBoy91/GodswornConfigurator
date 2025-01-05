@@ -137,14 +137,17 @@ namespace JCGodSwornConfigurator
         public DivineSKillDataLvlGroups divineSKillDataLvlGroups;
     }
 
+    [Serializable]
     public class DivineSkillTreeDataBlueprint
     {
-        string factionName;
-        public List<DivineSkillSet> divineSkillSets;
-        public class DivineSkillSet
+        public string factionName;
+        public bool rpgModeSkillTree;
+        public List<DivineSkillGroup> divineSkillSets = new List<DivineSkillGroup>();
+        [Serializable]
+        public class DivineSkillGroup
         {
-            int level;
-            public List<string> divineSkillName = new List<string>();
+            public int level;
+            public List<string> divineSkillNames = new List<string>();
         }
     }
 
