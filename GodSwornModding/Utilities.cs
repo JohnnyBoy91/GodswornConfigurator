@@ -59,6 +59,18 @@ namespace JCGodSwornConfigurator
             }
         }
 
+        public static void TryMethod(Action method)
+        {
+            try
+            {
+                method();
+            }
+            catch (Exception ex)
+            {
+                Log(CombineStrings("Failure in ", method.Method.Name, ": ", ex.Message), 3);
+            }
+        }
+
         /// <summary>
         /// Write to text file
         /// </summary>
@@ -73,6 +85,17 @@ namespace JCGodSwornConfigurator
             {
                 writer.Write('\n' + text[i]);
             }
+            writer.Close();
+        }
+
+        public static void WriteConfig(string fileName, string text)
+        {
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+            StreamWriter writer = new StreamWriter(fileName, true);
+            writer.Write(text);
             writer.Close();
         }
 

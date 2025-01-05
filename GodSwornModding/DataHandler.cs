@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 using static JCGodSwornConfigurator.Plugin.ModManager;
 using static JCGodSwornConfigurator.Utilities;
 
@@ -44,6 +45,7 @@ namespace JCGodSwornConfigurator
     {
         public ActionData actionData;
         public DivineSkillData refDivineSkillData;
+
         public ActionDataConfig(ActionData actionData, UnitData ownerUnit, bool divineSkill = false, bool rpgSkill = false, DivineSkillData refDivineSkillData = null)
         {
             this.actionData = actionData;
@@ -51,8 +53,24 @@ namespace JCGodSwornConfigurator
             this.divineSkill = divineSkill;
             this.rpgSkill = rpgSkill;
             this.refDivineSkillData = refDivineSkillData;
+
+            ActionDataBlueprint newDataTemplate = new ActionDataBlueprint
+            {
+                charges = actionData.Charges,
+                triggerDelay = actionData.TriggerDelay
+            };
+            Instance.actionDataTemplates.Add(newDataTemplate);
         }
+
     }
+
+    [Serializable]
+    public class ActionDataBlueprint
+    {
+        [JsonInclude] public int charges;
+        [JsonInclude] public float triggerDelay;
+    }
+
     public class TargetDataConfig : DataConfig
     {
         public TargetData targetData;
@@ -110,6 +128,23 @@ namespace JCGodSwornConfigurator
             this.ownerUnit = ownerUnit;
             this.divineSkill = divineSkill;
             this.rpgSkill = rpgSkill;
+        }
+    }
+
+    public class DivineSkillTreeDataConfig
+    {
+        public DivineSkillData divineSkillData;
+        public DivineSKillDataLvlGroups divineSKillDataLvlGroups;
+    }
+
+    public class DivineSkillTreeDataBlueprint
+    {
+        string factionName;
+        public List<DivineSkillSet> divineSkillSets;
+        public class DivineSkillSet
+        {
+            int level;
+            public List<string> divineSkillName = new List<string>();
         }
     }
 
