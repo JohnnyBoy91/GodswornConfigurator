@@ -151,5 +151,47 @@ namespace JCGodSwornConfigurator
         }
     }
 
+    //[Serializable]
+    //public class WaveManagerBlueprint
+    //{
+    //    WaveManagers waveManagers;
+
+    //    public string mapKey;
+    //    public List<WaveOptionsConfig> waveOptions = new List<WaveOptionsConfig>();
+
+    //    //waves
+    //    [Serializable]
+    //    public class WaveOptionsConfig
+    //    {
+    //        public string waveName;
+    //        public float spawnTimeSeconds;
+    //        public int unitCountMultiplier;
+    //        public bool revealOnMiniMap;
+    //        public bool revealInVision;
+    //        public List<WaveEventConfig> waves = new List<WaveEventConfig>();
+    //    }
+
+    //    //wave positions, do we need to have this?
+    //    [Serializable]
+    //    public class WavesConfig
+    //    {
+    //        public List<WaveEventConfig> waveEvents = new List<WaveEventConfig>();
+    //    }
+
+    //    //list of units
+    //    [Serializable]
+    //    public class WaveEventConfig
+    //    {
+    //        public Difficulty difficulty;
+    //        public List<SpawnUnitSetConfig> spawnUnitSets = new List<SpawnUnitSetConfig>();
+    //    }
+
+    //    [Serializable]
+    //    public class SpawnUnitSetConfig
+    //    {
+    //        public List<string> units = new List<string>();
+    //    }
+    //}
+
     #endregion
 }

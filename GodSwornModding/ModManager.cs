@@ -60,6 +60,8 @@ namespace JCGodSwornConfigurator
         {
             private static ModManager instance;
 
+            //public WaveManagers waveManager;
+
             public string dataConfigPath;
             public string modSettingsPath;
             public string modRootPath;
@@ -73,6 +75,7 @@ namespace JCGodSwornConfigurator
             public Plugin plugin;
 
             private readonly ModSpectatorMode modSpectatorMode = new ModSpectatorMode();
+            //private readonly HandleWaveManager handleWaveManager = new HandleWaveManager();
 
             public GameManager gameManager;
             public DataManager dataManager;
@@ -203,6 +206,22 @@ namespace JCGodSwornConfigurator
                     Directory.CreateDirectory(modRootPath + generatedConfigFolderPath);
                 }
             }
+
+            #region HarmonyPatches
+            //[HarmonyPatch(typeof(WaveManagers), "Start")]
+            //static class ModWaveManager
+            //{
+            //    [HarmonyPriority(100)]
+            //    private static void Postfix(WaveManagers __instance)
+            //    {
+            //        Log("WaveManagerInjected");
+            //        Instance.waveManager = __instance;
+            //        Log(Instance.waveManager.Waves.ToString() + Instance.waveManager.WavesOptions[0].WaveName.Value + ", " + Instance.waveManager.WavesOptions.Count);
+            //        string mapName = Instance.dataManager.GetCurrentMap().MapName.key;
+            //        Instance.handleWaveManager.Initialize(mapName);
+            //    }
+            //}
+            #endregion
 
             /// <summary>
             /// General mod setup for global config for variables present in main menu
@@ -347,8 +366,8 @@ namespace JCGodSwornConfigurator
                             {
                                 foreach (var action in upgrade.AddActions)
                                 {
-                                    ActionDataConfig newActionData = new ActionDataConfig(action, heroData, true, false, divineSkill);
-                                    newActionData.refDivineSkillData = divineSkill;
+                                    ActionDataConfig newActionData = new ActionDataConfig(action, heroData, true, false, divineSkill)
+                                    { refDivineSkillData = divineSkill };
                                     actionDataList.Add(newActionData);
                                 }
                             }
@@ -364,8 +383,8 @@ namespace JCGodSwornConfigurator
                             {
                                 foreach (var action in upgrade.AddActions)
                                 {
-                                    ActionDataConfig newActionData = new ActionDataConfig(action, heroData, true, true, divineSkill);
-                                    newActionData.refDivineSkillData = divineSkill;
+                                    ActionDataConfig newActionData = new ActionDataConfig(action, heroData, true, true, divineSkill)
+                                    { refDivineSkillData = divineSkill };
                                     if (!actionDataList.Any(x => x.actionData == newActionData.actionData))
                                     {
                                         actionDataList.Add(newActionData);
@@ -687,10 +706,6 @@ namespace JCGodSwornConfigurator
                         }
                     }
 
-                    //write defaults
-                    var options = new JsonSerializerOptions { WriteIndented = true, IncludeFields = true };
-                    string jsonString = JsonSerializer.Serialize(moddedDivineSkillTreeData, options);
-                    WriteConfig(modRootPath + generatedConfigFolderPath + "SkillTreeConfig.json", jsonString);
                 }
 
                 //read mod
@@ -716,8 +731,7 @@ namespace JCGodSwornConfigurator
                     int k = 0;
                     foreach (var divineSkillGroup in moddedSkillTree.divineSkillSets)
                     {
-                        DivineSKillDataLvlGroups newSkillGroup = new DivineSKillDataLvlGroups();
-                        newSkillGroup.Lvl = divineSkillGroup.level;
+                        DivineSKillDataLvlGroups newSkillGroup = new DivineSKillDataLvlGroups { Lvl = divineSkillGroup.level };
                         List<DivineSkillData> newDivineSkillData = new List<DivineSkillData>();
                         foreach (var divineSkillName in divineSkillGroup.divineSkillNames)
                         {
@@ -853,8 +867,8 @@ namespace JCGodSwornConfigurator
                         if (verboseLogging) Log("creationdata: " + actionData.actionData.name, 2);
                         if (!creationDataList.Any(x => x.creationData == actionData.actionData.CreationData))
                         {
-                            CreationDataConfig newCreationData = new CreationDataConfig(actionData.actionData.CreationData, actionData.actionData, actionData.ownerUnit, actionData.divineSkill, actionData.rpgSkill);
-                            newCreationData.refActionDataConfig = actionData;
+                            CreationDataConfig newCreationData = new CreationDataConfig(actionData.actionData.CreationData, actionData.actionData, actionData.ownerUnit, actionData.divineSkill, actionData.rpgSkill)
+                            { refActionDataConfig = actionData };
                             creationDataList.Add(newCreationData);
                         }
                         //get units created by abilities
