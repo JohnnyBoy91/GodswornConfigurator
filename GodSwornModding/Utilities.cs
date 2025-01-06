@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using static JCGodSwornConfigurator.Plugin.ModManager;
 
 namespace JCGodSwornConfigurator
@@ -97,6 +98,24 @@ namespace JCGodSwornConfigurator
             StreamWriter writer = new StreamWriter(fileName, true);
             writer.Write(text);
             writer.Close();
+        }
+
+        public static void WriteJsonConfig(string filePath, object dataToSerialize)
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true, IncludeFields = true };
+            string jsonString = JsonSerializer.Serialize(dataToSerialize, options);
+            WriteConfig(filePath, jsonString);
+        }
+
+        public static object ReadJsonConfig<T>(string filePath)
+        {
+            StreamReader reader = new StreamReader(filePath, true);
+            string jsonString = reader.ReadToEnd();
+            reader.Close();
+
+            var optionsRead = new JsonSerializerOptions { WriteIndented = true, IncludeFields = true };
+            T dataToDeserializeInto = JsonSerializer.Deserialize<T> (jsonString, optionsRead);
+            return dataToDeserializeInto;
         }
 
         /// <summary>

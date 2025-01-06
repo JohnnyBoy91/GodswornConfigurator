@@ -21,6 +21,11 @@ namespace JCGodSwornConfigurator
 
         public string UnitName()
         {
+            if(ownerUnit == null)
+            {
+                Log("Data Config Missing Unit Name");
+                return "";
+            }
             return ownerUnit.name;
         }
 
@@ -149,6 +154,32 @@ namespace JCGodSwornConfigurator
             public int level;
             public List<string> divineSkillNames = new List<string>();
         }
+    }
+
+    [Serializable]
+    public class UnitDataBlueprint
+    {
+        public string key;
+        public int maxHealth;
+        public float maxHealthRegen;
+        public float speed;
+        public int armor;
+        public int magicResistance;
+        public int visionRange;
+        public int xp;
+        public int housingUpkeep;
+
+        public List<string> defenseTypes = new List<string>();
+
+    }
+
+    [Serializable]
+    public class CostData
+    {
+        public int food;
+        public int wood;
+        public int faith;
+        public int wealth;
     }
 
     //[Serializable]
