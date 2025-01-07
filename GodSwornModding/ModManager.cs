@@ -16,7 +16,7 @@ using System.Text.Json;
 
 namespace JCGodSwornConfigurator
 {
-    [BepInPlugin("JCGodSwornConfigurator", "GodSwornConfigurator", "1.0.03")]
+    [BepInPlugin("JCGodSwornConfigurator", "GodSwornConfigurator", "1.0.04")]
     public class Plugin : BasePlugin
     {
         #region Plugin Core
@@ -39,8 +39,8 @@ namespace JCGodSwornConfigurator
             }
             GodSwornMainModObject.GetComponent<ModManager>().plugin = this;
 
-            //var harmony = new Harmony("JCGodSwornConfigurator");
-            //harmony.PatchAll(Assembly.GetExecutingAssembly());
+            var harmony = new Harmony("JCGodSwornConfigurator");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         //Sample postfix harmony patch for future
@@ -60,8 +60,6 @@ namespace JCGodSwornConfigurator
         {
             private static ModManager instance;
 
-            //public WaveManagers waveManager;
-
             public string dataConfigPath;
             public string modSettingsPath;
             public string modRootPath;
@@ -75,7 +73,7 @@ namespace JCGodSwornConfigurator
             public Plugin plugin;
 
             private readonly ModSpectatorMode modSpectatorMode = new ModSpectatorMode();
-            //private readonly HandleWaveManager handleWaveManager = new HandleWaveManager();
+            private readonly HandleWaveManager handleWaveManager = new HandleWaveManager();
 
             public GameManager gameManager;
             public DataManager dataManager;
@@ -208,19 +206,6 @@ namespace JCGodSwornConfigurator
             }
 
             #region HarmonyPatches
-            //[HarmonyPatch(typeof(WaveManagers), "Start")]
-            //static class ModWaveManager
-            //{
-            //    [HarmonyPriority(100)]
-            //    private static void Postfix(WaveManagers __instance)
-            //    {
-            //        Log("WaveManagerInjected");
-            //        Instance.waveManager = __instance;
-            //        Log(Instance.waveManager.Waves.ToString() + Instance.waveManager.WavesOptions[0].WaveName.Value + ", " + Instance.waveManager.WavesOptions.Count);
-            //        string mapName = Instance.dataManager.GetCurrentMap().MapName.key;
-            //        Instance.handleWaveManager.Initialize(mapName);
-            //    }
-            //}
             #endregion
 
             /// <summary>
