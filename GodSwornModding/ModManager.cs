@@ -42,18 +42,6 @@ namespace JCGodSwornConfigurator
             var harmony = new Harmony("JCGodSwornConfigurator");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
-
-        //Sample postfix harmony patch for future
-        //[HarmonyPatch(typeof(GameManager), "SpawnDivines")]
-        //static class PatchTest
-        //{
-        //    [HarmonyPriority(350)]
-        //    private static void Postfix()
-        //    {
-        //        ModManager.Log("Game started & divines spawned");
-        //    }
-        //}
-
         #endregion
 
         public class ModManager : MonoBehaviour

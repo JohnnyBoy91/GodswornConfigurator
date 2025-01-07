@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Text.Json;
 using UnityEngine;
 using System.Linq;
+using System;
+using Il2CppSystem;
 
 //WIP due to IL2CPP problems
 
@@ -49,6 +51,7 @@ namespace JCGodSwornConfigurator
                 Plugin.ModManager.Log("WaveEventInjected");
                 if (currentMapName == "$Tervete")
                 {
+                    __instance.RevealUnitsMinimap = currentWaveManagerBlueprint.revealUnitsOnMiniMap;
                     foreach (var spawnSet in __instance.SpawnSets)
                     {
                         spawnSet.Units.Clear();
@@ -71,6 +74,10 @@ namespace JCGodSwornConfigurator
                                 default:
                                     break;
                             }
+
+                            float variance = Mathf.Clamp(waveUnitConfig.quantityVarianceFactor, 0, 1f);
+                            quantity = new System.Random().Next((int)(quantity - (variance * quantity)), (int)(quantity + (variance * quantity)));
+
                             for (int i = 0; i < quantity; i++)
                             {
                                 spawnSet.Units.Add(Plugin.ModManager.Instance.unitDataList.Where(x => x.name == waveUnitConfig.unitNameKey).First());
@@ -83,17 +90,42 @@ namespace JCGodSwornConfigurator
 
         private static void Initialize(string mapName)
         {
+
+            if (!File.Exists(Utilities.CombineStrings(modManager.modRootPath, mapName, "ScenarioConfig.json")))
+            {
+                Plugin.ModManager.Log(mapName + " Scenario File Not Found, move to mod root folder to enable");
+                return;
+            }
+
             currentMapName = mapName;
             mapName = mapName.Replace("$", "");
             WaveManagerBlueprint waveManagerBlueprint = (WaveManagerBlueprint)Utilities.ReadJsonConfig<WaveManagerBlueprint>(Utilities.CombineStrings(modManager.modRootPath, mapName, "ScenarioConfig.json"));
             currentWaveManagerBlueprint = waveManagerBlueprint;
 
+            waveManager.CurrentWaveTimeScaler = 1;
+
             for (int i = 0; i < waveManager.WavesOptions.Count; i++)
             {
-                Plugin.ModManager.Log(Utilities.CombineStrings(waveManager.WavesOptions[i].WaveName.key, currentWaveManagerBlueprint.waveConfigs[i].waveName));
-                LocalizationManager.localisedEN[waveManager.WavesOptions[i].WaveName.key] = currentWaveManagerBlueprint.waveConfigs[i].waveName;
-                waveManager.WavesOptions[i].SpawnTime = currentWaveManagerBlueprint.waveConfigs[i].spawnTimeSeconds;
-                //waveManager.WavesOptions[i].WaveName = currentWaveManagerBlueprint.waveConfigs[i].waveName;
+                string newKey = "$" + currentWaveManagerBlueprint.waveConfigs[i].waveName;
+                if (!LocalizationManager.localisedEN.ContainsKey(newKey))
+                {
+                    LocalizationManager.localisedEN.Add(newKey, currentWaveManagerBlueprint.waveConfigs[i].waveName);
+                }
+                waveManager.WavesOptions[i].WaveName = newKey;
+
+                float spawnTime = currentWaveManagerBlueprint.waveConfigs[i].spawnTimeSeconds;
+                float variance = Mathf.Clamp(currentWaveManagerBlueprint.waveConfigs[i].spawnTimeVarianceFactor, 0, 0.5f);
+                spawnTime = new System.Random().Next((int)(spawnTime - (variance * spawnTime)), (int)(spawnTime + (variance * spawnTime)));
+                waveManager.WavesOptions[i].SpawnTime = spawnTime;
+            }
+
+            for (int i = 1; i < waveManager.WavesOptions.Count; i++)
+            {
+                if (waveManager.WavesOptions[i].SpawnTime < waveManager.WavesOptions[i - 1].SpawnTime)
+                {
+                    Plugin.ModManager.Log("Wave set to spawn before prior wave, attempting to correct. Please double check your config settings!", 2);
+                    waveManager.WavesOptions[i].SpawnTime = waveManager.WavesOptions[i - 1].SpawnTime + 5;
+                }
             }
 
             //WriteDefaults(mapName);
@@ -107,8 +139,8 @@ namespace JCGodSwornConfigurator
             for (int i = 0; i < 10; i++)
             {
                 WaveManagerBlueprint.WaveConfig waveConfig = new WaveManagerBlueprint.WaveConfig();
-                waveConfig.waveName = Utilities.CombineStrings(mapName, i.ToString());
-                waveConfig.spawnTimeSeconds = i * 10;
+                waveConfig.waveName = Utilities.CombineStrings(mapName, (i + 1).ToString());
+                waveConfig.spawnTimeSeconds = (i + 1) * 10;
                 for (int j = 0; j < 2; j++)
                 {
                     WaveManagerBlueprint.WaveUnitConfig waveUnitConfig = new WaveManagerBlueprint.WaveUnitConfig();

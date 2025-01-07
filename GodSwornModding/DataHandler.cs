@@ -186,10 +186,11 @@ namespace JCGodSwornConfigurator
     public class WaveManagerBlueprint
     {
         public string mapKey;
+        public string scenarioName = "TerveteMod";
         public float easyUnitMultiplier = 0.8f;
         public float hardUnitMultiplier = 1.2f;
         public float insaneUnitMultiplier = 1.5f;
-        //public bool revealOnMiniMap;
+        public bool revealUnitsOnMiniMap;
         //public bool revealInVision;
 
         public List<WaveConfig> waveConfigs = new List<WaveConfig>();
@@ -200,6 +201,7 @@ namespace JCGodSwornConfigurator
         {
             public string waveName;
             public float spawnTimeSeconds;
+            public float spawnTimeVarianceFactor = 0.05f;
             //public int unitCountMultiplier;
             public List<WaveUnitConfig> spawnUnitGroups = new List<WaveUnitConfig>();
         }
@@ -209,6 +211,7 @@ namespace JCGodSwornConfigurator
         {
             public string unitNameKey;
             public int quantity;
+            public float quantityVarianceFactor = 0f;
         }
     }
 
