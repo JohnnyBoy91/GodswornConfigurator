@@ -1077,28 +1077,28 @@ namespace JCGodSwornConfigurator
                     string baseUnitKey = CombineStrings(prefixUnit, dlmWord, unitName, dlmWord);
                     foreach (var unit in unitDataList.Where(x => x.name == unitName))
                     {
-                        UnitDataBlueprint unitBlueprint = new UnitDataBlueprint();
-                        unitBlueprint.key = unit.name;
-                        unitBlueprint.maxHealth = unit.DefualtMaxHealth;
-                        unitBlueprint.maxHealthRegen = unit.DefaultHealthRegen;
-                        unitBlueprint.speed = unit.Speed;
-                        unitBlueprint.armor = unit.Armor;
-                        unitBlueprint.magicResistance = unit.MagicResistance;
-                        unitBlueprint.visionRange = unit.Visionrange;
-                        unitBlueprint.xp = unit.XP;
-                        unitBlueprint.housingUpkeep = unit.HousingUpkeep;
+                        //UnitDataBlueprint unitBlueprint = new UnitDataBlueprint();
+                        //unitBlueprint.key = unit.name;
+                        //unitBlueprint.maxHealth = unit.DefualtMaxHealth;
+                        //unitBlueprint.maxHealthRegen = unit.DefaultHealthRegen;
+                        //unitBlueprint.speed = unit.Speed;
+                        //unitBlueprint.armor = unit.Armor;
+                        //unitBlueprint.magicResistance = unit.MagicResistance;
+                        //unitBlueprint.visionRange = unit.Visionrange;
+                        //unitBlueprint.xp = unit.XP;
+                        //unitBlueprint.housingUpkeep = unit.HousingUpkeep;
 
-                        unitDataBlueprints.Add(unitBlueprint);
+                        //unitDataBlueprints.Add(unitBlueprint);
                         
                         unitDataLines.Add(CombineStrings(dlmNewLine, dlmComment, unit.name));
-                        //unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.DefualtMaxHealth), dlmKey, unit.DefualtMaxHealth.ToString()));
-                        //unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.DefaultHealthRegen), dlmKey, unit.DefaultHealthRegen.ToString()));
-                        //unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.Speed), dlmKey, unit.Speed.ToString()));
-                        //unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.Armor), dlmKey, unit.Armor.ToString()));
-                        //unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.MagicResistance), dlmKey, unit.MagicResistance.ToString()));
-                        //unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.Visionrange), dlmKey, unit.Visionrange.ToString()));
-                        //unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.XP), dlmKey, unit.XP.ToString()));
-                        //unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.HousingUpkeep), dlmKey, unit.HousingUpkeep.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.DefualtMaxHealth), dlmKey, unit.DefualtMaxHealth.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.DefaultHealthRegen), dlmKey, unit.DefaultHealthRegen.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.Speed), dlmKey, unit.Speed.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.Armor), dlmKey, unit.Armor.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.MagicResistance), dlmKey, unit.MagicResistance.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.Visionrange), dlmKey, unit.Visionrange.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.XP), dlmKey, unit.XP.ToString()));
+                        unitDataLines.Add(CombineStrings(baseUnitKey, nameof(unit.HousingUpkeep), dlmKey, unit.HousingUpkeep.ToString()));
                         //unit cost data
                         if (unit.CreationAbility != null)
                         {
@@ -1182,7 +1182,7 @@ namespace JCGodSwornConfigurator
                     }
                 }
 
-                WriteJsonConfig(CombineStrings(modRootPath, generatedConfigFolderPath, "UnitDataConfig.txt"), unitDataBlueprints);
+                //WriteJsonConfig(CombineStrings(modRootPath, generatedConfigFolderPath, "UnitDataConfig.txt"), unitDataBlueprints);
 
                 Utilities.WriteConfig(modRootPath + generatedConfigFolderPath + "DefaultUnitDataConfig.txt", unitDataLines);
             }
