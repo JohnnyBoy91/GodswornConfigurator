@@ -91,14 +91,15 @@ namespace JCGodSwornConfigurator
         private static void Initialize(string mapName)
         {
 
+            currentMapName = mapName;
+            mapName = mapName.Replace("$", "");
+
             if (!File.Exists(Utilities.CombineStrings(modManager.modRootPath, mapName, "ScenarioConfig.json")))
             {
                 Plugin.ModManager.Log(mapName + " Scenario File Not Found, move to mod root folder to enable");
                 return;
             }
 
-            currentMapName = mapName;
-            mapName = mapName.Replace("$", "");
             WaveManagerBlueprint waveManagerBlueprint = (WaveManagerBlueprint)Utilities.ReadJsonConfig<WaveManagerBlueprint>(Utilities.CombineStrings(modManager.modRootPath, mapName, "ScenarioConfig.json"));
             currentWaveManagerBlueprint = waveManagerBlueprint;
 
