@@ -5,6 +5,7 @@ Features tested and working on single player only
 * Customizable faction starting conditions & resource settings
 * Customize Unit and Hero stats
 * Customize Hero Skills
+* Create your own fefense challenges on the Tervete map
 * Customize Damage Type Modifiers
 * Customizable worshipper spawn rate parameters
 * Customizable level xp requirements & stat scaling
@@ -12,8 +13,7 @@ Features tested and working on single player only
 * Customize other miscellaneous settings
 * WIP spectator mode(not working in multiplayer, need to test with all players having mod installed?)
 
-* Full config list here: [https://github.com/JohnnyBoy91/GodswornModding/blob/main/GodSwornModding/Config.txt](https://github.com/JohnnyBoy91/GodswornConfigurator/blob/main/GodSwornModding/ModDataConfig.txt)
-
+* Full config lists here: https://github.com/JohnnyBoy91/GodswornConfigurator/tree/1.0.04/GodSwornModding/Templates
 ## Download
 
 https://github.com/JohnnyBoy91/GodswornModding/releases
