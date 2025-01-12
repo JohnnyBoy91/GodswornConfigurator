@@ -368,6 +368,9 @@
     <Reference Include="UnityEngine.XRModule">
       <HintPath>J:\SteamLibrary\steamapps\common\Godsworn\BepInEx\unity-libs\UnityEngine.XRModule.dll</HintPath>
     </Reference>
+    <Reference Include="UniverseLib.IL2CPP.Interop">
+      <HintPath>J:\SteamLibrary\steamapps\common\Godsworn\BepInEx\interop\UniverseLib.IL2CPP.Interop.dll</HintPath>
+    </Reference>
     <Reference Include="WasmDisassembler">
       <HintPath>J:\SteamLibrary\steamapps\common\Godsworn\BepInEx\core\WasmDisassembler.dll</HintPath>
     </Reference>
