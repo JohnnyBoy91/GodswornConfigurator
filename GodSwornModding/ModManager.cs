@@ -13,6 +13,8 @@ using HarmonyLib;
 using static JCGodSwornConfigurator.Utilities;
 using System.Reflection;
 using System.Text.Json;
+using UniverseLib;
+using UnityEngine.SceneManagement;
 
 namespace JCGodSwornConfigurator
 {
@@ -41,6 +43,20 @@ namespace JCGodSwornConfigurator
 
             var harmony = new Harmony("JCGodSwornConfigurator");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+            Universe.Init();
+        }
+        #endregion
+
+        #region HarmonyPatches
+        [HarmonyPatch(typeof(DataManagerUI), "Start")]
+        static class ModDataManagerUI
+        {
+            [HarmonyPriority(100)]
+            private static void Postfix(DataManagerUI __instance)
+            {
+                ModManager.Log("DataManagerUIInjected");
+                ModManager.Instance.dataManagerUI = __instance;
+            }
         }
         #endregion
 
@@ -56,16 +72,19 @@ namespace JCGodSwornConfigurator
 
             public bool DisableModMasterSwitch;
             public bool RetrieveDataMode;
+            public bool treidenCommanderModeEnabled;
             public bool ShowUIWidget;
 
             public Plugin plugin;
 
             private readonly ModSpectatorMode modSpectatorMode = new ModSpectatorMode();
             private readonly HandleWaveManager handleWaveManager = new HandleWaveManager();
+            public readonly TreidenCommanderModData treidenCommanderModData = new TreidenCommanderModData();
 
             public GameManager gameManager;
             public DataManager dataManager;
             public DamageManager damageManager;
+            public DataManagerUI dataManagerUI;
 
             public FactionDatabase FactionsDatabase => dataManager.FactionsOptions;
 
@@ -109,6 +128,7 @@ namespace JCGodSwornConfigurator
             public const string dlmComment = "//";
             public const string dlmNewLine = "\n";
             public const string generatedConfigFolderPath = @"DefaultConfigData\";
+            public const string scenarioFolderPath = @"Scenarios\";
 
             public const int factionCount = 5;
 
@@ -162,24 +182,127 @@ namespace JCGodSwornConfigurator
                 }
             }
 
+            private string consoleString;
             void OnGUI()
             {
                 if (ShowUIWidget)
                 {
-                    GUI.Box(new Rect(10, 10, 260, 120), "Godsworn Configurator");
-                    if (GUI.Button(new Rect(20, 40, 220, 20), "Reload Config Files"))
+                    GUI.Box(new Rect(10, 10, 600, 400), "Godsworn Configurator");
+
+                    consoleString = GUI.TextField(new Rect(20, 130, 200, 20), consoleString);
+                    if (consoleString == "dv")
+                    {
+                        if (GUI.Button(new Rect(20, 40, 220, 20), "Reload Config Files"))
+                        {
+
+                            Log("Reloading mod config");
+                            ReadModConfig();
+                            initializedInGame = false;
+                            MainSetup();
+                        }
+                        if (GUI.Button(new Rect(20, 70, 220, 20), "Generate Default Config Values"))
+                        {
+                            WriteDefaultDataConfigs();
+                        }
+                    }
+
+                    GUI.Label(new Rect(20, 100, 200, 20), "Defense of Tervete");
+                    GUI.Label(new Rect(240, 100, 220, 20), "No Modded Scenario Loaded");
+                }
+
+                if (treidenCommanderModeEnabled && dataManager.GetCurrentMap().MapName.key == "$GaurdiansOfTreiden" && SceneManager.GetActiveScene().name != "MainMenu" && HandleWaveManager.TreidenData.init)
+                {
+                    Vector2 panelSize = new Vector2(320, 400);
+                    Vector2 panelPosition = new Vector2(Screen.width - panelSize.x, Screen.height - panelSize.y);
+                    Vector2 buttonSize = new Vector2(40, 40);
+                    GUI.Box(new Rect(panelPosition, new Vector2(panelSize.x, panelSize.y)), "Your Army Wave");
+
+                    if (HandleWaveManager.TreidenData.playerTeam == 0)
+                    {
+                        if(gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Diplomatic_Ties[6] == DiplomacyState.Allied)
+                        {
+                            HandleWaveManager.TreidenData.playerTeam = 1;
+                            InitTreidenFaction();
+                        }
+                        if (gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Diplomatic_Ties[7] == DiplomacyState.Allied)
+                        {
+                            HandleWaveManager.TreidenData.playerTeam = 2;
+                            InitTreidenFaction();
+                        }
+                    }
+
+                    string teamString = "Pick a Team";
+                    if (HandleWaveManager.TreidenData.playerTeam == 1) teamString = "Baltic";
+                    if (HandleWaveManager.TreidenData.playerTeam == 2) teamString = "Order";
+
+                    if (GUI.Button(new Rect(panelPosition, new Vector2(100, 30)), teamString))
                     {
 
-                        Log("Reloading mod config");
-                        ReadModConfig();
-                        initializedInGame = false;
-                        MainSetup();
                     }
-                    if (GUI.Button(new Rect(20, 70, 220, 20), "Generate Default Config Values"))
+
+                    if (GUI.Button(new Rect(new Vector2(panelPosition.x, panelPosition.y + 30), new Vector2(160, 30)), "+Faith Income:200"))
                     {
-                        WriteDefaultDataConfigs();
+
                     }
+                    if (GUI.Button(new Rect(new Vector2(panelPosition.x + 160, panelPosition.y + 30), new Vector2(160, 30)), "+Wealth Income:200"))
+                    {
+
+                    }
+                    if (GUI.Button(new Rect(new Vector2(panelPosition.x, panelPosition.y + 60), new Vector2(160, 30)), "+Tech Level:500"))
+                    {
+                        if (gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount >= 500)
+                        {
+                            treidenCommanderModData.commanderDatas[0].techLevel++;
+                            gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount -= 500;
+                        }
+                    }
+                    //if (GUI.Button(new Rect(new Vector2(panelPosition.x + 160, panelPosition.y + 30), new Vector2(160, 30)), teamString))
+                    //{
+
+                    //}
+
+                    int columnCount = 1;
+                    int yOffset = 30;
+                    int unitButtonWidth = 160;
+                    int rowIndex = 1;
+                    int columnIndex = 0;
+                    int k = 0;
+                    foreach (var treidenUnitData in treidenCommanderModData.balticUnits)
+                    {
+                        k++;
+                        if (k > treidenCommanderModData.commanderDatas[0].techLevel * 4 + (treidenCommanderModData.commanderDatas[0].techLevel == 3 ? 1 : 0)) break;
+                        string buttonUnitName = treidenUnitData.Key;
+                        if (buttonUnitName.Contains("Stardaughter - Lunar")) buttonUnitName = buttonUnitName.Replace("Stardaughter - Lunar", "Lunardaughter");
+                        if (buttonUnitName.Contains("Stardaughter - Solar")) buttonUnitName = buttonUnitName.Replace("Stardaughter - Solar", "Solardaughter");
+                        if (GUI.Button(new Rect(new Vector2(panelPosition.x + (unitButtonWidth * columnIndex), panelPosition.y + 100 + (yOffset * rowIndex)), new Vector2(unitButtonWidth, yOffset)), CombineStrings("(", treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key)?.First().quantityOwned.ToString(), ")", buttonUnitName, dlmKey, treidenUnitData.Value.ToString())))
+                        {
+                            if (gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount >= treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key)?.First().goldCost)
+                            {
+                                treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key).First().quantityOwned++;
+                                gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount -= treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key).First().goldCost;
+                            }
+                        }
+
+                        columnIndex++;
+                        if (columnIndex > columnCount)
+                        {
+                            columnIndex = 0;
+                            rowIndex++;
+                        }
+                    }
+
                 }
+            }
+
+            bool initTreiden;
+            private void InitTreidenFaction()
+            {
+                if (initTreiden) return;
+                foreach (var item in treidenCommanderModData.balticUnits)
+                {
+                    treidenCommanderModData.commanderDatas[0].unitBuildDatas.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));
+                }
+                initTreiden = true;
             }
 
             private void Initialize()
@@ -195,6 +318,14 @@ namespace JCGodSwornConfigurator
 
             #region HarmonyPatches
             #endregion
+
+            [Serializable]
+            public class Loc
+            {
+                public Loc() { }
+                public string key { get; set; }
+                public string value { get; set; }
+            }
 
             /// <summary>
             /// General mod setup for global config for variables present in main menu
@@ -215,11 +346,35 @@ namespace JCGodSwornConfigurator
                     modSpectatorMode.InitializeSpectatorMode(dataManager);
                 }
 
+                if (bool.TryParse(GetValue("TreidenCommanderModeEnabled"), out boolValue) && boolValue == true)
+                {
+                    treidenCommanderModeEnabled = true;
+                    treidenCommanderModData.commanderDatas.Clear();
+                    treidenCommanderModData.commanderDatas.Add(new TreidenCommanderModData.CommanderData());
+                }
+
                 if (DisableModMasterSwitch && !RetrieveDataMode)
                 {
                     initialized = true;
                     return;
                 }
+
+                //foreach (var unitData in RuntimeHelper.FindObjectsOfTypeAll<UnitData>())
+                //{
+                //    unitDataList.Add(unitData);
+                //}
+                
+                List<Loc> locDump = new List<Loc>();
+                foreach (var item in LocalizationManager.localisedEN)
+                {
+                    Loc newLocEntry = new Loc
+                    {
+                        key = item.Key,
+                        value = item.Value
+                    };
+                    locDump.Add(newLocEntry);
+                }
+                WriteJsonConfig(CombineStrings(modRootPath, generatedConfigFolderPath, "Loc.json"), locDump);
 
                 #region FactionStuff
 
@@ -237,6 +392,13 @@ namespace JCGodSwornConfigurator
                 //WriteDefaultFactionDataConfig();  //internal use for creating default config
 
                 ClearDataCache();
+
+                foreach (var unitData in RuntimeHelper.FindObjectsOfTypeAll<UnitData>())
+                {
+                    Log(CombineStrings('"'.ToString(), unitData.name, '"'.ToString(), ","));
+                    if (LocManager.legalUnitNames.Contains(unitData.name)) unitDataList.Add(unitData);
+                    //if (unitData.name == "Bear" || unitData.name == "BearSlayer") unitDataList.Add(unitData);
+                }
 
                 List<string> modifiedBuildingsList = new List<string>();
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
+using UnityEngine;
 using static JCGodSwornConfigurator.Plugin.ModManager;
 using static JCGodSwornConfigurator.Utilities;
 
@@ -212,6 +213,53 @@ namespace JCGodSwornConfigurator
             public string unitNameKey;
             public int quantity;
             public float quantityVarianceFactor = 0f;
+        }
+    }
+
+    public class TreidenCommanderModData
+    {
+        public List<CommanderData> commanderDatas = new List<CommanderData>();
+
+        public Dictionary<string, int> balticUnits = new Dictionary<string, int>()
+        {
+            {"Tribesman", 120 },
+            {"Marauder", 100 },
+            {"Skirmisher", 110 },
+            {"Ranger", 130 },
+            {"Werewolf", 90 },
+            {"Witch", 140 },
+            {"Herbalist", 150 },
+            {"Pukis", 200 },
+            {"Warrior", 250 },
+            {"WolfWarrior" , 300 },
+            {"Raider", 170 },
+            {"Leshi" , 380 },
+            {"Spigana" , 340 },
+            {"Stardaughter - Lunar" , 450 },
+            {"Stardaughter - Solar" , 480 },
+            {"Skybull" , 390 }
+        };
+
+        public class CommanderData
+        {
+            public int techLevel = 1;
+            public int goldIncome = 20;
+            public int faithIncome = 10;
+
+            public List<TreidenUnitBuildData> unitBuildDatas = new List<TreidenUnitBuildData>();
+        }
+
+        public class TreidenUnitBuildData
+        {
+            public string name;
+            public int goldCost;
+            public int quantityOwned;
+            public TreidenUnitBuildData(string name, int goldCost, int quantityOwned)
+            {
+                this.name = name;
+                this.goldCost = goldCost;
+                this.quantityOwned = quantityOwned;
+            }
         }
     }
 
