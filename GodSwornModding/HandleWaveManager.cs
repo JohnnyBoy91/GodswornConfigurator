@@ -22,6 +22,7 @@ namespace JCGodSwornConfigurator
             public static bool init = false;
             public static int playerID = 0;
             public static int playerTeam = 0;
+            public static int waveInterval = 40;
         }
 
         [HarmonyPatch(typeof(WaveManagers), "Start")]
@@ -35,7 +36,7 @@ namespace JCGodSwornConfigurator
                 if (mapName == "$Tervete" || mapName == "$GaurdiansOfTreiden")
                 {
                     Plugin.ModManager.Log(mapName);
-                    Plugin.ModManager.Log(__instance.name + ": " + __instance.RandomizedReinforcements[0].transform.position.ToString());
+                    if (mapName == "$GaurdiansOfTreiden") Plugin.ModManager.Log(__instance.name + ": " + __instance.RandomizedReinforcements[0].transform.position.ToString());
                     waveManager = __instance;
                     Initialize(mapName);
                 }
@@ -48,7 +49,7 @@ namespace JCGodSwornConfigurator
             [HarmonyPriority(100)]
             private static void Prefix(WaveEvent __instance)
             {
-                Plugin.ModManager.Log("WaveEventInjected " + __instance.WaveMgr.gameObject.name);
+                Plugin.ModManager.Log("WaveEventInjected");
                 if (currentMapName == "$Tervete")
                 {
                     //if(waveManager.currentwave == 1) __instance.ParticipantID = 0;
@@ -150,6 +151,21 @@ namespace JCGodSwornConfigurator
                         unitName = "Knight";
                     }
 
+                    if (__instance.ParticipantID == 6 && activeWave)
+                    {
+                        //TreidenData.waveInterval+= 2;
+                        modManager.treidenCommanderModData.playerWaveManager = waveManager;
+                    }
+
+                    //for (int i = 0; i < __instance.WaveMgr.WavesOptions.Count; i++)
+                    //{
+                    //    __instance.WaveMgr.WavesOptions[i].SpawnTime = TreidenData.waveInterval;
+                    //}
+                    //for (int i = 0; i < __instance.WaveMgr.WavesRepeats.Count; i++)
+                    //{
+                    //    __instance.WaveMgr.WavesRepeats[i].SpawnTime = TreidenData.waveInterval;
+                    //}
+
                     foreach (var spawnSet in __instance.SpawnSets)
                     {
                         spawnSet.Units.Clear();
@@ -161,12 +177,12 @@ namespace JCGodSwornConfigurator
                         {
                             foreach (var item in modManager.treidenCommanderModData.commanderDatas[0].unitBuildDatas)
                             {
-                                Plugin.ModManager.Log(item.name + ": " + item.quantityOwned);
+                                //Plugin.ModManager.Log(item.name + ": " + item.quantityOwned);
                                 if (item.quantityOwned > 0)
                                 {
                                     for (int i = 0; i < item.quantityOwned; i++)
                                     {
-                                        Plugin.ModManager.Log(item.name);
+                                        //Plugin.ModManager.Log(item.name);
                                         spawnSet.Units.Add(Plugin.ModManager.Instance.unitDataList.Where(x => x.name == item.name).First());
                                     }
                                 }
@@ -174,10 +190,45 @@ namespace JCGodSwornConfigurator
                         }
                         else if (__instance.ParticipantID == 7 && activeWave)
                         {
-                            if (!activeWave) unitQuantity = 0;
-                            for (int i = 0; i < unitQuantity; i++)
+                            TreidenCommanderModData.CommanderData AICommander = modManager.treidenCommanderModData.commanderDatas[1];
+
+                            if(__instance.WaveMgr.currentwave != 0) AICommander.currentGoldAI += AICommander.goldIncome * (TreidenData.waveInterval / 5);
+                            Plugin.ModManager.Log("AIGoldBank:" + AICommander.currentGoldAI + "AI GoldIncomeTick:" + AICommander.goldIncome + ", " + "WaveIncome:" + AICommander.goldIncome * (TreidenData.waveInterval / 5));
+                            int currentWave = __instance.WaveMgr.currentwave;
+
+                            if (__instance.WaveMgr.currentwave % 5 == 0)
                             {
-                                spawnSet.Units.Add(Plugin.ModManager.Instance.unitDataList.Where(x => x.name == unitName).First());
+                                Plugin.ModManager.Log(currentWave + ":" + "5th wave, upgrading AI income");
+                                AICommander.goldIncome++;
+                            }
+
+                            if (AICommander.currentGoldAI > currentWave * 20)
+                            {
+                                ProcessTreidenCommanderAI(AICommander, currentWave, __instance);
+                            }
+                            if (AICommander.currentGoldAI > currentWave * 10)
+                            {
+                                ProcessTreidenCommanderAI(AICommander, currentWave, __instance);
+                            }
+
+                            foreach (var item in modManager.treidenCommanderModData.commanderDatas[1].unitBuildDatas)
+                            {
+                                if (item.quantityOwned > 0)
+                                {
+                                    for (int i = 0; i < item.quantityOwned; i++)
+                                    {
+                                        if (item.name == "Cherub")
+                                        {
+                                            spawnSet.Units.Add(Plugin.ModManager.Instance.unitDataList.Where(x => x.name == "Cherub - Eagle").First());
+                                            spawnSet.Units.Add(Plugin.ModManager.Instance.unitDataList.Where(x => x.name == "Cherub - Lion").First());
+                                            spawnSet.Units.Add(Plugin.ModManager.Instance.unitDataList.Where(x => x.name == "Cherub - Ox").First());
+                                        }
+                                        else
+                                        {
+                                            spawnSet.Units.Add(Plugin.ModManager.Instance.unitDataList.Where(x => x.name == item.name).First());
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -188,6 +239,156 @@ namespace JCGodSwornConfigurator
                         //{
                         //    spawnSet.Units.Add(Plugin.ModManager.Instance.unitDataList.Where(x => x.name == unitName).First());
                         //}
+                    }
+                }
+            }
+        }
+
+        private static bool pickedBuildEarly;
+        private static bool pickedBuildMid;
+        private static bool pickedBuildMidLate;
+        private static bool pickedBuildLate;
+        private static void ProcessTreidenCommanderAI(TreidenCommanderModData.CommanderData aiCommander, int currentWave, WaveEvent waveEvent)
+        {
+            System.Random rng = new System.Random();
+
+
+            TreidenCommanderModData.CommanderData playerCommander = modManager.treidenCommanderModData.commanderDatas[0];
+            if (currentWave == 1 && !pickedBuildEarly)
+            {
+                pickedBuildEarly = true;
+                int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildOrderEarly)).Length);
+                aiCommander.aiBuildEarly = (TreidenCommanderModData.treidenBuildOrderEarly)randomInt;
+                Plugin.ModManager.Log(aiCommander.aiBuildEarly.ToString(), 2);
+                switch (aiCommander.aiBuildEarly)
+                {
+                    case TreidenCommanderModData.treidenBuildOrderEarly.Footmen_Xbow:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 8;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderEarly.Militant_Cherub:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 12;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 2;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderEarly.Footmen_Cherub:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 2;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderEarly.Rogue_Bow:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += 10;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 4;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderEarly.Tracker_Cherub:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tracker").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 3;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (currentWave == 10 && !pickedBuildMid)
+            {
+                pickedBuildMid = true;
+                int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildOrderMid)).Length);
+                aiCommander.aiBuildMid = (TreidenCommanderModData.treidenBuildOrderMid)randomInt;
+                Plugin.ModManager.Log(aiCommander.aiBuildMid.ToString(), 2);
+                switch (aiCommander.aiBuildMid)
+                {
+                    case TreidenCommanderModData.treidenBuildOrderMid.Longbows:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderMid.Zealot_Nurse:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 2;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderMid.Tracker_Rogue:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tracker").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (currentWave == 18 && !pickedBuildMidLate)
+            {
+                pickedBuildMidLate = true;
+                int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildOrderMidLate)).Length);
+                aiCommander.aiBuildMidLate = (TreidenCommanderModData.treidenBuildOrderMidLate)randomInt;
+                Plugin.ModManager.Log(aiCommander.aiBuildMidLate.ToString(), 2);
+                switch (aiCommander.aiBuildMidLate)
+                {
+                    case TreidenCommanderModData.treidenBuildOrderMidLate.Artillery:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cannon").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Catapult").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 2;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderMidLate.Angels:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Avenging Angel").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 3;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderMidLate.Knights:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Knight").First().quantityOwned += 10;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 4;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (currentWave == 26 && !pickedBuildLate)
+            {
+                pickedBuildLate = true;
+                int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildOrderLate)).Length);
+                aiCommander.aiBuildLate = (TreidenCommanderModData.treidenBuildOrderLate)randomInt;
+                Plugin.ModManager.Log(aiCommander.aiBuildLate.ToString(), 2);
+                switch (aiCommander.aiBuildLate)
+                {
+                    case TreidenCommanderModData.treidenBuildOrderLate.BlackKnight:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Blackknight").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cannon").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderLate.Paladin:
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Paladin").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (rng.Next(100) < 30) return;
+            for (int i = 0; i < aiCommander.unitBuildDatas.Count; i++)
+            {
+                Plugin.ModManager.Log("AIWants " + aiCommander.aiUnitWishList[i].quantityOwned + aiCommander.unitBuildDatas[i].name);
+                if (aiCommander.aiUnitWishList[i].quantityOwned > aiCommander.unitBuildDatas[i].quantityOwned)
+                {
+                    if (aiCommander.currentGoldAI > aiCommander.unitBuildDatas[i].goldCost)
+                    {
+                        Plugin.ModManager.Log("AIBought " + aiCommander.unitBuildDatas[i].name);
+                        aiCommander.unitBuildDatas[i].quantityOwned++;
+                        aiCommander.currentGoldAI -= aiCommander.unitBuildDatas[i].goldCost;
                     }
                 }
             }
@@ -211,7 +412,7 @@ namespace JCGodSwornConfigurator
                             TreidenData.init = true;
                             modManager.treidenCommanderModData.commanderDatas[0].goldIncome = 20;
                             modManager.treidenCommanderModData.commanderDatas[0].faithIncome = 10;
-                            participant.Wealth.amount = 3000;
+                            participant.Wealth.amount = 500;
                             participant.Wealth.Increase = 20;
                         }
                     }
@@ -276,19 +477,18 @@ namespace JCGodSwornConfigurator
                 //        participant.Wealth.Increase = 10;
                 //    }
                 //}
-
                 waveManager.CurrentWaveTimeScaler = 1;
-                for (int i = 0; i < waveManager.WavesOptions.Count; i++)
-                {
-                    waveManager.WavesOptions[i].SpawnTime = 30;
-                }
                 if (waveManager.WavesRepeats.Count > 1)
                 {
                     waveManager.WavesRepeats.RemoveRange(1, waveManager.WavesRepeats.Count - 1);
                 }
+                for (int i = 0; i < waveManager.WavesOptions.Count; i++)
+                {
+                    waveManager.WavesOptions[i].SpawnTime = TreidenData.waveInterval;
+                }
                 for (int i = 0; i < waveManager.WavesRepeats.Count; i++)
                 {
-                    waveManager.WavesRepeats[i].SpawnTime = 30;
+                    waveManager.WavesRepeats[i].SpawnTime = TreidenData.waveInterval;
                 }
             }
 

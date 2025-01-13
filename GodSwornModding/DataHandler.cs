@@ -219,25 +219,44 @@ namespace JCGodSwornConfigurator
     public class TreidenCommanderModData
     {
         public List<CommanderData> commanderDatas = new List<CommanderData>();
+        public WaveManagers playerWaveManager;
 
         public Dictionary<string, int> balticUnits = new Dictionary<string, int>()
         {
-            {"Tribesman", 120 },
-            {"Marauder", 100 },
-            {"Skirmisher", 110 },
-            {"Ranger", 130 },
-            {"Werewolf", 90 },
-            {"Witch", 140 },
-            {"Herbalist", 150 },
-            {"Pukis", 200 },
-            {"Warrior", 250 },
-            {"WolfWarrior" , 300 },
-            {"Raider", 170 },
-            {"Leshi" , 380 },
-            {"Spigana" , 340 },
-            {"Stardaughter - Lunar" , 450 },
-            {"Stardaughter - Solar" , 480 },
-            {"Skybull" , 390 }
+            {"Tribesman", 115 },
+            {"Marauder", 95 },
+            {"Skirmisher", 140 },
+            {"Ranger", 145 },
+            {"Werewolf", 90 },//t2
+            {"Witch", 165 },
+            {"Herbalist", 155 },
+            {"Pukis", 180 },
+            {"Warrior", 230 },//t3
+            {"WolfWarrior" , 315 },
+            {"Raider", 200 },
+            {"Leshi" , 425 },
+            {"Spigana" , 335 },
+            {"Stardaughter - Lunar" , 540 },//t4
+            {"Stardaughter - Solar" , 650 },
+            {"Skybull" , 650 }
+        };
+        public Dictionary<string, int> orderUnits = new Dictionary<string, int>()
+        {
+            {"Militant", 90 },
+            {"Marksman", 120 },
+            {"Footman", 130 },
+            {"Cherub", 270 },
+            {"Zealot", 185 },//t2
+            {"Nurse", 170 },
+            {"Tracker", 180 },
+            {"Rogue" , 105 },
+            {"LongbowMan" , 180 },
+            {"Avenging Angel", 250 },//t3
+            {"Catapult", 290 },
+            {"Cannon" , 515 },
+            {"Knight", 365 },
+            {"Blackknight" , 600 },//t4
+            {"Paladin" , 465 }
         };
 
         public class CommanderData
@@ -245,8 +264,15 @@ namespace JCGodSwornConfigurator
             public int techLevel = 1;
             public int goldIncome = 20;
             public int faithIncome = 10;
-
+            public bool isAI = false;
+            public int currentGoldAI = 500;
             public List<TreidenUnitBuildData> unitBuildDatas = new List<TreidenUnitBuildData>();
+            public List<TreidenUnitBuildData> aiUnitWishList = new List<TreidenUnitBuildData>();
+
+            public treidenBuildOrderEarly aiBuildEarly;
+            public treidenBuildOrderMid aiBuildMid;
+            public treidenBuildOrderMidLate aiBuildMidLate;
+            public treidenBuildOrderLate aiBuildLate;
         }
 
         public class TreidenUnitBuildData
@@ -260,6 +286,32 @@ namespace JCGodSwornConfigurator
                 this.goldCost = goldCost;
                 this.quantityOwned = quantityOwned;
             }
+        }
+
+        public enum treidenBuildOrderEarly
+        {
+            Footmen_Xbow,
+            Militant_Cherub,
+            Footmen_Cherub,
+            Rogue_Bow,
+            Tracker_Cherub
+        }
+        public enum treidenBuildOrderMid
+        {
+            Zealot_Nurse,
+            Tracker_Rogue,
+            Longbows
+        }
+        public enum treidenBuildOrderMidLate
+        {
+            Angels,
+            Knights,
+            Artillery
+        }
+        public enum treidenBuildOrderLate
+        {
+            Paladin,
+            BlackKnight
         }
     }
 

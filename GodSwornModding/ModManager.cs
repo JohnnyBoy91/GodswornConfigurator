@@ -235,62 +235,79 @@ namespace JCGodSwornConfigurator
                     if (HandleWaveManager.TreidenData.playerTeam == 1) teamString = "Baltic";
                     if (HandleWaveManager.TreidenData.playerTeam == 2) teamString = "Order";
 
-                    if (GUI.Button(new Rect(panelPosition, new Vector2(100, 30)), teamString))
-                    {
+                    ParticipantManager playerParticipant = gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID];
+                    int playerTechLevel = treidenCommanderModData.commanderDatas[0].techLevel;
+                    int nextTechLevelCost = 150 + (playerTechLevel * 100);
+                    int nextWealthLevelCost = -100 + (playerParticipant.Wealth.Increase * 10);
+                    int nextFaithLevelCost = 30 + (playerParticipant.Faith.Increase * 5);
 
-                    }
+                    GUI.Label(new Rect(panelPosition, new Vector2(100, 30)), teamString);
+                    if (treidenCommanderModData.playerWaveManager != null) GUI.Label(new Rect(new Vector2(panelPosition.x, panelPosition.y + 30), new Vector2(200, 30)), "Next Wave in " + ((int)(HandleWaveManager.TreidenData.waveInterval - (treidenCommanderModData.playerWaveManager.TimeSinceStart % HandleWaveManager.TreidenData.waveInterval))).ToString() + "seconds");
 
-                    if (GUI.Button(new Rect(new Vector2(panelPosition.x, panelPosition.y + 30), new Vector2(160, 30)), "+Faith Income:200"))
+                    if (GUI.Button(new Rect(new Vector2(panelPosition.x, panelPosition.y + 60), new Vector2(160, 30)), "+Faith Income:" + nextFaithLevelCost))
                     {
-
-                    }
-                    if (GUI.Button(new Rect(new Vector2(panelPosition.x + 160, panelPosition.y + 30), new Vector2(160, 30)), "+Wealth Income:200"))
-                    {
-
-                    }
-                    if (GUI.Button(new Rect(new Vector2(panelPosition.x, panelPosition.y + 60), new Vector2(160, 30)), "+Tech Level:500"))
-                    {
-                        if (gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount >= 500)
+                        if (playerParticipant.Wealth.amount >= nextFaithLevelCost)
                         {
-                            treidenCommanderModData.commanderDatas[0].techLevel++;
-                            gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount -= 500;
+                            playerParticipant.Faith.Increase += 2;
+                            playerParticipant.Wealth.amount -= nextFaithLevelCost;
                         }
                     }
-                    //if (GUI.Button(new Rect(new Vector2(panelPosition.x + 160, panelPosition.y + 30), new Vector2(160, 30)), teamString))
+                    if (GUI.Button(new Rect(new Vector2(panelPosition.x + 160, panelPosition.y + 60), new Vector2(160, 30)), "+Wealth Income:" + nextWealthLevelCost))
+                    {
+                        if (playerParticipant.Wealth.amount >= nextWealthLevelCost)
+                        {
+                            playerParticipant.Wealth.Increase += 2;
+                            playerParticipant.Wealth.amount -= nextWealthLevelCost;
+                        }
+                    }
+                    if (treidenCommanderModData.commanderDatas[0].techLevel < 4)
+                    {
+                        if (GUI.Button(new Rect(new Vector2(panelPosition.x, panelPosition.y + 90), new Vector2(160, 30)), "+Tech Level:" + nextTechLevelCost))
+                        {
+                            if (playerParticipant.Wealth.amount >= nextTechLevelCost)
+                            {
+                                treidenCommanderModData.commanderDatas[0].techLevel++;
+                                playerParticipant.Wealth.amount -= nextTechLevelCost;
+                            }
+                        }
+                    }
+                    //if (GUI.Button(new Rect(new Vector2(panelPosition.x + 160, panelPosition.y + 90), new Vector2(160, 30)), teamString))
                     //{
 
                     //}
 
-                    int columnCount = 1;
-                    int yOffset = 30;
-                    int unitButtonWidth = 160;
-                    int rowIndex = 1;
-                    int columnIndex = 0;
-                    int k = 0;
-                    foreach (var treidenUnitData in treidenCommanderModData.balticUnits)
+                    if (HandleWaveManager.TreidenData.playerTeam != 0)
                     {
-                        k++;
-                        if (k > treidenCommanderModData.commanderDatas[0].techLevel * 4 + (treidenCommanderModData.commanderDatas[0].techLevel == 3 ? 1 : 0)) break;
-                        string buttonUnitName = treidenUnitData.Key;
-                        if (buttonUnitName.Contains("Stardaughter - Lunar")) buttonUnitName = buttonUnitName.Replace("Stardaughter - Lunar", "Lunardaughter");
-                        if (buttonUnitName.Contains("Stardaughter - Solar")) buttonUnitName = buttonUnitName.Replace("Stardaughter - Solar", "Solardaughter");
-                        if (GUI.Button(new Rect(new Vector2(panelPosition.x + (unitButtonWidth * columnIndex), panelPosition.y + 100 + (yOffset * rowIndex)), new Vector2(unitButtonWidth, yOffset)), CombineStrings("(", treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key)?.First().quantityOwned.ToString(), ")", buttonUnitName, dlmKey, treidenUnitData.Value.ToString())))
+                        int columnCount = 1;
+                        int yOffset = 30;
+                        int unitButtonWidth = 160;
+                        int rowIndex = 1;
+                        int columnIndex = 0;
+                        int k = 0;
+                        foreach (var treidenUnitData in treidenCommanderModData.balticUnits)
                         {
-                            if (gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount >= treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key)?.First().goldCost)
+                            k++;
+                            if (k > treidenCommanderModData.commanderDatas[0].techLevel * 4 + (treidenCommanderModData.commanderDatas[0].techLevel == 3 ? 1 : 0)) break;
+                            string buttonUnitName = treidenUnitData.Key;
+                            if (buttonUnitName.Contains("Stardaughter - Lunar")) buttonUnitName = buttonUnitName.Replace("Stardaughter - Lunar", "Lunardaughter");
+                            if (buttonUnitName.Contains("Stardaughter - Solar")) buttonUnitName = buttonUnitName.Replace("Stardaughter - Solar", "Solardaughter");
+                            if (GUI.Button(new Rect(new Vector2(panelPosition.x + (unitButtonWidth * columnIndex), panelPosition.y + 120 + (yOffset * rowIndex)), new Vector2(unitButtonWidth, yOffset)), CombineStrings("(", treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key)?.First()?.quantityOwned.ToString(), ")", buttonUnitName, dlmKey, treidenUnitData.Value.ToString())))
                             {
-                                treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key).First().quantityOwned++;
-                                gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount -= treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key).First().goldCost;
+                                if (gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount >= treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key)?.First().goldCost)
+                                {
+                                    treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key).First().quantityOwned++;
+                                    gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Wealth.amount -= treidenCommanderModData.commanderDatas[0].unitBuildDatas.Where(x => x.name == treidenUnitData.Key).First().goldCost;
+                                }
+                            }
+
+                            columnIndex++;
+                            if (columnIndex > columnCount)
+                            {
+                                columnIndex = 0;
+                                rowIndex++;
                             }
                         }
-
-                        columnIndex++;
-                        if (columnIndex > columnCount)
-                        {
-                            columnIndex = 0;
-                            rowIndex++;
-                        }
                     }
-
                 }
             }
 
@@ -301,6 +318,13 @@ namespace JCGodSwornConfigurator
                 foreach (var item in treidenCommanderModData.balticUnits)
                 {
                     treidenCommanderModData.commanderDatas[0].unitBuildDatas.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));
+                }
+                treidenCommanderModData.commanderDatas[1].isAI = true;
+                treidenCommanderModData.commanderDatas[1].goldIncome = 24;
+                foreach (var item in treidenCommanderModData.orderUnits)
+                {
+                    treidenCommanderModData.commanderDatas[1].unitBuildDatas.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));
+                    treidenCommanderModData.commanderDatas[1].aiUnitWishList.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));
                 }
                 initTreiden = true;
             }
@@ -350,6 +374,7 @@ namespace JCGodSwornConfigurator
                 {
                     treidenCommanderModeEnabled = true;
                     treidenCommanderModData.commanderDatas.Clear();
+                    treidenCommanderModData.commanderDatas.Add(new TreidenCommanderModData.CommanderData());
                     treidenCommanderModData.commanderDatas.Add(new TreidenCommanderModData.CommanderData());
                 }
 
