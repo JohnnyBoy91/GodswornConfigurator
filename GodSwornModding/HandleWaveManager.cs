@@ -22,9 +22,12 @@ namespace JCGodSwornConfigurator
             public static bool init = false;
             public static int playerID = 0;
             public static int playerTeam = 0;
-            public static int waveInterval = 40;
+            public static int waveInterval = 38;
+            public static int wavesSpawned = 0;
+            public static float lastWaveSpawnTime;
         }
 
+        #region Harmony Patches
         [HarmonyPatch(typeof(WaveManagers), "Start")]
         static class ModWaveManager
         {
@@ -153,18 +156,21 @@ namespace JCGodSwornConfigurator
 
                     if (__instance.ParticipantID == 6 && activeWave)
                     {
-                        //TreidenData.waveInterval+= 2;
+                        TreidenData.wavesSpawned++;
+                        TreidenData.waveInterval+= 1;
+                        TreidenData.lastWaveSpawnTime = __instance.WaveMgr.TimeSinceStart;
                         modManager.treidenCommanderModData.playerWaveManager = waveManager;
                     }
 
-                    //for (int i = 0; i < __instance.WaveMgr.WavesOptions.Count; i++)
-                    //{
-                    //    __instance.WaveMgr.WavesOptions[i].SpawnTime = TreidenData.waveInterval;
-                    //}
-                    //for (int i = 0; i < __instance.WaveMgr.WavesRepeats.Count; i++)
-                    //{
-                    //    __instance.WaveMgr.WavesRepeats[i].SpawnTime = TreidenData.waveInterval;
-                    //}
+                    __instance.WaveMgr.currentwave = 0;
+                    for (int i = 0; i < __instance.WaveMgr.WavesOptions.Count; i++)
+                    {
+                        __instance.WaveMgr.WavesOptions[i].SpawnTime = __instance.WaveMgr.TimeSinceStart + TreidenData.waveInterval;
+                    }
+                    for (int i = 0; i < __instance.WaveMgr.WavesRepeats.Count; i++)
+                    {
+                        __instance.WaveMgr.WavesRepeats[i].SpawnTime = __instance.WaveMgr.TimeSinceStart + TreidenData.waveInterval;
+                    }
 
                     foreach (var spawnSet in __instance.SpawnSets)
                     {
@@ -191,15 +197,15 @@ namespace JCGodSwornConfigurator
                         else if (__instance.ParticipantID == 7 && activeWave)
                         {
                             TreidenCommanderModData.CommanderData AICommander = modManager.treidenCommanderModData.commanderDatas[1];
-
-                            if(__instance.WaveMgr.currentwave != 0) AICommander.currentGoldAI += AICommander.goldIncome * (TreidenData.waveInterval / 5);
+                            AICommander.currentGoldAI += AICommander.goldIncome * (TreidenData.waveInterval / 5);
+                            //if (TreidenData.wavesSpawned != 0) 
                             Plugin.ModManager.Log("AIGoldBank:" + AICommander.currentGoldAI + "AI GoldIncomeTick:" + AICommander.goldIncome + ", " + "WaveIncome:" + AICommander.goldIncome * (TreidenData.waveInterval / 5));
-                            int currentWave = __instance.WaveMgr.currentwave;
+                            int currentWave = TreidenData.wavesSpawned;
 
-                            if (__instance.WaveMgr.currentwave % 5 == 0)
+                            if (currentWave % 5 == 0)
                             {
                                 Plugin.ModManager.Log(currentWave + ":" + "5th wave, upgrading AI income");
-                                AICommander.goldIncome++;
+                                AICommander.goldIncome += 2;
                             }
 
                             if (AICommander.currentGoldAI > currentWave * 20)
@@ -243,6 +249,7 @@ namespace JCGodSwornConfigurator
                 }
             }
         }
+        #endregion
 
         private static bool pickedBuildEarly;
         private static bool pickedBuildMid;
@@ -269,9 +276,9 @@ namespace JCGodSwornConfigurator
                         break;
                     case TreidenCommanderModData.treidenBuildOrderEarly.Militant_Cherub:
                         aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 12;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 1;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 1;
                         break;
                     case TreidenCommanderModData.treidenBuildOrderEarly.Footmen_Cherub:
                         aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 2;
@@ -280,10 +287,12 @@ namespace JCGodSwornConfigurator
                         aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildOrderEarly.Rogue_Bow:
+                        TryUpgradeAITechLevel(2, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += 10;
                         aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 4;
                         break;
                     case TreidenCommanderModData.treidenBuildOrderEarly.Tracker_Cherub:
+                        TryUpgradeAITechLevel(2, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Tracker").First().quantityOwned += 8;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 3;
@@ -302,22 +311,31 @@ namespace JCGodSwornConfigurator
                 switch (aiCommander.aiBuildMid)
                 {
                     case TreidenCommanderModData.treidenBuildOrderMid.Longbows:
+                        TryUpgradeAITechLevel(2, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 6;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 4;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
                         break;
                     case TreidenCommanderModData.treidenBuildOrderMid.Zealot_Nurse:
+                        TryUpgradeAITechLevel(2, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 4;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 8;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildOrderMid.Tracker_Rogue:
+                        TryUpgradeAITechLevel(2, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Tracker").First().quantityOwned += 6;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += 6;
                         aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 1;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
+                        break;
+                    case TreidenCommanderModData.treidenBuildOrderMid.HolyRush:
+                        TryUpgradeAITechLevel(3, aiCommander);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Avenging Angel").First().quantityOwned += 3;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
                         break;
                     default:
                         break;
@@ -333,6 +351,7 @@ namespace JCGodSwornConfigurator
                 switch (aiCommander.aiBuildMidLate)
                 {
                     case TreidenCommanderModData.treidenBuildOrderMidLate.Artillery:
+                        TryUpgradeAITechLevel(3, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 1;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Cannon").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Catapult").First().quantityOwned += 2;
@@ -340,12 +359,14 @@ namespace JCGodSwornConfigurator
                         aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildOrderMidLate.Angels:
+                        TryUpgradeAITechLevel(3, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Avenging Angel").First().quantityOwned += 6;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 3;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildOrderMidLate.Knights:
+                        TryUpgradeAITechLevel(3, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Knight").First().quantityOwned += 10;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 4;
@@ -364,14 +385,12 @@ namespace JCGodSwornConfigurator
                 switch (aiCommander.aiBuildLate)
                 {
                     case TreidenCommanderModData.treidenBuildOrderLate.BlackKnight:
+                        TryUpgradeAITechLevel(4, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Blackknight").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Cannon").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
                         break;
                     case TreidenCommanderModData.treidenBuildOrderLate.Paladin:
+                        TryUpgradeAITechLevel(4, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Paladin").First().quantityOwned += 8;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
                         break;
                     default:
                         break;
@@ -391,6 +410,25 @@ namespace JCGodSwornConfigurator
                         aiCommander.currentGoldAI -= aiCommander.unitBuildDatas[i].goldCost;
                     }
                 }
+            }
+        }
+
+        private static void TryUpgradeAITechLevel(int targetTechLevel, TreidenCommanderModData.CommanderData aiCommander)
+        {
+            if (aiCommander.techLevel < targetTechLevel)
+            {
+                aiCommander.currentGoldAI -= 150 + (100 * aiCommander.techLevel);
+                aiCommander.techLevel++;
+            }
+            if (aiCommander.techLevel < targetTechLevel)
+            {
+                aiCommander.currentGoldAI -= 150 + (100 * aiCommander.techLevel);
+                aiCommander.techLevel++;
+            }
+            if (aiCommander.techLevel < targetTechLevel)
+            {
+                aiCommander.currentGoldAI -= 150 + (100 * aiCommander.techLevel);
+                aiCommander.techLevel++;
             }
         }
 

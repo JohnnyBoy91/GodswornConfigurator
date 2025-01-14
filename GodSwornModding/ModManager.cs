@@ -238,11 +238,12 @@ namespace JCGodSwornConfigurator
                     ParticipantManager playerParticipant = gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID];
                     int playerTechLevel = treidenCommanderModData.commanderDatas[0].techLevel;
                     int nextTechLevelCost = 150 + (playerTechLevel * 100);
-                    int nextWealthLevelCost = -100 + (playerParticipant.Wealth.Increase * 10);
-                    int nextFaithLevelCost = 30 + (playerParticipant.Faith.Increase * 5);
+                    int nextWealthLevelCost = -200 + (playerParticipant.Wealth.Increase * 15);
+                    int nextFaithLevelCost = 20 + (playerParticipant.Faith.Increase * 5);
 
                     GUI.Label(new Rect(panelPosition, new Vector2(100, 30)), teamString);
-                    if (treidenCommanderModData.playerWaveManager != null) GUI.Label(new Rect(new Vector2(panelPosition.x, panelPosition.y + 30), new Vector2(200, 30)), "Next Wave in " + ((int)(HandleWaveManager.TreidenData.waveInterval - (treidenCommanderModData.playerWaveManager.TimeSinceStart % HandleWaveManager.TreidenData.waveInterval))).ToString() + "seconds");
+                    if (treidenCommanderModData.playerWaveManager != null) GUI.Label(new Rect(new Vector2(panelPosition.x, panelPosition.y + 30), new Vector2(200, 30)), "Next Wave in " + 
+                        (HandleWaveManager.TreidenData.waveInterval + (int)HandleWaveManager.TreidenData.lastWaveSpawnTime - (int)treidenCommanderModData.playerWaveManager.TimeSinceStart).ToString() + "seconds");
 
                     if (GUI.Button(new Rect(new Vector2(panelPosition.x, panelPosition.y + 60), new Vector2(160, 30)), "+Faith Income:" + nextFaithLevelCost))
                     {

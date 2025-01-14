@@ -223,7 +223,7 @@ namespace JCGodSwornConfigurator
 
         public Dictionary<string, int> balticUnits = new Dictionary<string, int>()
         {
-            {"Tribesman", 115 },
+            {"Tribesman", 120 },
             {"Marauder", 95 },
             {"Skirmisher", 140 },
             {"Ranger", 145 },
@@ -233,12 +233,12 @@ namespace JCGodSwornConfigurator
             {"Pukis", 180 },
             {"Warrior", 230 },//t3
             {"WolfWarrior" , 315 },
-            {"Raider", 200 },
+            {"Raider", 170 },
             {"Leshi" , 425 },
             {"Spigana" , 335 },
-            {"Stardaughter - Lunar" , 540 },//t4
-            {"Stardaughter - Solar" , 650 },
-            {"Skybull" , 650 }
+            {"Stardaughter - Lunar" , 600 },//t4
+            {"Stardaughter - Solar" , 550 },
+            {"Skybull" , 520 }
         };
         public Dictionary<string, int> orderUnits = new Dictionary<string, int>()
         {
@@ -251,7 +251,7 @@ namespace JCGodSwornConfigurator
             {"Tracker", 180 },
             {"Rogue" , 105 },
             {"LongbowMan" , 180 },
-            {"Avenging Angel", 250 },//t3
+            {"Avenging Angel", 375 },//t3
             {"Catapult", 290 },
             {"Cannon" , 515 },
             {"Knight", 365 },
@@ -269,6 +269,8 @@ namespace JCGodSwornConfigurator
             public List<TreidenUnitBuildData> unitBuildDatas = new List<TreidenUnitBuildData>();
             public List<TreidenUnitBuildData> aiUnitWishList = new List<TreidenUnitBuildData>();
 
+            //0 is not picked early, 2 is picked buildmid etc
+            public int aiBuildOrderStage = 0;
             public treidenBuildOrderEarly aiBuildEarly;
             public treidenBuildOrderMid aiBuildMid;
             public treidenBuildOrderMidLate aiBuildMidLate;
@@ -300,7 +302,8 @@ namespace JCGodSwornConfigurator
         {
             Zealot_Nurse,
             Tracker_Rogue,
-            Longbows
+            Longbows,
+            HolyRush
         }
         public enum treidenBuildOrderMidLate
         {
