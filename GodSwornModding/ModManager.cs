@@ -175,6 +175,13 @@ namespace JCGodSwornConfigurator
                     initializedInGame = true;
                 }
 
+                if (initializedInGame && treidenCommanderModeEnabled && SceneManager.GetActiveScene().name == "MainMenu" && dataManager.GetCurrentMap().MapName.key == "$GaurdiansOfTreiden" && HandleWaveManager.TreidenData.init)
+                {
+                    treidenCommanderModData.ResetData();
+                    HandleWaveManager.TreidenData.ResetData();
+                    initTreiden = false;
+                }
+
                 //hotkey for dev commands
                 if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyUp(KeyCode.F10))
                 {
@@ -219,7 +226,10 @@ namespace JCGodSwornConfigurator
 
                     if (HandleWaveManager.TreidenData.playerTeam == 0)
                     {
-                        if(gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Diplomatic_Ties[6] == DiplomacyState.Allied)
+                        treidenCommanderModData.commanderDatas.Clear();
+                        treidenCommanderModData.commanderDatas.Add(new TreidenCommanderModData.CommanderData());
+                        treidenCommanderModData.commanderDatas.Add(new TreidenCommanderModData.CommanderData());
+                        if (gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Diplomatic_Ties[6] == DiplomacyState.Allied)
                         {
                             HandleWaveManager.TreidenData.playerTeam = 1;
                             InitTreidenFaction();
@@ -238,8 +248,8 @@ namespace JCGodSwornConfigurator
                     ParticipantManager playerParticipant = gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID];
                     int playerTechLevel = treidenCommanderModData.commanderDatas[0].techLevel;
                     int nextTechLevelCost = 150 + (playerTechLevel * 100);
-                    int nextWealthLevelCost = -200 + (playerParticipant.Wealth.Increase * 15);
-                    int nextFaithLevelCost = 20 + (playerParticipant.Faith.Increase * 5);
+                    int nextWealthLevelCost = -250 + (playerParticipant.Wealth.Increase * 20) - (HandleWaveManager.TreidenData.wavesSpawned * 10);
+                    int nextFaithLevelCost = 50 + (playerParticipant.Faith.Increase * 5);
 
                     GUI.Label(new Rect(panelPosition, new Vector2(100, 30)), teamString);
                     if (treidenCommanderModData.playerWaveManager != null) GUI.Label(new Rect(new Vector2(panelPosition.x, panelPosition.y + 30), new Vector2(200, 30)), "Next Wave in " + 
@@ -285,7 +295,7 @@ namespace JCGodSwornConfigurator
                         int rowIndex = 1;
                         int columnIndex = 0;
                         int k = 0;
-                        foreach (var treidenUnitData in treidenCommanderModData.balticUnits)
+                        foreach (var treidenUnitData in HandleWaveManager.TreidenData.playerTeam == 1 ? treidenCommanderModData.balticUnits : treidenCommanderModData.orderUnits)
                         {
                             k++;
                             if (k > treidenCommanderModData.commanderDatas[0].techLevel * 4 + (treidenCommanderModData.commanderDatas[0].techLevel == 3 ? 1 : 0)) break;
@@ -316,13 +326,16 @@ namespace JCGodSwornConfigurator
             private void InitTreidenFaction()
             {
                 if (initTreiden) return;
-                foreach (var item in treidenCommanderModData.balticUnits)
+
+                foreach (var item in HandleWaveManager.TreidenData.playerTeam == 1 ? treidenCommanderModData.balticUnits : treidenCommanderModData.orderUnits)
                 {
                     treidenCommanderModData.commanderDatas[0].unitBuildDatas.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));
                 }
+
                 treidenCommanderModData.commanderDatas[1].isAI = true;
                 treidenCommanderModData.commanderDatas[1].goldIncome = 24;
-                foreach (var item in treidenCommanderModData.orderUnits)
+                treidenCommanderModData.commanderDatas[1].currentGoldAI = 500;
+                foreach (var item in HandleWaveManager.TreidenData.playerTeam == 1 ? treidenCommanderModData.orderUnits : treidenCommanderModData.balticUnits)
                 {
                     treidenCommanderModData.commanderDatas[1].unitBuildDatas.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));
                     treidenCommanderModData.commanderDatas[1].aiUnitWishList.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));

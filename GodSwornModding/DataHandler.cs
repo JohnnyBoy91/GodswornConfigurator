@@ -221,13 +221,19 @@ namespace JCGodSwornConfigurator
         public List<CommanderData> commanderDatas = new List<CommanderData>();
         public WaveManagers playerWaveManager;
 
+        public void ResetData()
+        {
+            playerWaveManager = null;
+            commanderDatas.Clear();
+        }
+
         public Dictionary<string, int> balticUnits = new Dictionary<string, int>()
         {
             {"Tribesman", 120 },
-            {"Marauder", 95 },
+            {"Marauder", 100 },
             {"Skirmisher", 140 },
-            {"Ranger", 145 },
-            {"Werewolf", 90 },//t2
+            {"Werewolf", 80 },
+            {"Ranger", 145 },//t2
             {"Witch", 165 },
             {"Herbalist", 155 },
             {"Pukis", 180 },
@@ -245,18 +251,18 @@ namespace JCGodSwornConfigurator
             {"Militant", 90 },
             {"Marksman", 120 },
             {"Footman", 130 },
-            {"Cherub", 270 },
+            {"Cherub", 300 },
             {"Zealot", 185 },//t2
             {"Nurse", 170 },
             {"Tracker", 180 },
-            {"Rogue" , 105 },
+            {"Rogue" , 100 },
             {"LongbowMan" , 180 },
             {"Avenging Angel", 375 },//t3
             {"Catapult", 290 },
             {"Cannon" , 515 },
-            {"Knight", 365 },
+            {"Knight", 380 },
             {"Blackknight" , 600 },//t4
-            {"Paladin" , 465 }
+            {"Paladin" , 490 }
         };
 
         public class CommanderData
@@ -275,6 +281,11 @@ namespace JCGodSwornConfigurator
             public treidenBuildOrderMid aiBuildMid;
             public treidenBuildOrderMidLate aiBuildMidLate;
             public treidenBuildOrderLate aiBuildLate;
+
+            public treidenBuildBalticEarly aiBuildBalticEarly;
+            public treidenBuildBalticMid aiBuildBalticMid;
+            public treidenBuildBalticMidLate aiBuildBalticMidLate;
+            public treidenBuildBalticLate aiBuildBalticLate;
         }
 
         public class TreidenUnitBuildData
@@ -289,7 +300,8 @@ namespace JCGodSwornConfigurator
                 this.quantityOwned = quantityOwned;
             }
         }
-
+        
+        //Treiden Order
         public enum treidenBuildOrderEarly
         {
             Footmen_Xbow,
@@ -315,6 +327,36 @@ namespace JCGodSwornConfigurator
         {
             Paladin,
             BlackKnight
+        }
+
+        //Treiden Baltic
+        public enum treidenBuildBalticEarly
+        {
+            Wolves,
+            Tribe_Rauder,
+            Mix,
+            PukiRush,
+            MassTribe
+        }
+        public enum treidenBuildBalticMid
+        {
+            Witches,
+            RangedMix,
+            Puki_Tribe
+        }
+        public enum treidenBuildBalticMidLate
+        {
+            WolfWarriors,
+            Leshis,
+            Raiders,
+            Spiganas
+        }
+        public enum treidenBuildBalticLate
+        {
+            Bulls,
+            Lunardaughters,
+            Solardaughters,
+            T3Mix
         }
     }
 
