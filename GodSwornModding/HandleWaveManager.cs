@@ -26,6 +26,7 @@ namespace JCGodSwornConfigurator
             public static int waveInterval = 38;
             public static int wavesSpawned = 0;
             public static float lastWaveSpawnTime;
+            public static int spawnPairCheck = 0;
 
             public static void ResetData()
             {
@@ -35,6 +36,7 @@ namespace JCGodSwornConfigurator
                 waveInterval = 38;
                 wavesSpawned = 0;
                 lastWaveSpawnTime = 0;
+                spawnPairCheck = 0;
 
                 pickedBuildEarly = false;
                 pickedBuildMid = false;
@@ -168,13 +170,6 @@ namespace JCGodSwornConfigurator
                     //    unitName = "Knight";
                     //}
 
-                    if (__instance.ParticipantID == 6 && activeWave)
-                    {
-                        TreidenData.wavesSpawned++;
-                        TreidenData.waveInterval+= 1;
-                        TreidenData.lastWaveSpawnTime = __instance.WaveMgr.TimeSinceStart;
-                    }
-
                     //for ui
                     if(__instance.ParticipantID == 6 && activeWave && TreidenData.playerTeam == 1)
                     {
@@ -190,10 +185,24 @@ namespace JCGodSwornConfigurator
                     for (int i = 0; i < __instance.WaveMgr.WavesOptions.Count; i++)
                     {
                         __instance.WaveMgr.WavesOptions[i].SpawnTime = __instance.WaveMgr.TimeSinceStart + TreidenData.waveInterval;
+                        if (activeWave) Plugin.ModManager.Log("SpawnTime " + __instance.WaveMgr.gameObject.name + " " + __instance.WaveMgr.WavesOptions[i].SpawnTime);
                     }
                     for (int i = 0; i < __instance.WaveMgr.WavesRepeats.Count; i++)
                     {
                         __instance.WaveMgr.WavesRepeats[i].SpawnTime = __instance.WaveMgr.TimeSinceStart + TreidenData.waveInterval;
+                    }
+
+                    if ((__instance.ParticipantID == 6 || __instance.ParticipantID == 7) && activeWave)
+                    {
+                        //handle race condition
+                        TreidenData.spawnPairCheck++;
+                        if (TreidenData.spawnPairCheck == 2)
+                        {
+                            TreidenData.wavesSpawned++;
+                            TreidenData.waveInterval += 1;
+                            TreidenData.lastWaveSpawnTime = __instance.WaveMgr.TimeSinceStart;
+                            TreidenData.spawnPairCheck = 0;
+                        }
                     }
 
                     foreach (var spawnSet in __instance.SpawnSets)
@@ -304,7 +313,7 @@ namespace JCGodSwornConfigurator
         private static void ProcessTreidenOrderAI(TreidenCommanderModData.CommanderData aiCommander, int currentWave)
         {
             System.Random rng = new System.Random();
-            if (currentWave == 1 && !pickedBuildEarly)
+            if (currentWave >= 0 && !pickedBuildEarly)
             {
                 pickedBuildEarly = true;
                 int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildOrderEarly)).Length);
@@ -345,7 +354,7 @@ namespace JCGodSwornConfigurator
                 }
             }
 
-            if (currentWave == 10 && !pickedBuildMid)
+            if (currentWave >= 10 && !pickedBuildMid)
             {
                 pickedBuildMid = true;
                 int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildOrderMid)).Length);
@@ -385,7 +394,7 @@ namespace JCGodSwornConfigurator
                 }
             }
 
-            if (currentWave == 18 && !pickedBuildMidLate)
+            if (currentWave >= 18 && !pickedBuildMidLate)
             {
                 pickedBuildMidLate = true;
                 int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildOrderMidLate)).Length);
@@ -395,7 +404,7 @@ namespace JCGodSwornConfigurator
                 {
                     case TreidenCommanderModData.treidenBuildOrderMidLate.Artillery:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Cannon").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Catapult").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
@@ -419,7 +428,7 @@ namespace JCGodSwornConfigurator
                 }
             }
 
-            if (currentWave == 26 && !pickedBuildLate)
+            if (currentWave >= 26 && !pickedBuildLate)
             {
                 pickedBuildLate = true;
                 int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildOrderLate)).Length);
@@ -429,11 +438,11 @@ namespace JCGodSwornConfigurator
                 {
                     case TreidenCommanderModData.treidenBuildOrderLate.BlackKnight:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Blackknight").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Blackknight").First().quantityOwned += 8;
                         break;
                     case TreidenCommanderModData.treidenBuildOrderLate.Paladin:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Paladin").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Paladin").First().quantityOwned += 10;
                         break;
                     default:
                         break;
@@ -459,7 +468,7 @@ namespace JCGodSwornConfigurator
         private static void ProcessTreidenBalticAI(TreidenCommanderModData.CommanderData aiCommander, int currentWave)
         {
             System.Random rng = new System.Random();
-            if (currentWave == 1 && !pickedBuildEarly)
+            if (currentWave >= 0 && !pickedBuildEarly)
             {
                 pickedBuildEarly = true;
                 int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildBalticEarly)).Length);
@@ -468,37 +477,38 @@ namespace JCGodSwornConfigurator
                 switch (aiCommander.aiBuildBalticEarly)
                 {
                     case TreidenCommanderModData.treidenBuildBalticEarly.MassTribe:
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 10;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 12;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 6;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticEarly.Tribe_Rauder:
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 12;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticEarly.Wolves:
                         aiCommander.aiUnitWishList.Where(x => x.name == "Werewolf").First().quantityOwned += 12;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 12;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticEarly.Mix:
                         aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 6;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 6;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticEarly.PukiRush:
                         TryUpgradeAITechLevel(2, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Pukis").First().quantityOwned += 6;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 2;
                         break;
                     default:
                         break;
                 }
             }
 
-            if (currentWave == 10 && !pickedBuildMid)
+            if (currentWave >= 10 && !pickedBuildMid)
             {
                 pickedBuildMid = true;
                 int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildBalticMid)).Length);
@@ -512,6 +522,7 @@ namespace JCGodSwornConfigurator
                         aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 4;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 3;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMid.Witches:
                         TryUpgradeAITechLevel(2, aiCommander);
@@ -539,7 +550,7 @@ namespace JCGodSwornConfigurator
                 }
             }
 
-            if (currentWave == 18 && !pickedBuildMidLate)
+            if (currentWave >= 18 && !pickedBuildMidLate)
             {
                 pickedBuildMidLate = true;
                 int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildBalticMidLate)).Length);
@@ -552,6 +563,7 @@ namespace JCGodSwornConfigurator
                         aiCommander.aiUnitWishList.Where(x => x.name == "Raider").First().quantityOwned += 6;
                         aiCommander.aiUnitWishList.Where(x => x.name == "WolfWarrior").First().quantityOwned += 4;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Leshi").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += 1;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMidLate.Leshis:
@@ -560,6 +572,7 @@ namespace JCGodSwornConfigurator
                         aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMidLate.Spiganas:
                         TryUpgradeAITechLevel(3, aiCommander);
@@ -568,10 +581,12 @@ namespace JCGodSwornConfigurator
                         aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 1;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMidLate.WolfWarriors:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "WolfWarrior").First().quantityOwned += 10;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "WolfWarrior").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 4;
                         break;
@@ -580,7 +595,7 @@ namespace JCGodSwornConfigurator
                 }
             }
 
-            if (currentWave == 26 && !pickedBuildLate)
+            if (currentWave >= 26 && !pickedBuildLate)
             {
                 pickedBuildLate = true;
                 int randomInt = rng.Next(System.Enum.GetValues(typeof(TreidenCommanderModData.treidenBuildBalticLate)).Length);
@@ -590,23 +605,24 @@ namespace JCGodSwornConfigurator
                 {
                     case TreidenCommanderModData.treidenBuildBalticLate.Bulls:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skybull").First().quantityOwned += 7;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skybull").First().quantityOwned += 10;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 3;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticLate.Lunardaughters:
                         TryUpgradeAITechLevel(4, aiCommander);
                         aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += 4;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticLate.Solardaughters:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 3;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 4;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticLate.T3Mix:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 3;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += 3;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skybull").First().quantityOwned += 3;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skybull").First().quantityOwned += 4;
                         break;
                     default:
                         break;
@@ -648,6 +664,19 @@ namespace JCGodSwornConfigurator
             }
         }
 
+        [HarmonyPatch(typeof(Destructable), "StartSetup")]
+        static class ModDestructableStart
+        {
+            [HarmonyPriority(100)]
+            private static void Postfix(Destructable __instance)
+            {
+                if (Plugin.ModManager.Instance.treidenCommanderModeEnabled && Plugin.ModManager.Instance.dataManager.GetCurrentMap().MapName.key == "$GaurdiansOfTreiden" && !__instance.gameObject.name.Contains("Pole_Choice"))
+                {
+                    __instance.AddHealth(-100, __instance, 6);
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(ParticipantManager), "gameStart")]
         static class ModParticipantManager
         {
@@ -679,6 +708,8 @@ namespace JCGodSwornConfigurator
                             participant.Wood.Increase = 10;
                             participant.Wealth.Increase = 10;
                             participant.Faith.Increase = 10;
+                            participant.House.Cap = 50;
+                            participant.House.Maximum = 50;
                         }
                     }
                 }
@@ -754,6 +785,10 @@ namespace JCGodSwornConfigurator
                 for (int i = 0; i < waveManager.WavesRepeats.Count; i++)
                 {
                     waveManager.WavesRepeats[i].SpawnTime = TreidenData.waveInterval;
+                }
+                if (waveManager.gameObject.name.Contains("Order D") || waveManager.gameObject.name.Contains("Baltic D"))
+                {
+                    waveManager.gameObject.GetComponent<Objective>()?.CompleteConsequences.Clear();
                 }
             }
 

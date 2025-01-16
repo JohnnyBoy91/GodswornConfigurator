@@ -258,13 +258,13 @@ namespace JCGodSwornConfigurator
             {"Nurse", 170 },
             {"Tracker", 190 },
             {"Rogue" , 100 },
-            {"LongbowMan" , 180 },
-            {"Avenging Angel", 380 },//t3
+            {"LongbowMan" , 180 },//t3
+            {"Avenging Angel", 380 },
             {"Catapult", 330 },
-            {"Cannon" , 520 },
+            {"Cannon" , 420 },
             {"Knight", 400 },
-            {"Blackknight" , 600 },//t4
-            {"Paladin" , 520 }
+            {"Blackknight" , 660 },//t4
+            {"Paladin" , 550 }
         };
 
         public class CommanderData

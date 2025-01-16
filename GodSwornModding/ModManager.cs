@@ -323,7 +323,6 @@ namespace JCGodSwornConfigurator
             private void InitTreidenFaction()
             {
                 if (initTreiden) return;
-
                 foreach (var item in HandleWaveManager.TreidenData.playerTeam == 1 ? treidenCommanderModData.balticUnits : treidenCommanderModData.orderUnits)
                 {
                     treidenCommanderModData.commanderDatas[0].unitBuildDatas.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));
