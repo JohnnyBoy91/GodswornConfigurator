@@ -225,44 +225,46 @@ namespace JCGodSwornConfigurator
         {
             playerWaveManager = null;
             commanderDatas.Clear();
+            commanderDatas.Add(new CommanderData());
+            commanderDatas.Add(new CommanderData());
         }
 
         public Dictionary<string, int> balticUnits = new Dictionary<string, int>()
         {
             {"Tribesman", 120 },
             {"Marauder", 100 },
-            {"Skirmisher", 140 },
+            {"Skirmisher", 130 },
             {"Werewolf", 80 },
-            {"Ranger", 145 },//t2
-            {"Witch", 165 },
-            {"Herbalist", 155 },
+            {"Ranger", 140 },//t2
+            {"Witch", 160 },
+            {"Herbalist", 150 },
             {"Pukis", 180 },
-            {"Warrior", 230 },//t3
-            {"WolfWarrior" , 315 },
-            {"Raider", 170 },
-            {"Leshi" , 425 },
-            {"Spigana" , 335 },
-            {"Stardaughter - Lunar" , 600 },//t4
-            {"Stardaughter - Solar" , 550 },
+            {"Warrior", 250 },//t3
+            {"WolfWarrior" , 310 },
+            {"Raider", 160 },
+            {"Leshi" , 420 },
+            {"Spigana" , 330 },
+            {"Stardaughter - Lunar" , 580 },//t4
+            {"Stardaughter - Solar" , 540 },
             {"Skybull" , 520 }
         };
         public Dictionary<string, int> orderUnits = new Dictionary<string, int>()
         {
             {"Militant", 90 },
             {"Marksman", 120 },
-            {"Footman", 130 },
+            {"Footman", 150 },
             {"Cherub", 300 },
-            {"Zealot", 185 },//t2
+            {"Zealot", 190 },//t2
             {"Nurse", 170 },
-            {"Tracker", 180 },
+            {"Tracker", 190 },
             {"Rogue" , 100 },
             {"LongbowMan" , 180 },
-            {"Avenging Angel", 375 },//t3
-            {"Catapult", 290 },
-            {"Cannon" , 515 },
-            {"Knight", 380 },
+            {"Avenging Angel", 380 },//t3
+            {"Catapult", 330 },
+            {"Cannon" , 520 },
+            {"Knight", 400 },
             {"Blackknight" , 600 },//t4
-            {"Paladin" , 490 }
+            {"Paladin" , 520 }
         };
 
         public class CommanderData

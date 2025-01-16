@@ -226,9 +226,6 @@ namespace JCGodSwornConfigurator
 
                     if (HandleWaveManager.TreidenData.playerTeam == 0)
                     {
-                        treidenCommanderModData.commanderDatas.Clear();
-                        treidenCommanderModData.commanderDatas.Add(new TreidenCommanderModData.CommanderData());
-                        treidenCommanderModData.commanderDatas.Add(new TreidenCommanderModData.CommanderData());
                         if (gameManager.ParticipantMgrs[HandleWaveManager.TreidenData.playerID].Diplomatic_Ties[6] == DiplomacyState.Allied)
                         {
                             HandleWaveManager.TreidenData.playerTeam = 1;
