@@ -233,7 +233,7 @@ namespace JCGodSwornConfigurator
         {
             {"Tribesman", 120 },
             {"Marauder", 95 },
-            {"Skirmisher", 130 },
+            {"Skirmisher", 125 },
             {"Werewolf", 80 },
             {"Ranger", 140 },//t2
             {"Witch", 160 },
