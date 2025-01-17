@@ -239,10 +239,10 @@ namespace JCGodSwornConfigurator
             {"Witch", 160 },
             {"Herbalist", 150 },
             {"Pukis", 180 },
-            {"Warrior", 250 },//t3
+            {"Warrior", 270 },//t3
             {"WolfWarrior" , 310 },
             {"Raider", 160 },
-            {"Leshi" , 420 },
+            {"Leshi" , 410 },
             {"Spigana" , 330 },
             {"Stardaughter - Lunar" , 580 },//t4
             {"Stardaughter - Solar" , 540 },
@@ -264,7 +264,7 @@ namespace JCGodSwornConfigurator
             {"Cannon" , 420 },
             {"Knight", 400 },
             {"Blackknight" , 660 },//t4
-            {"Paladin" , 550 }
+            {"Paladin" , 620 }
         };
 
         public class CommanderData

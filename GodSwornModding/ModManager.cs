@@ -327,10 +327,30 @@ namespace JCGodSwornConfigurator
                 {
                     treidenCommanderModData.commanderDatas[0].unitBuildDatas.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));
                 }
-
                 treidenCommanderModData.commanderDatas[1].isAI = true;
-                treidenCommanderModData.commanderDatas[1].goldIncome = 24;
-                treidenCommanderModData.commanderDatas[1].currentGoldAI = 500;
+                switch (DataManager.Difficulty)
+                {
+                    case Difficulty.Easy:
+                        treidenCommanderModData.commanderDatas[1].goldIncome = 20;
+                        treidenCommanderModData.commanderDatas[1].currentGoldAI = 400;
+                        break;
+                    case Difficulty.Normal:
+                        treidenCommanderModData.commanderDatas[1].goldIncome = 24;
+                        treidenCommanderModData.commanderDatas[1].currentGoldAI = 500;
+                        break;
+                    case Difficulty.Hard:
+                        treidenCommanderModData.commanderDatas[1].goldIncome = 26;
+                        treidenCommanderModData.commanderDatas[1].currentGoldAI = 600;
+                        break;
+                    case Difficulty.Insane:
+                        treidenCommanderModData.commanderDatas[1].goldIncome = 28;
+                        treidenCommanderModData.commanderDatas[1].currentGoldAI = 700;
+                        break;
+                    default:
+                        treidenCommanderModData.commanderDatas[1].goldIncome = 24;
+                        treidenCommanderModData.commanderDatas[1].currentGoldAI = 500;
+                        break;
+                }
                 foreach (var item in HandleWaveManager.TreidenData.playerTeam == 1 ? treidenCommanderModData.orderUnits : treidenCommanderModData.balticUnits)
                 {
                     treidenCommanderModData.commanderDatas[1].unitBuildDatas.Add(new TreidenCommanderModData.TreidenUnitBuildData(item.Key, item.Value, 0));

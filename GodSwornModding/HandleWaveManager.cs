@@ -568,11 +568,12 @@ namespace JCGodSwornConfigurator
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMidLate.Leshis:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Leshi").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Leshi").First().quantityOwned += 3;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 2;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMidLate.Spiganas:
                         TryUpgradeAITechLevel(3, aiCommander);
@@ -580,8 +581,9 @@ namespace JCGodSwornConfigurator
                         aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += 5;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 1;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 1;
                         aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += 2;
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMidLate.WolfWarriors:
                         TryUpgradeAITechLevel(3, aiCommander);
@@ -661,6 +663,23 @@ namespace JCGodSwornConfigurator
             {
                 aiCommander.currentGoldAI -= 150 + (100 * aiCommander.techLevel);
                 aiCommander.techLevel++;
+            }
+        }
+
+        private static int TreidenDifficultyScaledUnitQuantity(int quantity)
+        {
+            switch (DataManager.Difficulty)
+            {
+                case Difficulty.Easy:
+                    return (int)(quantity * 0.8f);
+                case Difficulty.Normal:
+                    return quantity;
+                case Difficulty.Hard:
+                    return (int)(quantity * 1.15f);
+                case Difficulty.Insane:
+                    return (int)(quantity * 1.3f);
+                default:
+                    return quantity;
             }
         }
 
