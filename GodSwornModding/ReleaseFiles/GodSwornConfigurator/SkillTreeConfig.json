@@ -1,0 +1,437 @@
+[
+  {
+    "factionName": "Faction_Baltic_Saule",
+    "rpgModeSkillTree": false,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "SolarRay_DivineSkill",
+          "Jug of warmth_Divineskill"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "Tears of amber_DivineSkill",
+          "AsvinaiPassage_DivineSkill"
+        ]
+      },
+      {
+        "level": 4,
+        "divineSkillNames": [
+          "GoldenApple_DivineSkill",
+          "Zaltys_DivineSkil"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "FloodingLight_DivineSkill",
+          "Radiance_DivineSkill"
+        ]
+      },
+      {
+        "level": 7,
+        "divineSkillNames": [
+          "GoldenEmbrace_DivineSkill",
+          "Solarfury_DivineSkill"
+        ]
+      }
+    ]
+  },
+  {
+    "factionName": "Faction_Baltic_Meness",
+    "rpgModeSkillTree": false,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "Cresent_DivineSkill",
+          "Sleep_DivineSkill"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "Wane_DivineSkill",
+          "Ritualofthewolf_DivineSkill"
+        ]
+      },
+      {
+        "level": 4,
+        "divineSkillNames": [
+          "Bladedash_DivineSkill",
+          "Warrior Patron_DivineSkill"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "HornedStride_DivineSkill",
+          "Shadows_DivineSkill"
+        ]
+      },
+      {
+        "level": 7,
+        "divineSkillNames": [
+          "DarkestNight_DivineSkill",
+          "Bloodmoon_DivineSkill"
+        ]
+      }
+    ]
+  },
+  {
+    "factionName": "Faction_Order_Michael",
+    "rpgModeSkillTree": false,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "Righteousfury_DivineSkill",
+          "SummonCherubs_DivineSkil"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "Tithe_of_the_condemned_DivineSkill",
+          "ChainofCondemnation_DivineSkill"
+        ]
+      },
+      {
+        "level": 4,
+        "divineSkillNames": [
+          "CleansingFlame_DivineSkill",
+          "Atonement_DivineSkill"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "SummonAvenging Angel_DivineSkill",
+          "Rebuke_DivineSkill"
+        ]
+      },
+      {
+        "level": 7,
+        "divineSkillNames": [
+          "FinalReckoning_DivineSkill",
+          "Heavensgate_DivineSkill"
+        ]
+      }
+    ]
+  },
+  {
+    "factionName": "Faction_Baltic_Ausrine",
+    "rpgModeSkillTree": false,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "Charm_DivineSkill",
+          "Stunninglights_DivineSkill"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "Recognition_DivineSkill",
+          "Lietuvensward_DivineSkill"
+        ]
+      },
+      {
+        "level": 4,
+        "divineSkillNames": [
+          "Attraction_DivineSkill",
+          "Fernflower_DivineSkill"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "Nova_DivineSkill",
+          "FallingStars_DivineSkill"
+        ]
+      },
+      {
+        "level": 7,
+        "divineSkillNames": [
+          "Domainofthedawn_DivineSkill",
+          "Strife_DivineSkill"
+        ]
+      }
+    ]
+  },
+  {
+    "factionName": "Faction_Order_Bishops",
+    "rpgModeSkillTree": false,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "Conversion_DivineSkill",
+          "Smite_DivineSkill"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "Consecrate_DivineSkill",
+          "Dedication_DivineSkill"
+        ]
+      },
+      {
+        "level": 3,
+        "divineSkillNames": [
+          "Dominion_DivineSkill",
+          "Banishment_DivineSkill"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "Saint_DivineSkill",
+          "Revivify_DivineSkill"
+        ]
+      },
+      {
+        "level": 6,
+        "divineSkillNames": [
+          "TheBlackOrder_DivineSkill"
+        ]
+      },
+      {
+        "level": 10,
+        "divineSkillNames": [
+          "Cathedral_DivineSkill"
+        ]
+      }
+    ]
+  },
+  {
+    "factionName": "Faction_Baltic_Saule",
+    "rpgModeSkillTree": true,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "SolarRay_DivineSkill",
+          "Rejuvenate_DivineSkill"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "Tears of amber_DivineSkill",
+          "Flare_DivineSkill"
+        ]
+      },
+      {
+        "level": 3,
+        "divineSkillNames": [
+          "Radiance_DivineSkill"
+        ]
+      },
+      {
+        "level": 4,
+        "divineSkillNames": [
+          "FloodingLight_DivineSkill",
+          "Mount_Usinsh__Divineskill"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "Summon_SolarDaughters__Divineskill",
+          "GoldenEmbrace_DivineSkill"
+        ]
+      },
+      {
+        "level": 7,
+        "divineSkillNames": [
+          "Solarfury_DivineSkill"
+        ]
+      }
+    ]
+  },
+  {
+    "factionName": "Faction_Baltic_Meness",
+    "rpgModeSkillTree": true,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "Cresent_DivineSkill",
+          "Sleep_DivineSkill"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "Warrior Patron_DivineSkill",
+          "SummonShadowWolf_DivineSkill"
+        ]
+      },
+      {
+        "level": 3,
+        "divineSkillNames": [
+          "Hiddenblade_DivineSkill",
+          "HornedStride_DivineSkill RPG"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "Shadows_DivineSkill",
+          "Bladedash_DivineSkill"
+        ]
+      },
+      {
+        "level": 7,
+        "divineSkillNames": [
+          "DarkestNight_DivineSkill",
+          "Bloodmoon_DivineSkill"
+        ]
+      }
+    ]
+  },
+  {
+    "factionName": "Faction_Order_Michael",
+    "rpgModeSkillTree": true,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "SummonCherubs_DivineSkil",
+          "Righteousfury_DivineSkill"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "ChainofCondemnation_DivineSkill",
+          "DivineBulwark_DivineSkill"
+        ]
+      },
+      {
+        "level": 3,
+        "divineSkillNames": [
+          "Tithe_of_the_condemned_DivineSkill Faith"
+        ]
+      },
+      {
+        "level": 4,
+        "divineSkillNames": [
+          "CleansingFlame_DivineSkill",
+          "SummonAvenging Angel_DivineSkill"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "Atonement_DivineSkill",
+          "Rebuke_DivineSkill"
+        ]
+      },
+      {
+        "level": 7,
+        "divineSkillNames": [
+          "FinalReckoning_DivineSkill"
+        ]
+      }
+    ]
+  },
+  {
+    "factionName": "Faction_Baltic_Ausrine",
+    "rpgModeSkillTree": true,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "Charm_DivineSkill",
+          "Stunninglights_DivineSkill"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "Lietuvensward_DivineSkill RPG",
+          "Nova_DivineSkill"
+        ]
+      },
+      {
+        "level": 3,
+        "divineSkillNames": [
+          "Recognition_DivineSkill",
+          "Fernflower_DivineSkill"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "FallingStars_DivineSkill",
+          "Attraction_DivineSkill rpg"
+        ]
+      },
+      {
+        "level": 6,
+        "divineSkillNames": [
+          "Strife_DivineSkill"
+        ]
+      },
+      {
+        "level": 7,
+        "divineSkillNames": [
+          "Skybull_DivineSkill"
+        ]
+      }
+    ]
+  },
+  {
+    "factionName": "Faction_Order_Bishops",
+    "rpgModeSkillTree": true,
+    "divineSkillSets": [
+      {
+        "level": 1,
+        "divineSkillNames": [
+          "Conversion_DivineSkill",
+          "CallForCrusade_DivineSkill"
+        ]
+      },
+      {
+        "level": 2,
+        "divineSkillNames": [
+          "Consecrate_DivineSkill",
+          "Smite_DivineSkill"
+        ]
+      },
+      {
+        "level": 3,
+        "divineSkillNames": [
+          "UnbreakableSpirit_DivineSkill"
+        ]
+      },
+      {
+        "level": 4,
+        "divineSkillNames": [
+          "Dominion_DivineSkill",
+          "Banishment_DivineSkill"
+        ]
+      },
+      {
+        "level": 5,
+        "divineSkillNames": [
+          "Saint_DivineSkill",
+          "Revivify_DivineSkill"
+        ]
+      },
+      {
+        "level": 7,
+        "divineSkillNames": [
+          "Summon Black Order_DivineSkill"
+        ]
+      }
+    ]
+  }
+]

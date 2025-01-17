@@ -1,0 +1,1 @@
+Move Tervete scenario to root folder to enable.

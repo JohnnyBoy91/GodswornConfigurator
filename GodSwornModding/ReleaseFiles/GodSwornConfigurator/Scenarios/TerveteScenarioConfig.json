@@ -1,0 +1,250 @@
+{
+  "mapKey": "Tervete",
+  "scenarioName": "TerveteModTemplate1",
+  "easyUnitMultiplier": 0.7,
+  "hardUnitMultiplier": 1.2,
+  "insaneUnitMultiplier": 1.5,
+  "revealUnitsOnMiniMap": false,
+  "waveConfigs": [
+    {
+      "waveName": "Woof Woof",
+      "spawnTimeSeconds": 140,
+      "spawnTimeVarianceFactor": 0.3,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "Werewolf",
+          "quantity": 7,
+          "quantityVarianceFactor": 0.5
+        }
+      ]
+    },
+    {
+      "waveName": "Tribeswitches",
+      "spawnTimeSeconds": 240,
+      "spawnTimeVarianceFactor": 0.15,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "Tribesman",
+          "quantity": 4,
+          "quantityVarianceFactor": 0.3
+        },
+        {
+          "unitNameKey": "Witch",
+          "quantity": 4,
+          "quantityVarianceFactor": 0.3
+        }
+      ]
+    },
+    {
+      "waveName": "Beefy Bandits",
+      "spawnTimeSeconds": 360,
+      "spawnTimeVarianceFactor": 0.1,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "Skybull",
+          "quantity": 2,
+          "quantityVarianceFactor": 0
+        }
+      ]
+    },
+    {
+      "waveName": "Warriors",
+      "spawnTimeSeconds": 480,
+      "spawnTimeVarianceFactor": 0,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "Warrior",
+          "quantity": 4,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Marauder",
+          "quantity": 4,
+          "quantityVarianceFactor": 0.3
+        },
+        {
+          "unitNameKey": "Skirmisher",
+          "quantity": 6,
+          "quantityVarianceFactor": 0.3
+        }
+      ]
+    },
+    {
+      "waveName": "Dragons",
+      "spawnTimeSeconds": 600,
+      "spawnTimeVarianceFactor": 0,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "Pukis",
+          "quantity": 6,
+          "quantityVarianceFactor": 0.2
+        },
+        {
+          "unitNameKey": "Witch",
+          "quantity": 8,
+          "quantityVarianceFactor": 0.15
+        }
+      ]
+    },
+    {
+      "waveName": "Army of Steel",
+      "spawnTimeSeconds": 720,
+      "spawnTimeVarianceFactor": 0,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "Footman",
+          "quantity": 8,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Marksman",
+          "quantity": 6,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Zealot",
+          "quantity": 4,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Militant",
+          "quantity": 12,
+          "quantityVarianceFactor": 0.3
+        }
+      ]
+    },
+    {
+      "waveName": "Spirits of the Forest",
+      "spawnTimeSeconds": 840,
+      "spawnTimeVarianceFactor": 0,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "Spigana",
+          "quantity": 6,
+          "quantityVarianceFactor": 0.3
+        },
+        {
+          "unitNameKey": "Leshi",
+          "quantity": 6,
+          "quantityVarianceFactor": 0.3
+        }
+      ]
+    },
+    {
+      "waveName": "Army of the Sun",
+      "spawnTimeSeconds": 960,
+      "spawnTimeVarianceFactor": 0,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "Stardaughter - Solar",
+          "quantity": 6,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Ranger",
+          "quantity": 12,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Warrior",
+          "quantity": 4,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Raider",
+          "quantity": 4,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Herbalist",
+          "quantity": 4,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Pukis",
+          "quantity": 3,
+          "quantityVarianceFactor": 0
+        }
+      ]
+    },
+    {
+      "waveName": "Black Knights",
+      "spawnTimeSeconds": 1080,
+      "spawnTimeVarianceFactor": 0,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "Blackknight",
+          "quantity": 3,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Cannon",
+          "quantity": 4,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Nurse",
+          "quantity": 4,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Zealot",
+          "quantity": 4,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Marksman",
+          "quantity": 8,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Footman",
+          "quantity": 8,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Catapult",
+          "quantity": 3,
+          "quantityVarianceFactor": 0
+        }
+      ]
+    },
+    {
+      "waveName": "Army of the Moon",
+      "spawnTimeSeconds": 1200,
+      "spawnTimeVarianceFactor": 0,
+      "spawnUnitGroups": [
+        {
+          "unitNameKey": "WolfWarrior",
+          "quantity": 12,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Stardaughter - Lunar",
+          "quantity": 8,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Pukis",
+          "quantity": 4,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Tribesman",
+          "quantity": 6,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Werewolf",
+          "quantity": 12,
+          "quantityVarianceFactor": 0
+        },
+        {
+          "unitNameKey": "Raider",
+          "quantity": 6,
+          "quantityVarianceFactor": 0
+        }
+      ]
+    }
+  ]
+}
