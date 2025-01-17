@@ -232,7 +232,7 @@ namespace JCGodSwornConfigurator
         public Dictionary<string, int> balticUnits = new Dictionary<string, int>()
         {
             {"Tribesman", 120 },
-            {"Marauder", 100 },
+            {"Marauder", 95 },
             {"Skirmisher", 130 },
             {"Werewolf", 80 },
             {"Ranger", 140 },//t2
@@ -245,13 +245,13 @@ namespace JCGodSwornConfigurator
             {"Leshi" , 410 },
             {"Spigana" , 330 },
             {"Stardaughter - Lunar" , 580 },//t4
-            {"Stardaughter - Solar" , 540 },
+            {"Stardaughter - Solar" , 500 },
             {"Skybull" , 520 }
         };
         public Dictionary<string, int> orderUnits = new Dictionary<string, int>()
         {
             {"Militant", 90 },
-            {"Marksman", 120 },
+            {"Marksman", 125 },
             {"Footman", 150 },
             {"Cherub", 300 },
             {"Zealot", 190 },//t2

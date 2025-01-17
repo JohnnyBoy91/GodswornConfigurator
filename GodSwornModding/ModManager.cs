@@ -340,11 +340,11 @@ namespace JCGodSwornConfigurator
                         break;
                     case Difficulty.Hard:
                         treidenCommanderModData.commanderDatas[1].goldIncome = 26;
-                        treidenCommanderModData.commanderDatas[1].currentGoldAI = 600;
+                        treidenCommanderModData.commanderDatas[1].currentGoldAI = 550;
                         break;
                     case Difficulty.Insane:
                         treidenCommanderModData.commanderDatas[1].goldIncome = 28;
-                        treidenCommanderModData.commanderDatas[1].currentGoldAI = 700;
+                        treidenCommanderModData.commanderDatas[1].currentGoldAI = 600;
                         break;
                     default:
                         treidenCommanderModData.commanderDatas[1].goldIncome = 24;
