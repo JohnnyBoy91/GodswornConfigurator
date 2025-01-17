@@ -260,8 +260,8 @@ namespace JCGodSwornConfigurator
             {"Rogue" , 100 },
             {"LongbowMan" , 180 },//t3
             {"Avenging Angel", 380 },
-            {"Catapult", 330 },
-            {"Cannon" , 420 },
+            {"Catapult", 340 },
+            {"Cannon" , 480 },
             {"Knight", 400 },
             {"Blackknight" , 660 },//t4
             {"Paladin" , 620 }
