@@ -322,32 +322,32 @@ namespace JCGodSwornConfigurator
                 switch (aiCommander.aiBuildEarly)
                 {
                     case TreidenCommanderModData.treidenBuildOrderEarly.Footmen_Xbow:
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(8);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderEarly.Militant_Cherub:
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 12;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(12);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderEarly.Footmen_Cherub:
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marksman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderEarly.Rogue_Bow:
                         TryUpgradeAITechLevel(2, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += 10;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(10);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderEarly.Tracker_Cherub:
                         TryUpgradeAITechLevel(2, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tracker").First().quantityOwned += 8;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 3;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tracker").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(8);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(3);
                         break;
                     default:
                         break;
@@ -364,30 +364,30 @@ namespace JCGodSwornConfigurator
                 {
                     case TreidenCommanderModData.treidenBuildOrderMid.Longbows:
                         TryUpgradeAITechLevel(2, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderMid.Zealot_Nurse:
                         TryUpgradeAITechLevel(2, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 8;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Militant").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(8);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderMid.Tracker_Rogue:
                         TryUpgradeAITechLevel(2, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tracker").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tracker").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Rogue").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderMid.HolyRush:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Avenging Angel").First().quantityOwned += 3;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Avenging Angel").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(3);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
                         break;
                     default:
                         break;
@@ -404,24 +404,24 @@ namespace JCGodSwornConfigurator
                 {
                     case TreidenCommanderModData.treidenBuildOrderMidLate.Artillery:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Cannon").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Catapult").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "LongbowMan").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cannon").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Catapult").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Footman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderMidLate.Angels:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Avenging Angel").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += 3;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Avenging Angel").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Cherub").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(3);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderMidLate.Knights:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Knight").First().quantityOwned += 10;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Knight").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(10);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Nurse").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Zealot").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
                         break;
                     default:
                         break;
@@ -438,11 +438,11 @@ namespace JCGodSwornConfigurator
                 {
                     case TreidenCommanderModData.treidenBuildOrderLate.BlackKnight:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Blackknight").First().quantityOwned += 8;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Blackknight").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(8);
                         break;
                     case TreidenCommanderModData.treidenBuildOrderLate.Paladin:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Paladin").First().quantityOwned += 10;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Paladin").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(10);
                         break;
                     default:
                         break;
@@ -477,31 +477,31 @@ namespace JCGodSwornConfigurator
                 switch (aiCommander.aiBuildBalticEarly)
                 {
                     case TreidenCommanderModData.treidenBuildBalticEarly.MassTribe:
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 12;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(12);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticEarly.Tribe_Rauder:
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 8;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 8;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(8);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(8);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticEarly.Wolves:
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Werewolf").First().quantityOwned += 12;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 12;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Werewolf").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(12);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(12);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticEarly.Mix:
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 6;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Marauder").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticEarly.PukiRush:
                         TryUpgradeAITechLevel(2, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Pukis").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Pukis").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     default:
                         break;
@@ -518,26 +518,26 @@ namespace JCGodSwornConfigurator
                 {
                     case TreidenCommanderModData.treidenBuildBalticMid.Puki_Tribe:
                         TryUpgradeAITechLevel(2, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Pukis").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 3;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Pukis").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(3);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMid.Witches:
                         TryUpgradeAITechLevel(2, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Pukis").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 8;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Pukis").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(8);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMid.RangedMix:
                         TryUpgradeAITechLevel(2, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Pukis").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Pukis").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skirmisher").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     //case TreidenCommanderModData.treidenBuildBalticMid.HolyRush:
                     //    TryUpgradeAITechLevel(3, aiCommander);
@@ -560,37 +560,37 @@ namespace JCGodSwornConfigurator
                 {
                     case TreidenCommanderModData.treidenBuildBalticMidLate.Raiders:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Raider").First().quantityOwned += 6;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "WolfWarrior").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Leshi").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += 1;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Raider").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(6);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "WolfWarrior").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Leshi").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMidLate.Leshis:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Leshi").First().quantityOwned += 3;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Leshi").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(3);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMidLate.Spiganas:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Leshi").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += 5;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += 1;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += 2;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Leshi").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Spigana").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(5);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Witch").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Tribesman").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(1);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticMidLate.WolfWarriors:
                         TryUpgradeAITechLevel(3, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "WolfWarrior").First().quantityOwned += 8;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += 2;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "WolfWarrior").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(7);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Warrior").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(3);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Herbalist").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(2);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Ranger").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
                         break;
                     default:
                         break;
@@ -607,24 +607,24 @@ namespace JCGodSwornConfigurator
                 {
                     case TreidenCommanderModData.treidenBuildBalticLate.Bulls:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skybull").First().quantityOwned += 10;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 3;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skybull").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(10);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(3);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticLate.Lunardaughters:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 8;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(8);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticLate.Solardaughters:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += 8;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(8);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
                         break;
                     case TreidenCommanderModData.treidenBuildBalticLate.T3Mix:
                         TryUpgradeAITechLevel(4, aiCommander);
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += 4;
-                        aiCommander.aiUnitWishList.Where(x => x.name == "Skybull").First().quantityOwned += 4;
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Lunar").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Stardaughter - Solar").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
+                        aiCommander.aiUnitWishList.Where(x => x.name == "Skybull").First().quantityOwned += TreidenDifficultyScaledUnitQuantity(4);
                         break;
                     default:
                         break;
@@ -668,16 +668,24 @@ namespace JCGodSwornConfigurator
 
         private static int TreidenDifficultyScaledUnitQuantity(int quantity)
         {
+            System.Random rng = new System.Random();
+            int newQuantity;
             switch (DataManager.Difficulty)
             {
                 case Difficulty.Easy:
-                    return (int)(quantity * 0.8f);
+                    newQuantity = (int)(quantity * 0.8f);
+                    if (newQuantity == quantity && rng.Next(100) < 20) newQuantity--;
+                    return newQuantity;
                 case Difficulty.Normal:
                     return quantity;
                 case Difficulty.Hard:
-                    return (int)(quantity * 1.15f);
+                    newQuantity = (int)(quantity * 1.15f);
+                    if (newQuantity == quantity && rng.Next(100) < 15) newQuantity++;
+                    return newQuantity;
                 case Difficulty.Insane:
-                    return (int)(quantity * 1.3f);
+                    newQuantity = (int)(quantity * 1.3f);
+                    if (newQuantity == quantity && rng.Next(100) < 30) newQuantity++;
+                    return newQuantity;
                 default:
                     return quantity;
             }
