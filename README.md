@@ -5,7 +5,8 @@ Features tested and working on single player only
 * Customizable faction starting conditions & resource settings
 * Customize Unit and Hero stats
 * Customize Hero Skills
-* Create your own fefense challenges on the Tervete map
+* Treiden commander mode scenario
+* Create your own defense challenges on the Tervete map
 * Customize Damage Type Modifiers
 * Customizable worshipper spawn rate parameters
 * Customizable level xp requirements & stat scaling
