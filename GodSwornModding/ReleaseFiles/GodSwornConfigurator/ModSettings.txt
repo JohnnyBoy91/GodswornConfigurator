@@ -1,6 +1,8 @@
 //adds extra spectator slot to skirmish maps, not confirmed working in multiplayer yet
-EnableSpectatorMode:False
+EnableSpectatorMode:false
+
+TreidenCommanderModeEnabled:True
 
 //Below is for dev use
-RetrieveDataMode:False
-VerboseLogging:False
+RetrieveDataMode:false
+VerboseLogging:false
